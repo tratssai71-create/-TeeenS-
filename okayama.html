@@ -160,8 +160,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 
 /* 代表メッセージ */
 .msg-wrap{background:var(--ink);border-radius:20px;padding:72px 64px;display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center}
-.msg-img{width:160px;height:160px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,.15)}
-.msg-img img{width:100%;height:100%;object-fit:cover}
+.msg-img{width:88px;height:88px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:rgba(255,255,255,.6);letter-spacing:-.02em}
 .msg-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px}
 .msg-name{font-size:clamp(22px,2.6vw,32px);font-weight:900;letter-spacing:-0.03em;color:#fff;margin-bottom:4px}
 .msg-name small{font-size:.42em;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.02em;display:block;margin-top:4px}
@@ -273,13 +272,13 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     <div class="ok-chips">
       <span class="ok-chip">岡山市内 即日訪問</span>
       <span class="ok-chip">初回相談 完全無料</span>
-      <span class="ok-chip">地元密着 10年以上</span>
+      <span class="ok-chip">岡山生まれ 岡山育ち</span>
     </div>
     <a href="contact.html" class="ok-cta">無料相談してみる →</a>
   </div>
   <!-- 右：写真パネル -->
   <div class="ok-right">
-    <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&q=80" alt="岡山の風景"/>
+    <img src="https://images.unsplash.com/photo-1700055978308-68c7f0ba70be?w=1200&q=80" alt="倉敷美観地区 運河"/>
   </div>
 </div>
 
@@ -287,7 +286,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 <div class="lead sa">
   <p class="lead-label">For Okayama Businesses</p>
   <h2 class="lead-h2">遠い制作会社じゃなくて、<br>近くにいるパートナーを選んでください。</h2>
-  <p class="lead-p">Webの制作会社というと、どこか遠い存在に感じることはありませんか。連絡はメールだけ、打ち合わせはオンラインのみ——そんな会社とは、少し違います。TeeenSは、岡山を拠点に活動する地元のWeb会社です。</p>
+  <p class="lead-p">Web制作会社って、なんか遠い感じがしませんか。メールだけ、オンラインのみ、担当者の顔が見えない——。TeeenSはそういう会社じゃないです。岡山に根を張って、顔の見える関係でやっています。</p>
 </div>
 
 <!-- コンテンツセクション -->
@@ -321,13 +320,13 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       </div>
       <div class="feat-body">
         <span class="feat-num">02 — 地元だから分かること</span>
-        <h3 class="feat-h3">岡山のビジネスの空気を、<br>肌で知っています。</h3>
-        <p class="feat-p">商店街の賑わいも、ものづくり企業の誇りも、農業・食品産業の丁寧さも。岡山で育ったからこそ、この地域のビジネスが持つ個性と強みを深く理解しています。</p>
-        <p class="feat-p">東京の感覚や、どこにでも当てはまるテンプレートではなく、岡山のお客様一人ひとりのビジネスに合わせたWeb戦略をご提案します。</p>
+        <h3 class="feat-h3">岡山で生まれて、<br>岡山で育ちました。</h3>
+        <p class="feat-p">僕自身、岡山で生まれ育ちました。だからこそ、「岡山らしさ」を知った上でWebをつくれます。どこにでも当てはまるテンプレートを押しつけるんじゃなくて、お客さんの商売や想いに合ったものを一緒に考えたい。</p>
+        <p class="feat-p">距離が近いと、それだけ本音で話せます。</p>
         <ul class="feat-list">
-          <li>岡山の商慣習・ビジネス文化を理解</li>
-          <li>地元企業の事例・ネットワークあり</li>
-          <li>長く続くお付き合いを大切に</li>
+          <li>岡山市内なら直接打ち合わせに伺います</li>
+          <li>長く付き合えるパートナーでありたい</li>
+          <li>遠い制作会社より、近くにいる担当を</li>
         </ul>
       </div>
     </div>
@@ -383,18 +382,16 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       <h2 class="sec-h2">代表より、岡山の経営者の皆さまへ</h2>
     </div>
     <div class="msg-wrap sa">
-      <div class="msg-img">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="新田 拓夢"/>
-      </div>
+      <div class="msg-img">NT</div>
       <div>
         <p class="msg-label">Representative Message</p>
         <h3 class="msg-name">
           新田 拓夢
           <small>代表取締役 — 株式会社TeeenS</small>
         </h3>
-        <p class="msg-p">はじめまして。株式会社TeeenS代表の新田 拓夢と申します。私はまだ10代ですが、岡山のまちと、ここで真剣にビジネスに向き合う経営者の皆さまを、心から尊敬しています。</p>
-        <p class="msg-p" style="margin-top:14px">だからこそ、皆さまのWebを任せていただく仕事に、全力で取り組んでいます。年齢や規模にかかわらず、誠実に、丁寧に、スピーディーに。それが、TeeenSの約束です。</p>
-        <p class="msg-p" style="margin-top:14px">一度、お気軽に話しかけてみてください。岡山でお待ちしています。</p>
+        <p class="msg-p">僕はまだ10代ですが、岡山のまちが好きで、ここで本気でやっています。難しい言葉を並べるより、一回会って話したほうが早い——そういうスタンスでやっています。</p>
+        <p class="msg-p" style="margin-top:14px">「なんか若い子にWebを頼むのって…」と思う方もいると思います。でも、そういう方こそ一度だけ話してみてください。年齢より、仕事で判断してほしいです。</p>
+        <p class="msg-p" style="margin-top:14px">岡山市内ならいつでも会いに行きます。</p>
         <p class="msg-sign">代表取締役　新田 拓夢</p>
       </div>
     </div>
