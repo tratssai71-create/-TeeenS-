@@ -49,14 +49,17 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ── 全幅ビデオヒーロー ── */
+/* ── 全幅ヒーロー（動画 or 写真） ── */
 .ok-hero{
   position:relative;
   width:100%;min-height:100vh;
   overflow:hidden;
   display:flex;align-items:flex-end;
   padding-top:80px;
-  background:#000;
+  /* 写真フォールバック（動画が読み込めない場合） */
+  background:
+    url('https://images.unsplash.com/photo-1779451549137-7a9d70ff107e?w=1800&q=85')
+    center 60% / cover no-repeat;
 }
 /* YouTube背景動画 */
 .ok-yt-wrap{
@@ -70,12 +73,12 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   min-width:100%;min-height:100%;
   border:none;
 }
-/* グラデオーバーレイ */
+/* 明るめオーバーレイ */
 .ok-hero::before{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.3) 50%, rgba(0,0,0,.1) 100%),
-    linear-gradient(to right, rgba(0,0,0,.55) 0%, transparent 60%);
+    linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,0) 100%),
+    linear-gradient(to right, rgba(0,0,0,.38) 0%, transparent 55%);
 }
 /* テキストエリア */
 .ok-left{
@@ -87,18 +90,20 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .ok-eyebrow{
   display:inline-flex;align-items:center;gap:12px;
   font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(255,255,255,.5);margin-bottom:28px;
+  color:rgba(255,255,255,.65);margin-bottom:28px;
 }
-.ok-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.3)}
+.ok-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.4)}
 .ok-h1{
   font-size:clamp(36px,4.8vw,68px);
   font-weight:900;letter-spacing:-0.04em;line-height:1.1;
   color:#fff;margin-bottom:22px;
+  text-shadow:0 2px 24px rgba(0,0,0,.25);
 }
 .ok-sub{
   font-size:clamp(15px,1.5vw,19px);font-weight:600;
-  color:rgba(251,191,36,.85);letter-spacing:-.01em;
+  color:rgba(255,230,100,.95);letter-spacing:-.01em;
   margin-bottom:40px;
+  text-shadow:0 1px 8px rgba(0,0,0,.3);
 }
 /* アクセスチップ */
 .ok-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:44px}
@@ -106,12 +111,13 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   display:inline-flex;align-items:center;gap:7px;
   font-size:12.5px;font-weight:600;
   padding:9px 16px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.18);
-  color:rgba(255,255,255,.8);
-  background:rgba(255,255,255,.07);
-  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.28);
+  color:#fff;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
-.ok-chip::before{content:'✓';font-size:10px;color:rgba(251,191,36,.9);font-weight:900}
+.ok-chip::before{content:'✓';font-size:10px;color:rgba(255,220,60,1);font-weight:900}
 /* CTA */
 .ok-cta{
   display:inline-flex;align-items:center;gap:10px;
@@ -121,7 +127,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   transition:transform .25s,box-shadow .25s;
   align-self:flex-start;
 }
-.ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
 
 /* リード */
 .lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
@@ -266,10 +272,10 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <!-- 背景：岡山ドローン動画 -->
   <div class="ok-yt-wrap">
     <iframe
-      src="https://www.youtube.com/embed/isaGciN_bqc?autoplay=1&mute=1&loop=1&playlist=isaGciN_bqc&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=5"
+      src="https://www.youtube.com/embed/xN0gXgXAMB8?autoplay=1&mute=1&loop=1&playlist=xN0gXgXAMB8&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=3"
       allow="autoplay; encrypted-media"
       allowfullscreen
-      title="岡山 瀬戸大橋 ドローン空撮"
+      title="岡山城 ドローン空撮"
     ></iframe>
   </div>
   <!-- テキスト -->
