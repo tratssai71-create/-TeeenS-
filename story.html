@@ -51,16 +51,44 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ヒーロー */
-.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
-.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
-.hero-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.1) 30%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.85) 100%)}
-.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 64px;max-width:1280px;margin:0 auto}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:22px}
-.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
-.hero-h1{font-size:clamp(38px,5.5vw,68px);font-weight:900;letter-spacing:-0.03em;line-height:1.1;color:#fff;margin-bottom:20px}
-.hero-h1 em{font-style:normal;font-size:.52em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);display:block;margin-top:14px}
-.hero-lead{font-size:clamp(14px,1.4vw,17px);font-weight:400;color:rgba(255,255,255,.78);line-height:1.9;max-width:520px}
+/* ヒーロー — グラデーションアート */
+.hero{
+  position:relative;width:100%;height:100vh;
+  min-height:560px;max-height:900px;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 65%, rgba(99,102,241,.28) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 45% at 92% 12%, rgba(139,92,246,.22) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 40% at 58% 92%, rgba(14,165,233,.14) 0%, transparent 52%),
+    #07070d;
+}
+/* ノイズテクスチャ */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:180px;
+  opacity:.055;pointer-events:none;z-index:1;
+}
+/* 下グラデード */
+.hero::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:45%;
+  background:linear-gradient(to top,rgba(7,7,13,.95) 0%,transparent 100%);
+  z-index:1;pointer-events:none;
+}
+/* 背景に大きなデコ文字 */
+.hero-deco{
+  position:absolute;right:-1%;top:50%;transform:translateY(-52%);
+  font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(120px,19vw,260px);
+  letter-spacing:-0.06em;line-height:1;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,.055);
+  user-select:none;pointer-events:none;white-space:nowrap;z-index:1;
+}
+.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 68px;max-width:1280px;margin:0 auto;z-index:2}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:22px}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.35)}
+.hero-h1{font-size:clamp(42px,5.8vw,72px);font-weight:900;letter-spacing:-0.04em;line-height:1.06;color:#fff;margin-bottom:20px}
+.hero-h1 em{font-style:normal;font-size:.46em;font-weight:500;letter-spacing:.03em;color:rgba(255,255,255,.38);display:block;margin-top:16px}
+.hero-lead{font-size:clamp(14px,1.4vw,17px);font-weight:400;color:rgba(255,255,255,.62);line-height:1.9;max-width:520px}
 
 /* リード */
 .lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
@@ -199,8 +227,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 
 <!-- HERO -->
 <div class="hero">
-  <img class="hero-photo" src="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1800&q=80" alt="代表ストーリー"/>
-  <div class="hero-shade"></div>
+  <div class="hero-deco" aria-hidden="true">FOUNDER</div>
   <div class="hero-inner">
     <p class="hero-eyebrow">Founder's Story</p>
     <h1 class="hero-h1">
