@@ -49,36 +49,22 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ── 全幅ヒーロー（動画 or 写真） ── */
+/* ── フルスクリーンヒーロー ── */
 .ok-hero{
   position:relative;
   width:100%;min-height:100vh;
   overflow:hidden;
   display:flex;align-items:flex-end;
   padding-top:80px;
-  /* 写真フォールバック（動画が読み込めない場合） */
   background:
-    url('https://images.unsplash.com/photo-1779451549137-7a9d70ff107e?w=1800&q=85')
-    center 60% / cover no-repeat;
+    url('https://images.unsplash.com/photo-1755199233318-d10434fac092?w=1800&q=85')
+    center 55% / cover no-repeat;
 }
-/* YouTube背景動画 */
-.ok-yt-wrap{
-  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;
-}
-.ok-yt-wrap iframe{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  width:177.78vh;height:56.25vw;
-  min-width:100%;min-height:100%;
-  border:none;
-}
-/* 明るめオーバーレイ */
+/* 明るめオーバーレイ：下だけ暗くしてテキスト読みやすく */
 .ok-hero::before{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.18) 45%, rgba(0,0,0,0) 100%),
-    linear-gradient(to right, rgba(0,0,0,.38) 0%, transparent 55%);
+    linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.15) 40%, rgba(0,0,0,0) 75%);
 }
 /* テキストエリア */
 .ok-left{
@@ -166,14 +152,29 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .info-h4{font-size:16px;font-weight:800;letter-spacing:-0.01em;margin-bottom:8px}
 .info-p{font-size:13.5px;color:var(--ink2);line-height:1.85}
 
-/* 代表メッセージ */
-.msg-wrap{background:var(--ink);border-radius:20px;padding:72px 64px;display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center}
-.msg-img{width:88px;height:88px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:rgba(255,255,255,.6);letter-spacing:-.02em}
-.msg-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px}
-.msg-name{font-size:clamp(22px,2.6vw,32px);font-weight:900;letter-spacing:-0.03em;color:#fff;margin-bottom:4px}
-.msg-name small{font-size:.42em;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.02em;display:block;margin-top:4px}
-.msg-p{font-size:14.5px;color:rgba(255,255,255,.72);line-height:2.1;margin-top:20px;max-width:560px}
-.msg-sign{font-size:13px;font-weight:700;color:rgba(255,255,255,.55);margin-top:28px}
+/* 代表＋ストーリー統合セクション */
+.founder-sec{background:var(--ink);padding:88px 56px}
+.founder-in{max-width:1100px;margin:0 auto}
+.founder-label{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:48px;display:flex;align-items:center;gap:12px}
+.founder-label::before{content:'';width:18px;height:1px;background:rgba(255,255,255,.25)}
+.founder-grid{display:grid;grid-template-columns:240px 1fr;gap:72px;align-items:start}
+/* 左カード */
+.founder-profile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:40px 28px}
+.founder-avatar{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:rgba(255,255,255,.55);letter-spacing:-.02em;flex-shrink:0}
+.founder-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:-.03em}
+.founder-name small{font-size:11px;font-weight:500;color:rgba(255,255,255,.38);letter-spacing:.04em;display:block;margin-top:5px}
+.founder-stats{display:flex;flex-direction:column;gap:14px;width:100%;margin-top:8px}
+.founder-stat{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:8px;border:1px solid rgba(255,255,255,.07)}
+.founder-stat-l{font-size:11px;color:rgba(255,255,255,.38);font-weight:600;letter-spacing:.06em}
+.founder-stat-v{font-size:14px;color:#fff;font-weight:700}
+/* 右テキスト */
+.founder-body{}
+.founder-quote{border-left:2px solid rgba(255,220,60,.5);padding:6px 0 6px 24px;margin-bottom:36px}
+.founder-quote p{font-size:clamp(18px,2vw,24px);font-weight:700;color:#fff;line-height:1.65;letter-spacing:-.02em}
+.founder-quote cite{font-size:12px;font-style:normal;color:rgba(255,255,255,.35);margin-top:10px;display:block;letter-spacing:.05em}
+.founder-story{display:flex;flex-direction:column;gap:18px}
+.founder-story p{font-size:15px;color:rgba(255,255,255,.68);line-height:2;max-width:580px}
+.founder-sign{font-size:13px;font-weight:700;color:rgba(255,255,255,.4);margin-top:12px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07)}
 
 /* CTA */
 #cta{position:relative;overflow:hidden;min-height:480px;display:flex;align-items:center;justify-content:center}
@@ -226,8 +227,11 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .feat-photo{min-height:260px}
   .feat-body{padding:36px 28px}
   .info-grid{grid-template-columns:1fr}
-  .msg-wrap{grid-template-columns:1fr;text-align:center;padding:40px 28px;gap:28px}
-  .msg-img{margin:0 auto}
+  .founder-sec{padding:64px 24px}
+  .founder-grid{grid-template-columns:1fr;gap:40px}
+  .founder-profile{flex-direction:row;flex-wrap:wrap;justify-content:center;padding:28px 20px}
+  .founder-stats{flex-direction:row;flex-wrap:wrap}
+  .founder-stat{min-width:140px;flex:1}
   .ft{padding:52px 22px 22px}
   .ft-top{flex-direction:column}
   .ft-links{flex-wrap:wrap;gap:32px}
@@ -250,7 +254,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
     <div class="h-item"><a href="works.html">Works</a></div>
     <div class="h-item"><a href="okayama.html">岡山密着</a></div>
-    <div class="h-item"><a href="story.html">ストーリー</a></div>
     <a href="contact.html" class="h-cta">無料相談 →</a>
   </nav>
   <button class="h-burger" id="h-burger" aria-label="メニュー">
@@ -263,22 +266,11 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <a href="index.html#services" class="mob-link">Service</a>
   <a href="works.html" class="mob-link">Works</a>
   <a href="okayama.html" class="mob-link">岡山密着</a>
-  <a href="story.html" class="mob-link">ストーリー</a>
   <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
 </div>
 
-<!-- HERO 全幅ビデオ -->
+<!-- HERO -->
 <div class="ok-hero">
-  <!-- 背景：岡山ドローン動画 -->
-  <div class="ok-yt-wrap">
-    <iframe
-      src="https://www.youtube.com/embed/xN0gXgXAMB8?autoplay=1&mute=1&loop=1&playlist=xN0gXgXAMB8&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=3"
-      allow="autoplay; encrypted-media"
-      allowfullscreen
-      title="岡山城 ドローン空撮"
-    ></iframe>
-  </div>
-  <!-- テキスト -->
   <div class="ok-left">
     <p class="ok-eyebrow">Local Okayama Partner</p>
     <h1 class="ok-h1">岡山の社長さんへ、<br>頼れる隣のWeb担当、います。</h1>
@@ -384,26 +376,47 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   </div>
 </section>
 
-<!-- 代表メッセージ -->
-<section class="sec">
-  <div class="sec-in">
-    <div class="sec-head sa" style="margin-bottom:40px">
-      <span class="sec-label">Message</span>
-      <h2 class="sec-h2">代表より、岡山の経営者の皆さまへ</h2>
-    </div>
-    <div class="msg-wrap sa">
-      <div class="msg-img">NT</div>
-      <div>
-        <p class="msg-label">Representative Message</p>
-        <h3 class="msg-name">
-          新田 拓夢
-          <small>代表取締役 — 株式会社TeeenS</small>
-        </h3>
-        <p class="msg-p">僕はまだ10代ですが、岡山のまちが好きで、ここで本気でやっています。難しい言葉を並べるより、一回会って話したほうが早い——そういうスタンスでやっています。</p>
-        <p class="msg-p" style="margin-top:14px">「なんか若い子にWebを頼むのって…」と思う方もいると思います。でも、そういう方こそ一度だけ話してみてください。年齢より、仕事で判断してほしいです。</p>
-        <p class="msg-p" style="margin-top:14px">岡山市内ならいつでも会いに行きます。</p>
-        <p class="msg-sign">代表取締役　新田 拓夢</p>
+<!-- 代表＋ストーリー -->
+<section class="founder-sec">
+  <div class="founder-in">
+    <p class="founder-label sa">Founder's Story &amp; Message</p>
+    <div class="founder-grid">
+
+      <!-- 左：プロフィールカード -->
+      <div class="founder-profile sa">
+        <div class="founder-avatar">NT</div>
+        <div>
+          <p class="founder-name">新田 拓夢<small>代表取締役 — 株式会社TeeenS</small></p>
+        </div>
+        <div class="founder-stats">
+          <div class="founder-stat">
+            <span class="founder-stat-l">出身</span>
+            <span class="founder-stat-v">岡山</span>
+          </div>
+          <div class="founder-stat">
+            <span class="founder-stat-l">起業年齢</span>
+            <span class="founder-stat-v">10代</span>
+          </div>
+          <div class="founder-stat">
+            <span class="founder-stat-l">初回相談</span>
+            <span class="founder-stat-v">無料</span>
+          </div>
+        </div>
       </div>
+
+      <!-- 右：ストーリー＋メッセージ -->
+      <div class="founder-body sa sd1">
+        <blockquote class="founder-quote">
+          <p>「良いものをつくる人が、<br>正しく評価される世界をつくりたい。」</p>
+          <cite>— 新田 拓夢</cite>
+        </blockquote>
+        <div class="founder-story">
+          <p>岡山で生まれ育ちました。10代のうちに、「誰かのビジネスを本気で応援できる仕事がしたい」と思い、TeeenSを立ち上げました。</p>
+          <p>難しい言葉より、一回会って話したほうが早い。岡山市内ならいつでも顔を出しに行きます。「若いから不安」という方こそ、一度だけ話しかけてみてください。仕事で判断してもらえれば。</p>
+          <p class="founder-sign">代表取締役　新田 拓夢</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -435,7 +448,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
         <div class="ft-col">
           <h4>About</h4>
           <ul>
-            <li><a href="story.html">代表ストーリー</a></li>
             <li><a href="okayama.html">岡山地元密着</a></li>
             <li><a href="index.html#culture">会社概要</a></li>
           </ul>
