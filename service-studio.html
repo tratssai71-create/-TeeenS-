@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STUDIO導入・運用レクチャー | 株式会社TeeenS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --black:#0A0A0A; --dark:#1A1A1A; --mid:#3A3A3A;
+      --gray:#767676; --silver:#ADADAD; --border:#E5E5E5;
+      --light:#F5F5F5; --white:#FFFFFF;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Noto Sans JP',sans-serif; color:var(--dark); background:var(--white); overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+
+    /* HEADER */
+    header {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      height:72px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 60px; background:#fff;
+      border-bottom:1px solid var(--border); transition:box-shadow 0.3s;
+    }
+    header.scrolled { box-shadow:0 2px 24px rgba(0,0,0,0.08); }
+    .logo img { height:34px; display:block; }
+    nav { display:flex; align-items:center; gap:36px; }
+    nav a { text-decoration:none; color:var(--mid); font-size:14px; font-weight:500; letter-spacing:0.03em; transition:color 0.2s; }
+    nav a:hover { color:var(--black); }
+    .hd-cta { background:var(--black); color:var(--white) !important; font-size:13px !important; font-weight:700 !important; padding:10px 22px; border-radius:4px; letter-spacing:0.04em; }
+    .hd-cta:hover { opacity:0.8; }
+
+    /* HERO */
+    .page-hero { padding:160px 80px 100px; background:var(--black); position:relative; overflow:hidden; }
+    .page-hero::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(0,200,255,0.07) 0%, transparent 60%); pointer-events:none; }
+    .breadcrumb { font-size:12px; color:rgba(255,255,255,0.35); font-family:'Inter',sans-serif; letter-spacing:0.08em; margin-bottom:32px; }
+    .breadcrumb a { color:rgba(255,255,255,0.35); text-decoration:none; }
+    .breadcrumb a:hover { color:rgba(255,255,255,0.6); }
+    .breadcrumb span { margin:0 10px; }
+    .page-eyebrow { font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,255,255,0.4); font-family:'Inter',sans-serif; margin-bottom:20px; }
+    .page-title { font-size:clamp(36px,5vw,72px); font-weight:900; color:#fff; line-height:1.1; letter-spacing:-0.02em; margin-bottom:24px; font-family:'Inter','Noto Sans JP',sans-serif; }
+    .page-lead { font-size:clamp(15px,1.5vw,18px); color:rgba(255,255,255,0.6); line-height:1.85; max-width:560px; font-weight:300; }
+
+    /* SECTIONS */
+    section { padding:100px 80px; }
+    .eyebrow { font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--silver); font-family:'Inter',sans-serif; margin-bottom:16px; }
+    .h2 { font-size:clamp(28px,3.5vw,48px); font-weight:900; color:var(--black); line-height:1.15; letter-spacing:-0.02em; margin-bottom:20px; font-family:'Inter','Noto Sans JP',sans-serif; }
+    .lead { font-size:16px; color:var(--gray); line-height:1.9; font-weight:300; max-width:640px; }
+
+    /* OVERVIEW */
+    .overview { background:var(--white); }
+    .overview-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; margin-top:64px; }
+    .overview-img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+    .overview-text p { font-size:15px; color:var(--gray); line-height:1.95; font-weight:300; margin-bottom:20px; }
+
+    /* WHAT IS STUDIO */
+    .what { background:var(--light); }
+    .what-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--border); border:1px solid var(--border); margin-top:56px; }
+    .what-card { background:var(--white); padding:44px 36px; }
+    .what-icon { font-size:32px; margin-bottom:20px; }
+    .what-title { font-size:18px; font-weight:800; color:var(--black); margin-bottom:12px; }
+    .what-desc { font-size:13px; color:var(--gray); line-height:1.85; font-weight:300; }
+    .what-img-wrap { overflow:hidden; }
+    .what-img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; transition:transform 0.5s cubic-bezier(.22,1,.36,1); }
+    .what-card:hover .what-img { transform:scale(1.06); }
+    .what-body { padding:36px; }
+
+    /* LECTURE CONTENT */
+    .lecture { background:var(--white); }
+    .lec-list { margin-top:56px; border:1px solid var(--border); background:var(--border); display:flex; flex-direction:column; gap:2px; }
+    .lec-row { display:grid; grid-template-columns:80px 1fr; background:var(--white); }
+    .lec-num { display:flex; align-items:center; justify-content:center; background:var(--black); color:var(--white); font-size:20px; font-weight:900; font-family:'Inter',sans-serif; }
+    .lec-body { padding:32px 40px; border-left:1px solid var(--border); }
+    .lec-title { font-size:17px; font-weight:800; color:var(--black); margin-bottom:6px; }
+    .lec-desc { font-size:13px; color:var(--gray); line-height:1.85; font-weight:300; }
+
+    /* PRICE */
+    .price { background:var(--light); }
+    .price-card { background:var(--white); border:1px solid var(--border); padding:56px; margin-top:56px; max-width:720px; }
+    .price-label { font-size:12px; font-weight:700; letter-spacing:0.12em; color:var(--silver); font-family:'Inter',sans-serif; margin-bottom:12px; }
+    .price-val { font-size:clamp(36px,5vw,60px); font-weight:900; color:var(--black); font-family:'Inter',sans-serif; letter-spacing:-0.03em; }
+    .price-val span { font-size:18px; font-weight:400; color:var(--gray); }
+    .price-note { font-size:13px; color:var(--gray); line-height:1.85; font-weight:300; margin-top:20px; }
+
+    /* CTA */
+    .cta-section { background:var(--black); padding:100px 80px; text-align:center; }
+    .cta-title { font-size:clamp(28px,4vw,52px); font-weight:900; color:#fff; letter-spacing:-0.02em; margin-bottom:20px; font-family:'Inter','Noto Sans JP',sans-serif; }
+    .cta-desc { font-size:16px; color:rgba(255,255,255,0.45); line-height:1.9; margin-bottom:48px; font-weight:300; }
+    .btn-cta { display:inline-flex; align-items:center; gap:10px; background:#fff; color:#000; text-decoration:none; font-size:15px; font-weight:700; padding:18px 48px; letter-spacing:0.04em; transition:opacity 0.2s; }
+    .btn-cta:hover { opacity:0.85; }
+    .btn-back { display:inline-flex; align-items:center; gap:8px; color:rgba(255,255,255,0.4); text-decoration:none; font-size:13px; font-weight:500; letter-spacing:0.06em; margin-top:24px; transition:color 0.2s; }
+    .btn-back:hover { color:rgba(255,255,255,0.7); }
+
+    /* FOOTER */
+    footer { background:#060606; padding:40px 80px; border-top:1px solid #181818; text-align:center; }
+    .ft-copy { font-size:12px; color:rgba(255,255,255,0.18); font-family:'Inter',sans-serif; }
+  </style>
+</head>
+<body>
+
+  <header id="hdr">
+    <div class="logo"><a href="index.html"><img src="logo-side.png" alt="TeeenS" /></a></div>
+    <nav>
+      <a href="index.html#about">私たちについて</a>
+      <a href="index.html#services">サービス</a>
+      <a href="index.html#works">制作実績</a>
+      <a href="index.html#flow">制作の流れ</a>
+      <a href="index.html#contact" class="hd-cta">お問い合わせ →</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <div class="page-hero">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span>/</span>
+      <a href="index.html#services">Services</a><span>/</span>
+      STUDIO導入・運用レクチャー
+    </div>
+    <div class="page-eyebrow">Service 03</div>
+    <h1 class="page-title">STUDIO導入・<br>運用レクチャー</h1>
+    <p class="page-lead">納品して終わりじゃない。<br>自分たちで育てられるWebに変えます。</p>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="overview">
+    <div class="eyebrow">Overview</div>
+    <h2 class="h2">「更新できない」を<br>なくす。</h2>
+    <div class="overview-grid">
+      <img class="overview-img" src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=900&q=85&auto=format&fit=crop" alt="STUDIO導入・運用レクチャー" />
+      <div class="overview-text">
+        <p>「ホームページを作ったけど、更新できなくて放置してしまっている」そんなお悩みをよく聞きます。TeeenSはSTUDIOを活用することで、エンジニア不要で誰でも簡単に更新できるWebサイトを標準でお届けします。</p>
+        <p>納品後は1時間のビデオ通話レクチャーを実施。テキスト変更・画像差し替え・ページ追加など、日常的な運用に必要な操作を丁寧にお伝えします。</p>
+        <p>「育てられるサイト」を一緒につくりましょう。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS STUDIO -->
+  <section class="what">
+    <div class="eyebrow">What is STUDIO?</div>
+    <h2 class="h2">STUDIOでできること</h2>
+    <div class="what-grid">
+      <div class="what-card">
+        <div class="what-img-wrap"><img class="what-img" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80&auto=format&fit=crop" alt="直感的な編集" /></div>
+        <div class="what-body">
+          <div class="what-icon">✏️</div>
+          <div class="what-title">直感的な編集</div>
+          <p class="what-desc">ブロックを選んでクリックするだけでテキスト・画像・色を変更できます。プログラミング知識は一切不要。誰でも簡単に更新できます。</p>
+        </div>
+      </div>
+      <div class="what-card">
+        <div class="what-img-wrap"><img class="what-img" src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&q=80&auto=format&fit=crop" alt="ページの追加・削除" /></div>
+        <div class="what-body">
+          <div class="what-icon">📄</div>
+          <div class="what-title">ページの追加・削除</div>
+          <p class="what-desc">新しいページの追加や不要なページの削除も自分でできます。お知らせ・ブログ・実績など、どんどん情報を追加していけます。</p>
+        </div>
+      </div>
+      <div class="what-card">
+        <div class="what-img-wrap"><img class="what-img" src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80&auto=format&fit=crop" alt="スマホ対応も自動" /></div>
+        <div class="what-body">
+          <div class="what-icon">📱</div>
+          <div class="what-title">スマホ対応も自動</div>
+          <p class="what-desc">STUDIOで制作したサイトはPC・スマホ両方に自動対応。更新してもデザインが崩れる心配がありません。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LECTURE CONTENT -->
+  <section class="lecture">
+    <div class="eyebrow">Lecture Content</div>
+    <h2 class="h2">レクチャーの内容</h2>
+    <p class="lead" style="margin-bottom:0;">納品後の1時間ビデオ通話で、以下の内容をご説明します。</p>
+    <div class="lec-list">
+      <div class="lec-row"><div class="lec-num">01</div><div class="lec-body"><div class="lec-title">STUDIO管理画面の基本操作</div><div class="lec-desc">ログイン方法・管理画面の見方・基本的な操作の流れをご説明します。初めての方でも安心して使い始められます。</div></div></div>
+      <div class="lec-row"><div class="lec-num">02</div><div class="lec-body"><div class="lec-title">テキスト・画像の変更方法</div><div class="lec-desc">文章の編集・画像の差し替え・ボタンのリンク変更など、日常的に使う操作を実際に画面を見ながらご説明します。</div></div></div>
+      <div class="lec-row"><div class="lec-num">03</div><div class="lec-body"><div class="lec-title">お知らせ・ブログの更新方法</div><div class="lec-desc">新しい記事の追加・編集・公開・非公開の切り替えなど、情報を継続的に発信するための操作方法をお伝えします。</div></div></div>
+      <div class="lec-row"><div class="lec-num">04</div><div class="lec-body"><div class="lec-title">よくある質問・疑問の解消</div><div class="lec-desc">「これはどうやるの？」という疑問にその場でお答えします。レクチャー後もLINE・メールで気軽にご相談いただけます。</div></div></div>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="price">
+    <div class="eyebrow">Price</div>
+    <h2 class="h2">料金の目安</h2>
+    <p class="lead">制作とセットでのご依頼が基本ですが、既存サイトへの導入も対応します。</p>
+    <div class="price-card">
+      <div class="price-label">STUDIO LECTURE</div>
+      <div class="price-val">制作費に含む <span>（単体：¥20,000〜）</span></div>
+      <p class="price-note">
+        ・TeeenSでの制作ご依頼の場合、レクチャーは制作費に含まれます<br>
+        ・既存STUDIOサイトへの導入・レクチャー単体も対応可能<br>
+        ・お見積もりは無料。まずはお気軽にご相談ください
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-title">まずは無料相談から。</div>
+    <p class="cta-desc">「今のサイトを自分で更新できるようにしたい」もご相談ください。</p>
+    <a href="index.html#contact" class="btn-cta">無料相談をする →</a><br>
+    <a href="index.html#services" class="btn-back">← サービス一覧に戻る</a>
+  </section>
+
+  <footer>
+    <div class="ft-copy">© 2026 TeeenS Co., Ltd. All Rights Reserved.</div>
+  </footer>
+
+  <script>
+    const hdr = document.getElementById('hdr');
+    window.addEventListener('scroll', () => hdr.classList.toggle('scrolled', scrollY > 40));
+  </script>
+</body>
+</html>

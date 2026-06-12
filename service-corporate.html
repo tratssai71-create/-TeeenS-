@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>コーポレートサイト制作 | 株式会社TeeenS</title>
+<meta name="description" content="岡山発・コーポレートサイト制作。ブランドに合わせたデザインをゼロから設計。最短2週間納品、公開後3ヶ月サポートつき。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;--bg3:#fafafa;--ac:#09090b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ═══════ ヘッダー（index.html共通） ═══════ */
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px;background:transparent}
+.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:16px;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
+.h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px;display:block}
+.h-nav{display:flex;align-items:center}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;text-decoration:none;display:inline-flex;align-items:center}
+.h-cta:hover{background:#333 !important}
+.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;transform-origin:center}
+.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
+.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mob-link{font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em;transition:color .18s}
+.mob-link:first-child{border-top:1px solid var(--bd)}
+.mob-cta-btn{margin-top:36px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;text-decoration:none;letter-spacing:.06em;border-radius:4px;transition:background .2s}
+
+/* ═══════════════════════════════════════
+   HERO — 全画面写真 + 下部にテキスト
+═══════════════════════════════════════ */
+.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%}
+.hero-shade{position:absolute;inset:0;background:
+  linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 30%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.82) 100%)}
+.hero-inner{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:0 56px 64px;
+  max-width:1280px;margin:0 auto;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.72);margin-bottom:22px;
+}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
+.hero-h1{
+  font-size:clamp(34px,5vw,62px);
+  font-weight:800;letter-spacing:-0.02em;line-height:1.14;
+  color:#fff;margin-bottom:20px;
+}
+.hero-h1 small{display:block;font-size:.42em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);margin-top:14px}
+.hero-lead{
+  font-size:clamp(14px,1.5vw,17px);font-weight:400;
+  color:rgba(255,255,255,.78);line-height:1.9;max-width:540px;margin-bottom:34px;
+}
+.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;color:var(--ink);
+  font-size:14px;font-weight:800;letter-spacing:.03em;
+  padding:15px 32px;border-radius:6px;
+  transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;
+}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.hero-btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;
+  padding:15px 24px;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+  transition:background .2s,border-color .2s;
+}
+.hero-btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5)}
+
+/* ═══════ 数字バー ═══════ */
+.stat-bar{padding:0;background:var(--ink)}
+.stat-bar-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-item{text-align:center;padding:38px 16px;border-right:1px solid rgba(255,255,255,.08)}
+.stat-item:last-child{border-right:none}
+.stat-n{font-size:clamp(30px,3.4vw,46px);font-weight:900;letter-spacing:-0.05em;line-height:1;margin-bottom:8px;color:#fff}
+.stat-l{font-size:12px;color:rgba(255,255,255,.42);font-weight:500;letter-spacing:.04em}
+
+/* ═══════ リード文 ═══════ */
+.lead{padding:104px 56px 64px;max-width:980px;margin:0 auto;text-align:center}
+.lead-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
+.lead-h2{font-size:clamp(24px,3.2vw,40px);font-weight:900;letter-spacing:-0.03em;line-height:1.5;margin-bottom:24px}
+.lead-h2 mark{background:linear-gradient(transparent 62%,rgba(9,9,11,.1) 62%);padding:0 2px}
+.lead-p{font-size:15px;color:var(--ink2);line-height:2;font-weight:400;max-width:640px;margin:0 auto}
+
+/* ═══════ セクション共通 ═══════ */
+.sec{padding:96px 56px}
+.sec-in{max-width:1180px;margin:0 auto}
+.sec-head{margin-bottom:56px}
+.sec-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:1.5px;background:var(--ink3)}
+.sec-h2{font-size:clamp(28px,3.6vw,46px);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px}
+.sec-desc{font-size:15px;color:var(--ink2);line-height:1.85;font-weight:400;max-width:520px}
+
+/* ═══════ 特徴（写真+テキスト交互） ═══════ */
+#features{background:#fff}
+.feat-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:0;align-items:stretch;border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:24px}
+.feat-grid.rev .feat-photo{order:2}
+.feat-photo{overflow:hidden;position:relative;min-height:420px}
+.feat-photo img{width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.22,1,.36,1)}
+.feat-grid:hover .feat-photo img{transform:scale(1.05)}
+.feat-tag{position:absolute;top:20px;left:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font-size:11px;font-weight:800;letter-spacing:.06em;padding:7px 14px;border-radius:30px}
+.feat-body{padding:60px 56px;display:flex;flex-direction:column;justify-content:center;background:#fff}
+.feat-num{font-size:13px;font-weight:900;letter-spacing:.1em;color:var(--ink3);margin-bottom:18px;display:block}
+.feat-h3{font-size:clamp(21px,2.3vw,29px);font-weight:900;letter-spacing:-0.03em;line-height:1.25;margin-bottom:18px}
+.feat-p{font-size:14.5px;color:var(--ink2);line-height:1.95;font-weight:400;margin-bottom:28px}
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:11px}
+.feat-list li{display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:1.6;font-weight:500}
+.feat-list li::before{content:'';width:18px;height:18px;background:var(--ink);border-radius:50%;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:11px;background-position:center;background-repeat:no-repeat}
+
+/* ═══════ 特徴カード（横画像スロット版） ═══════ */
+.reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.reason-card{border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:#fff;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.reason-card:hover{transform:translateY(-6px);box-shadow:0 20px 56px rgba(0,0,0,.09)}
+.reason-img{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg2)}
+.reason-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.reason-card:hover .reason-img img{transform:scale(1.06)}
+.reason-badge{position:absolute;top:16px;left:16px;width:34px;height:34px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.04em}
+.reason-tag{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:30px}
+.reason-body{padding:30px 28px 34px}
+.reason-h3{font-size:clamp(16px,1.7vw,20px);font-weight:900;letter-spacing:-0.025em;line-height:1.35;margin-bottom:12px}
+.reason-p{font-size:13.5px;color:var(--ink2);line-height:1.95;font-weight:400;margin-bottom:18px}
+.reason-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.reason-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.6;font-weight:500}
+.reason-list li::before{content:'';width:16px;height:16px;background:var(--ink);border-radius:50%;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%23fff' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:10px;background-position:center;background-repeat:no-repeat}
+
+/* ═══════ 含まれるもの ═══════ */
+#includes{background:var(--bg3);border-top:1px solid var(--bd)}
+.inc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.inc-card{background:#fff;padding:38px 34px;border:1px solid var(--bd);border-radius:12px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+.inc-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.07)}
+.inc-ic{width:46px;height:46px;border-radius:11px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.inc-ic svg{width:22px;height:22px;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.inc-h4{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:11px}
+.inc-p{font-size:13.5px;color:var(--ink2);line-height:1.85;font-weight:400}
+
+/* ═══════ 制作フロー ═══════ */
+#flow{background:#fff}
+.flow-wrap{display:flex;flex-direction:column;gap:0;border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.flow-row{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:0;background:#fff;padding:30px 44px;border-bottom:1px solid var(--bd);transition:background .25s}
+.flow-row:last-child{border-bottom:none}
+.flow-row:hover{background:var(--bg3)}
+.flow-n{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--ink3)}
+.flow-title{font-size:17px;font-weight:800;letter-spacing:-0.01em;margin-bottom:4px}
+.flow-sub{font-size:13.5px;color:var(--ink2);font-weight:400}
+.flow-days{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink3);border:1px solid var(--bd2);padding:5px 14px;border-radius:30px;white-space:nowrap}
+
+/* ═══════ 制作実績 ═══════ */
+#works-sec{background:var(--bg3);border-top:1px solid var(--bd)}
+.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.work-card{border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:#fff;display:block;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.work-card:hover{transform:translateY(-5px);box-shadow:0 18px 50px rgba(0,0,0,.1)}
+.work-img{aspect-ratio:16/10;overflow:hidden;background:var(--bg2)}
+.work-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.work-card:hover .work-img img{transform:scale(1.05)}
+.work-info{padding:20px 22px}
+.work-name{font-size:15px;font-weight:800;letter-spacing:-0.01em;margin-bottom:9px}
+.work-tags{display:flex;gap:6px;flex-wrap:wrap}
+.work-tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border:1px solid var(--bd2);border-radius:30px;color:var(--ink2)}
+
+/* ═══════ FAQ ═══════ */
+#faq-sec{background:var(--bg3);border-top:1px solid var(--bd)}
+.faq-wrap{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--bd);background:#fff;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.faq-q{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:22px 26px;cursor:pointer;user-select:none;
+  transition:background .2s;
+}
+.faq-q:hover{background:var(--bg2)}
+.faq-qlabel{
+  flex-shrink:0;width:28px;height:28px;background:var(--ink);color:#fff;
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:900;letter-spacing:.04em;margin-top:1px;
+}
+.faq-qtext{flex:1;font-size:15px;font-weight:700;line-height:1.55;color:var(--ink)}
+.faq-ic{
+  flex-shrink:0;width:26px;height:26px;
+  border:1px solid var(--bd2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;font-weight:300;line-height:1;
+  transition:transform .3s,background .25s,border-color .25s;
+  margin-top:1px;
+}
+.faq-item.open .faq-ic{transform:rotate(45deg);background:var(--ink);color:#fff;border-color:var(--ink)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}
+.faq-item.open .faq-a{max-height:300px}
+.faq-ai{padding:0 26px 22px 70px;font-size:14px;color:var(--ink2);line-height:1.95;font-weight:400}
+
+/* ═══════ CTA（写真背景） ═══════ */
+#cta{position:relative;overflow:hidden;padding:60px 56px;text-align:center}
+.cta-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.cta-shade{position:absolute;inset:0;background:rgba(255,255,255,.52);backdrop-filter:blur(1px)}
+.cta-in{position:relative;z-index:2;max-width:640px;margin:0 auto;background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:20px;padding:56px 52px;box-shadow:0 24px 80px rgba(9,9,11,.1)}
+.cta-label{font-size:10.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:20px}
+.cta-h2{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-0.04em;line-height:1.15;color:var(--ink);margin-bottom:16px}
+.cta-p{font-size:14.5px;color:var(--ink2);font-weight:400;margin-bottom:34px;line-height:1.95}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em;padding:16px 38px;border-radius:8px;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(9,9,11,.25)}
+.cta-note{font-size:12px;color:var(--ink3);margin-top:16px}
+
+/* ═══════ フッター ═══════ */
+.ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft-in{max-width:1180px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
+.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
+.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
+.ft-links{display:flex;gap:56px}
+.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
+.ft-col ul li a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
+
+/* ═══════ レスポンシブ ═══════ */
+@media(max-width:1024px){
+  header{padding:12px 24px}
+  .h-item>a{padding:8px 10px;font-size:13px}
+  .h-cta{padding:9px 18px !important;font-size:13px !important}
+  .reason-grid{grid-template-columns:1fr 1fr}
+  .inc-grid{grid-template-columns:repeat(2,1fr)}
+  .works-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:767px){
+  header{padding:10px 16px}
+  .h-inner{padding:6px 6px 6px 14px}
+  .h-item,.h-cta{display:none !important}
+  .h-logo img{height:28px}
+  .h-burger{display:flex}
+  .hero{height:88vh;min-height:480px}
+  .hero-inner{padding:0 22px 44px}
+  .stat-bar-in{grid-template-columns:repeat(2,1fr)}
+  .stat-item{border-bottom:1px solid rgba(255,255,255,.08)}
+  .stat-item:nth-child(2){border-right:none}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-bottom:none}
+  .lead{padding:72px 22px 48px}
+  .sec{padding:68px 22px}
+  .reason-grid{grid-template-columns:1fr}
+  .inc-grid{grid-template-columns:1fr}
+  .flow-row{grid-template-columns:64px 1fr;padding:24px 22px}
+  .flow-days{display:none}
+  .works-grid{grid-template-columns:1fr}
+  #cta{padding:40px 22px}
+  .ft{padding:52px 22px 22px}
+  .ft-top{flex-direction:column}
+  .ft-links{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ ヘッダー ═══════ -->
+<header>
+<div class="h-inner">
+  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <nav class="h-nav">
+    <div class="h-item"><a href="index.html#vision">About</a></div>
+    <div class="h-item"><a href="index.html#services">Service</a></div>
+    <div class="h-item"><a href="index.html#works">Works &amp; News</a></div>
+    <div class="h-item"><a href="index.html#faq">Contact</a></div>
+    <a href="contact.html" class="h-cta">無料相談 →</a>
+  </nav>
+  <button class="h-burger" id="h-burger" aria-label="メニューを開く">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</header>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="index.html#vision" class="mob-link">About</a>
+  <a href="index.html#services" class="mob-link">Service</a>
+  <a href="index.html#works" class="mob-link">Works &amp; News</a>
+  <a href="index.html#faq" class="mob-link">Contact</a>
+  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+</div>
+
+
+<!-- ═══════ HERO ═══════ -->
+<!-- ✏️ 背景写真を変える → hero-photo の src を差し替えてください -->
+<section class="hero">
+  <img class="hero-photo"
+    src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=1800&q=80&auto=format&fit=crop"
+    alt="コーポレートサイト制作"/>
+  <div class="hero-shade"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Service 01 — Corporate Site</span><!-- ✏️ ラベル -->
+    <h1 class="hero-h1">
+      会社の「らしさ」が伝わる、<br>コーポレートサイト制作。<!-- ✏️ メイン見出し -->
+      <small>第一印象で信頼される企業サイトを、ゼロから設計します。</small><!-- ✏️ サブ見出し -->
+    </h1>
+    <p class="hero-lead">テンプレートに頼らず、御社のブランド・ターゲット・強みを分析したうえでデザインを設計。最短2週間で公開まで伴走し、公開後3ヶ月のサポートまでお任せいただけます。</p><!-- ✏️ 説明文 -->
+    <div class="hero-actions">
+      <a href="contact.html" class="hero-btn">無料で相談する →</a><!-- ✏️ ボタン -->
+      <a href="#features" class="hero-btn-ghost">サービスを見る ↓</a>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ═══════ リード文 ═══════ -->
+<!-- ✏️ 見出し・説明文をここで編集できます -->
+<section class="lead">
+  <p class="lead-label">Why a Corporate Site Matters</p>
+  <h2 class="lead-h2">ホームページは、<mark>24時間働く営業マン</mark>。<br>会社の信頼を、Webから生み出します。</h2>
+  <p class="lead-p">採用・取引・問い合わせ——あらゆる場面で、まず見られるのが会社のサイトです。だからこそ「誰に・何を・どう伝えるか」を丁寧に設計し、成果につながるWebサイトをTeeenSがつくります。</p>
+</section>
+
+
+<!-- ═══════ 特徴 ═══════ -->
+<!-- ✏️ reason-card をコピーするとカードを追加できます。img src を差し替えると横画像を変更できます -->
+<section class="sec" id="features">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Features</p>
+      <h2 class="sec-h2">TeeenSが選ばれる理由</h2>
+      <p class="sec-desc">「安い・早い」だけでは終わらせない。成果につながる3つのこだわりがあります。</p>
+    </div>
+
+    <div class="reason-grid">
+
+      <!-- カード01 ✏️ img src を差し替えると横画像が変わります -->
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=900&q=80&auto=format&fit=crop" alt="オーダーメイドデザイン"/>
+          <span class="reason-badge">01</span>
+          <span class="reason-tag">DESIGN</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">「らしさ」が伝わる<br>オーダーメイドデザイン</h3>
+          <p class="reason-p">テンプレートではなく、御社のブランドイメージ・ターゲット・競合を分析したうえでゼロからデザインを設計。第一印象で「信頼できる」と感じてもらえるビジュアルを追求します。</p>
+          <ul class="reason-list">
+            <li>ヒアリングシートで方向性を丁寧にすり合わせ</li>
+            <li>参考サイトを複数提示してイメージを共有</li>
+            <li>デザイン修正は2回まで無料対応</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- カード02 ✏️ img src を差し替えると横画像が変わります -->
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=900&q=80&auto=format&fit=crop" alt="レスポンシブ対応"/>
+          <span class="reason-badge">02</span>
+          <span class="reason-tag">RESPONSIVE</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">スマホでも美しく。<br>完全レスポンシブ対応</h3>
+          <p class="reason-p">スマートフォンからの閲覧が7割を超える現代、PC・スマホ・タブレットすべてで最適な表示を実現します。見た目だけでなく、タップしやすいUI設計にもこだわります。</p>
+          <ul class="reason-list">
+            <li>全デバイスで表示確認・調整済み</li>
+            <li>タップターゲット・フォントサイズを最適化</li>
+            <li>Googleモバイルフレンドリーテスト合格保証</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- カード03 ✏️ img src を差し替えると横画像が変わります -->
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80&auto=format&fit=crop" alt="運用サポート"/>
+          <span class="reason-badge">03</span>
+          <span class="reason-tag">SUPPORT</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">公開がゴールじゃない。<br>運用まで伴走します</h3>
+          <p class="reason-p">STUDIO CMSを活用し、ご担当者様がお知らせや実績を自分で更新できる仕組みを構築。公開後3ヶ月は修正・相談を無料でサポートします。</p>
+          <ul class="reason-list">
+            <li>STUDIO CMSで更新作業が簡単に</li>
+            <li>公開後3ヶ月・小修正無料</li>
+            <li>Google Analytics設定・レポートつき</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ 含まれるもの ═══════ -->
+<!-- ✏️ inc-cardをコピーでカードを追加できます（アイコンはSVG。絵文字に変えてもOK） -->
+<section class="sec" id="includes">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">What's Included</p>
+      <h2 class="sec-h2">制作に含まれるもの</h2>
+      <p class="sec-desc">追加費用なし。サイト公開に必要なものを、すべてまとめてお届けします。</p>
+    </div>
+    <div class="inc-grid">
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18M3 12h18"/></svg></div>
+        <h4 class="inc-h4">デザイン設計</h4>
+        <p class="inc-p">ワイヤーフレームからデザインカンプまで。御社ブランドに合わせたオリジナルUIを制作します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M8 9l-3 3 3 3M16 9l3 3-3 3M14 6l-4 12"/></svg></div>
+        <h4 class="inc-h4">コーディング・実装</h4>
+        <p class="inc-p">STUDIO またはHTML/CSS/JSによるフルコーディング。高速・軽量なサイトを実装します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
+        <h4 class="inc-h4">レスポンシブ対応</h4>
+        <p class="inc-p">PC・スマホ・タブレット、全デバイスで崩れないレイアウトを保証します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <h4 class="inc-h4">SEO基本設定</h4>
+        <p class="inc-p">メタタグ・OGP・構造化データ・Google Search Console登録まで対応します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <h4 class="inc-h4">アクセス解析設定</h4>
+        <p class="inc-p">Google Analytics 4を導入し、訪問者の行動を可視化。改善に役立てられます。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4-3.5 7.5-8 9-4.5-1.5-8-5-8-9V6z"/></svg></div>
+        <h4 class="inc-h4">公開後3ヶ月サポート</h4>
+        <p class="inc-p">テキスト修正・バグ対応・相談対応を3ヶ月間無料で提供します。</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ 制作フロー ═══════ -->
+<!-- ✏️ flow-rowをコピーでステップを追加できます -->
+<section class="sec" id="flow">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Process</p>
+      <h2 class="sec-h2">制作の流れ</h2>
+      <p class="sec-desc">お問い合わせから公開まで最短2週間。すべてのステップで伴走します。</p>
+    </div>
+    <div class="flow-wrap">
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 01</div>
+        <div>
+          <div class="flow-title">無料ヒアリング</div>
+          <div class="flow-sub">目的・ターゲット・参考サイトをお伺いします</div>
+        </div>
+        <div class="flow-days">Day 1</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 02</div>
+        <div>
+          <div class="flow-title">提案・お見積り</div>
+          <div class="flow-sub">方向性とお見積りを提示。ご納得いただけたら正式依頼</div>
+        </div>
+        <div class="flow-days">Day 2〜3</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 03</div>
+        <div>
+          <div class="flow-title">デザイン制作</div>
+          <div class="flow-sub">デザインカンプを作成し、ご確認・修正対応</div>
+        </div>
+        <div class="flow-days">Day 4〜8</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 04</div>
+        <div>
+          <div class="flow-title">実装・テスト</div>
+          <div class="flow-sub">コーディング・各種設定・動作確認</div>
+        </div>
+        <div class="flow-days">Day 9〜12</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 05</div>
+        <div>
+          <div class="flow-title">公開・引き渡し</div>
+          <div class="flow-sub">ドメイン設定・公開処理・操作レクチャー</div>
+        </div>
+        <div class="flow-days">Day 13〜14</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ 制作実績 ═══════ -->
+<!-- ✏️ work-cardをコピーで実績を追加できます -->
+<section class="sec" id="works-sec">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Works</p>
+      <h2 class="sec-h2">制作実績</h2>
+      <p class="sec-desc">実際に制作したサイトをご覧ください。</p>
+    </div>
+    <div class="works-grid">
+
+      <a href="news/2026-06-05.html" class="work-card">
+        <div class="work-img"><img src="case1.png" alt="株式会社SENTRIX"/></div>
+        <div class="work-info">
+          <div class="work-name">株式会社SENTRIX 公式サイト</div>
+          <div class="work-tags">
+            <span class="work-tag">コーポレート</span>
+            <span class="work-tag">STUDIO</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ✏️ 実績が増えたらCOMING SOONを差し替えてください -->
+      <div class="work-card" style="opacity:.35;pointer-events:none">
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info">
+          <div class="work-name">準備中</div>
+          <div class="work-tags"><span class="work-tag">コーポレート</span></div>
+        </div>
+      </div>
+
+      <div class="work-card" style="opacity:.35;pointer-events:none">
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info">
+          <div class="work-name">準備中</div>
+          <div class="work-tags"><span class="work-tag">コーポレート</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ FAQ ═══════ -->
+<!-- ✏️ faq-itemをコピーでQ&Aを追加できます -->
+<section class="sec" id="faq-sec">
+  <div class="sec-in">
+    <div class="sec-head" style="text-align:center;max-width:560px;margin:0 auto 48px">
+      <p class="sec-label" style="justify-content:center">FAQ</p>
+      <h2 class="sec-h2">よくある質問</h2>
+    </div>
+    <div class="faq-wrap">
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">料金はどのくらいかかりますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">ページ数・機能・デザインの複雑さによって異なります。まずは無料相談でご要望をお聞きし、お見積りをお出しします。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">制作期間はどれくらいですか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">標準的なコーポレートサイトであれば最短2週間〜4週間が目安です。ページ数・素材の準備状況によって変動します。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">写真・テキストは自分で用意する必要がありますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">基本的にはご用意いただく形となります。ご準備が難しい場合は、フリー素材の選定やライティングのサポートも対応可能です。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">公開後に自分でテキストや写真を更新できますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">はい、STUDIO CMSを活用することで、専門知識なしにお知らせや実績の追加・編集が可能です。納品時に操作方法をレクチャーします。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">ドメインやサーバーの契約は必要ですか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">STUDIOプランをご利用の場合はSTUDIOのサブスクリプションが必要です。フルコーディングの場合は別途ドメイン・サーバー契約が必要です。</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════ CTA ═══════ -->
+<!-- ✏️ 背景写真・テキストを変えるときはここを編集してください -->
+<section id="cta">
+  <video class="cta-photo" autoplay muted loop playsinline>
+    <source src="assets/business-meeting.mp4" type="video/mp4">
+  </video>
+  <div class="cta-shade"></div>
+  <div class="cta-in">
+    <p class="cta-label">Free Consultation</p>
+    <h2 class="cta-h2">御社だけの<br>サイトを、一緒につくりませんか。</h2>
+    <p class="cta-p">テンプレートではない、御社のブランドに合ったコーポレートサイトを設計します。相談・見積もりは完全無料。まずは気軽にお話しましょう。</p>
+    <a href="contact.html" class="cta-btn">無料相談を予約する →</a>
+    <p class="cta-note">通常2営業日以内にご返信します</p>
+  </div>
+</section>
+
+
+<!-- ═══════ フッター ═══════ -->
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="index.html#vision">私たちについて</a></li>
+            <li><a href="index.html#culture">会社概要</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Service</h4>
+          <ul>
+            <li><a href="service-corporate.html">コーポレートサイト制作</a></li>
+            <li><a href="service-lp.html">LP制作</a></li>
+            <li><a href="service-renewal.html">サイトリニューアル</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Works &amp; News</h4>
+          <ul><li><a href="index.html#works">制作実績</a></li></ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="contact.html">無料で相談する</a></li>
+            <li><a href="index.html#faq">よくある質問</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
+  </div>
+</footer>
+
+
+<script>
+/* FAQ */
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.addEventListener('mouseenter',()=>{
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    item.classList.add('open');
+  });
+  item.addEventListener('mouseleave',()=>{
+    item.classList.remove('open');
+  });
+});
+/* ハンバーガー */
+(function(){
+  const btn=document.getElementById('h-burger'),nav=document.getElementById('mob-nav');
+  if(!btn||!nav)return;
+  const close=()=>{nav.classList.remove('open');btn.classList.remove('open');document.body.style.overflow=''};
+  btn.addEventListener('click',()=>{
+    const o=nav.classList.toggle('open');
+    btn.classList.toggle('open',o);
+    document.body.style.overflow=o?'hidden':'';
+  });
+  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>a.addEventListener('click',close));
+})();
+</script>
+</body>
+</html>

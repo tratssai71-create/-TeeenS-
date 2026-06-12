@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AI・システム開発 | 株式会社TeeenS</title>
+<meta name="description" content="「こんなことしたい」をアイデア段階からヒアリング。業務効率化ツール・AIチャットボット・完全オーダーメイドのWebアプリまで、TeeenSが形にします。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;--bg3:#fafafa;--ac:#09090b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px;background:transparent}
+.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:16px;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
+.h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px;display:block}
+.h-nav{display:flex;align-items:center}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;text-decoration:none;display:inline-flex;align-items:center}
+.h-cta:hover{background:#333 !important}
+.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;transform-origin:center}
+.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
+.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mob-link{font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em;transition:color .18s}
+.mob-link:first-child{border-top:1px solid var(--bd)}
+.mob-cta-btn{margin-top:36px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;text-decoration:none;letter-spacing:.06em;border-radius:4px;transition:background .2s}
+.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 30%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.82) 100%)}
+.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 64px;max-width:1280px;margin:0 auto;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:22px;}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
+.hero-h1{font-size:clamp(34px,5vw,62px);font-weight:800;letter-spacing:-0.02em;line-height:1.14;color:#fff;margin-bottom:20px;}
+.hero-h1 small{display:block;font-size:.42em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);margin-top:14px}
+.hero-lead{font-size:clamp(14px,1.5vw,17px);font-weight:400;color:rgba(255,255,255,.78);line-height:1.9;max-width:540px;margin-bottom:34px;}
+.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);font-size:14px;font-weight:800;letter-spacing:.03em;padding:15px 32px;border-radius:6px;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.hero-btn-ghost{display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;padding:15px 24px;border:1px solid rgba(255,255,255,.28);border-radius:6px;transition:background .2s,border-color .2s;}
+.hero-btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5)}
+.stat-bar{padding:0;background:var(--ink)}
+.stat-bar-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-item{text-align:center;padding:38px 16px;border-right:1px solid rgba(255,255,255,.08)}
+.stat-item:last-child{border-right:none}
+.stat-n{font-size:clamp(26px,3.4vw,42px);font-weight:900;letter-spacing:-0.05em;line-height:1;margin-bottom:8px;color:#fff}
+.stat-l{font-size:12px;color:rgba(255,255,255,.42);font-weight:500;letter-spacing:.04em}
+.lead{padding:104px 56px 64px;max-width:980px;margin:0 auto;text-align:center}
+.lead-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
+.lead-h2{font-size:clamp(24px,3.2vw,40px);font-weight:900;letter-spacing:-0.03em;line-height:1.5;margin-bottom:24px}
+.lead-h2 mark{background:linear-gradient(transparent 62%,rgba(9,9,11,.1) 62%);padding:0 2px}
+.lead-p{font-size:15px;color:var(--ink2);line-height:2;font-weight:400;max-width:640px;margin:0 auto}
+.sec{padding:96px 56px}
+.sec-in{max-width:1180px;margin:0 auto}
+.sec-head{margin-bottom:56px}
+.sec-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:1.5px;background:var(--ink3)}
+.sec-h2{font-size:clamp(28px,3.6vw,46px);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px}
+.sec-desc{font-size:15px;color:var(--ink2);line-height:1.85;font-weight:400;max-width:520px}
+#features{background:#fff}
+.reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.reason-card{border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:#fff;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.reason-card:hover{transform:translateY(-6px);box-shadow:0 20px 56px rgba(0,0,0,.09)}
+.reason-img{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg2)}
+.reason-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.reason-card:hover .reason-img img{transform:scale(1.06)}
+.reason-badge{position:absolute;top:16px;left:16px;width:34px;height:34px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.04em}
+.reason-tag{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:30px}
+.reason-body{padding:30px 28px 34px}
+.reason-h3{font-size:clamp(16px,1.7vw,20px);font-weight:900;letter-spacing:-0.025em;line-height:1.35;margin-bottom:12px}
+.reason-p{font-size:13.5px;color:var(--ink2);line-height:1.95;font-weight:400;margin-bottom:18px}
+.reason-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.reason-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.6;font-weight:500}
+.reason-list li::before{content:'';width:16px;height:16px;background:var(--ink);border-radius:50%;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%23fff' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:10px;background-position:center;background-repeat:no-repeat}
+#includes{background:var(--bg3);border-top:1px solid var(--bd)}
+.inc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.inc-card{background:#fff;padding:38px 34px;border:1px solid var(--bd);border-radius:12px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+.inc-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.07)}
+.inc-ic{width:46px;height:46px;border-radius:11px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.inc-ic svg{width:22px;height:22px;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.inc-h4{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:11px}
+.inc-p{font-size:13.5px;color:var(--ink2);line-height:1.85;font-weight:400}
+#flow{background:#fff}
+.flow-wrap{display:flex;flex-direction:column;gap:0;border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.flow-row{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:0;background:#fff;padding:30px 44px;border-bottom:1px solid var(--bd);transition:background .25s}
+.flow-row:last-child{border-bottom:none}
+.flow-row:hover{background:var(--bg3)}
+.flow-n{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--ink3)}
+.flow-title{font-size:17px;font-weight:800;letter-spacing:-0.01em;margin-bottom:4px}
+.flow-sub{font-size:13.5px;color:var(--ink2);font-weight:400}
+.flow-days{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink3);border:1px solid var(--bd2);padding:5px 14px;border-radius:30px;white-space:nowrap}
+#works-sec{background:var(--bg3);border-top:1px solid var(--bd)}
+.works-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.work-card{border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:#fff;display:block;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.work-card:hover{transform:translateY(-5px);box-shadow:0 18px 50px rgba(0,0,0,.1)}
+.work-img{aspect-ratio:16/10;overflow:hidden;background:var(--bg2)}
+.work-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.22,1,.36,1)}
+.work-card:hover .work-img img{transform:scale(1.05)}
+.work-info{padding:20px 22px}
+.work-name{font-size:15px;font-weight:800;letter-spacing:-0.01em;margin-bottom:9px}
+.work-tags{display:flex;gap:6px;flex-wrap:wrap}
+.work-tag{font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border:1px solid var(--bd2);border-radius:30px;color:var(--ink2)}
+#faq-sec{background:var(--bg3);border-top:1px solid var(--bd)}
+.faq-wrap{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--bd);background:#fff;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.faq-q{display:flex;align-items:flex-start;gap:16px;padding:22px 26px;cursor:pointer;user-select:none;transition:background .2s;}
+.faq-q:hover{background:var(--bg2)}
+.faq-qlabel{flex-shrink:0;width:28px;height:28px;background:var(--ink);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.04em;margin-top:1px;}
+.faq-qtext{flex:1;font-size:15px;font-weight:700;line-height:1.55;color:var(--ink)}
+.faq-ic{flex-shrink:0;width:26px;height:26px;border:1px solid var(--bd2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:300;line-height:1;transition:transform .3s,background .25s,border-color .25s;margin-top:1px;}
+.faq-item.open .faq-ic{transform:rotate(45deg);background:var(--ink);color:#fff;border-color:var(--ink)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.22,1,.36,1)}
+.faq-item.open .faq-a{max-height:300px}
+.faq-ai{padding:0 26px 22px 70px;font-size:14px;color:var(--ink2);line-height:1.95;font-weight:400}
+#cta{position:relative;overflow:hidden;padding:60px 56px;text-align:center}
+.cta-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.cta-shade{position:absolute;inset:0;background:rgba(255,255,255,.52);backdrop-filter:blur(1px)}
+.cta-in{position:relative;z-index:2;max-width:640px;margin:0 auto;background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:20px;padding:56px 52px;box-shadow:0 24px 80px rgba(9,9,11,.1)}
+.cta-label{font-size:10.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:20px}
+.cta-h2{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-0.04em;line-height:1.15;color:var(--ink);margin-bottom:16px}
+.cta-p{font-size:14.5px;color:var(--ink2);font-weight:400;margin-bottom:34px;line-height:1.95}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em;padding:16px 38px;border-radius:8px;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(9,9,11,.25)}
+.cta-note{font-size:12px;color:var(--ink3);margin-top:16px}
+.ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft-in{max-width:1180px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
+.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
+.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
+.ft-links{display:flex;gap:56px}
+.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
+.ft-col ul li a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
+@media(max-width:1024px){
+  header{padding:12px 24px}
+  .h-item>a{padding:8px 10px;font-size:13px}
+  .h-cta{padding:9px 18px !important;font-size:13px !important}
+  .reason-grid{grid-template-columns:1fr 1fr}
+  .inc-grid{grid-template-columns:repeat(2,1fr)}
+  .works-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:767px){
+  header{padding:10px 16px}
+  .h-inner{padding:6px 6px 6px 14px}
+  .h-item,.h-cta{display:none !important}
+  .h-logo img{height:28px}
+  .h-burger{display:flex}
+  .hero{height:88vh;min-height:480px}
+  .hero-inner{padding:0 22px 44px}
+  .stat-bar-in{grid-template-columns:repeat(2,1fr)}
+  .stat-item{border-bottom:1px solid rgba(255,255,255,.08)}
+  .stat-item:nth-child(2){border-right:none}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-bottom:none}
+  .lead{padding:72px 22px 48px}
+  .sec{padding:68px 22px}
+  .reason-grid{grid-template-columns:1fr}
+  .inc-grid{grid-template-columns:1fr}
+  .flow-row{grid-template-columns:64px 1fr;padding:24px 22px}
+  .flow-days{display:none}
+  .works-grid{grid-template-columns:1fr}
+  #cta{padding:40px 22px}
+  .ft{padding:52px 22px 22px}
+  .ft-top{flex-direction:column}
+  .ft-links{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="h-inner">
+  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <nav class="h-nav">
+    <div class="h-item"><a href="index.html#vision">About</a></div>
+    <div class="h-item"><a href="index.html#services">Service</a></div>
+    <div class="h-item"><a href="index.html#works">Works &amp; News</a></div>
+    <div class="h-item"><a href="index.html#faq">Contact</a></div>
+    <a href="contact.html" class="h-cta">無料相談 →</a>
+  </nav>
+  <button class="h-burger" id="h-burger" aria-label="メニューを開く">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</header>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="index.html#vision" class="mob-link">About</a>
+  <a href="index.html#services" class="mob-link">Service</a>
+  <a href="index.html#works" class="mob-link">Works &amp; News</a>
+  <a href="index.html#faq" class="mob-link">Contact</a>
+  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-photo"
+    src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1800&q=80&auto=format&fit=crop"
+    alt="AI・システム開発"/>
+  <div class="hero-shade"></div>
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Service 03 — AI System &amp; Application</span>
+    <h1 class="hero-h1">
+      「こんなことしたい」を、<br>最新AIで形にします。
+      <small>アイデア段階からヒアリング。完全オーダーメイドで開発します。</small>
+    </h1>
+    <p class="hero-lead">業務を自動化したい・チャットボットを作りたい・社内ツールが欲しい——どんなアイデアでも構いません。TeeenSが最新のAI技術を活用して、御社専用のシステム・アプリを開発します。</p>
+    <div class="hero-actions">
+      <a href="contact.html" class="hero-btn">アイデアを相談する →</a>
+      <a href="#features" class="hero-btn-ghost">サービスを見る ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- 数字バー -->
+<section class="stat-bar">
+  <div class="stat-bar-in">
+    <div class="stat-item">
+      <div class="stat-n">完全</div>
+      <div class="stat-l">オーダーメイド</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">AI活用</div>
+      <div class="stat-l">最新技術で開発</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">無料</div>
+      <div class="stat-l">アイデア段階から相談OK</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">即対応</div>
+      <div class="stat-l">スピード感ある開発</div>
+    </div>
+  </div>
+</section>
+
+<!-- リード文 -->
+<section class="lead">
+  <p class="lead-label">Why AI & System Development</p>
+  <h2 class="lead-h2"><mark>「便利なツールがあれば…」</mark>が、<br>もう夢じゃない時代になった。</h2>
+  <p class="lead-p">ChatGPTをはじめとするAI技術の進化により、以前は大企業にしか作れなかったシステムが、中小企業・個人事業主でも手の届くコストで実現できるようになりました。TeeenSが最新技術を使いこなし、御社のビジネスを次のステージへ。</p>
+</section>
+
+<!-- 特徴 -->
+<section class="sec" id="features">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Features</p>
+      <h2 class="sec-h2">TeeenSのAI・システム開発が選ばれる理由</h2>
+      <p class="sec-desc">技術力だけでなく、「使えるものを作る」ことにこだわります。</p>
+    </div>
+    <div class="reason-grid">
+
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=900&q=80&auto=format&fit=crop" alt="AIチャットボット"/>
+          <span class="reason-badge">01</span>
+          <span class="reason-tag">AI</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">最新AIを活用した<br>チャットボット・自動化ツール</h3>
+          <p class="reason-p">ChatGPT・Claude等のAI APIを活用し、御社専用のチャットボットや業務自動化ツールを開発。問い合わせ対応・社内FAQ・データ集計など、繰り返し作業をAIに任せます。</p>
+          <ul class="reason-list">
+            <li>LLM APIを活用したカスタムAIの開発</li>
+            <li>問い合わせ自動応答・社内ナレッジボット</li>
+            <li>業務フローの自動化・効率化</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900&q=80&auto=format&fit=crop" alt="Webアプリ開発"/>
+          <span class="reason-badge">02</span>
+          <span class="reason-tag">WEBAPP</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">完全オーダーメイドの<br>Webアプリ・社内ツール開発</h3>
+          <p class="reason-p">既製品では対応できない独自の業務フロー・管理システム・予約ツールなど、御社の課題に合わせたWebアプリを一から設計・開発します。</p>
+          <ul class="reason-list">
+            <li>予約管理・顧客管理システム</li>
+            <li>社内向けダッシュボード・管理画面</li>
+            <li>データ入力・集計の自動化ツール</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="reason-card">
+        <div class="reason-img">
+          <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=900&q=80&auto=format&fit=crop" alt="アイデア段階からサポート"/>
+          <span class="reason-badge">03</span>
+          <span class="reason-tag">SUPPORT</span>
+        </div>
+        <div class="reason-body">
+          <h3 class="reason-h3">「何が作れるか」から<br>一緒に考えます</h3>
+          <p class="reason-p">「こういうことがしたいけど、どう実現するかわからない」——そんな段階からご相談いただけます。課題を整理し、最適な技術で現実的なプランをご提案します。</p>
+          <ul class="reason-list">
+            <li>アイデア段階・要件未定でも相談OK</li>
+            <li>技術的な実現可能性・費用感を丁寧に説明</li>
+            <li>スモールスタートで段階的な開発も対応</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 含まれるもの -->
+<section class="sec" id="includes">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">What's Included</p>
+      <h2 class="sec-h2">対応内容・含まれるもの</h2>
+      <p class="sec-desc">要件定義から開発・リリース後のサポートまで、一貫して対応します。</p>
+    </div>
+    <div class="inc-grid">
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h4 class="inc-h4">要件ヒアリング・整理</h4>
+        <p class="inc-p">「やりたいこと」を丁寧にヒアリングし、実現すべき機能と優先度を整理します。アイデア段階でもOKです。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h4 class="inc-h4">UI/UX設計・プロトタイプ</h4>
+        <p class="inc-p">使いやすい画面設計・操作フローを設計し、プロトタイプで事前確認。認識のズレをなくします。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M8 9l-3 3 3 3M16 9l3 3-3 3M14 6l-4 12"/></svg></div>
+        <h4 class="inc-h4">フロントエンド・バックエンド開発</h4>
+        <p class="inc-p">React・Next.js・Node.js等のモダンな技術スタックで、高品質なシステムを実装します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <h4 class="inc-h4">AI API統合</h4>
+        <p class="inc-p">ChatGPT・Claude等のAI APIを活用し、御社のシステムにインテリジェントな機能を追加します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h4 class="inc-h4">テスト・品質保証</h4>
+        <p class="inc-p">リリース前の動作確認・バグ修正を徹底。安心して使い始められる状態でお渡しします。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4-3.5 7.5-8 9-4.5-1.5-8-5-8-9V6z"/></svg></div>
+        <h4 class="inc-h4">リリース後サポート・保守</h4>
+        <p class="inc-p">不具合対応・機能追加・運用サポートをリリース後も継続して提供します。</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 制作フロー -->
+<section class="sec" id="flow">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Process</p>
+      <h2 class="sec-h2">開発の流れ</h2>
+      <p class="sec-desc">アイデアのヒアリングからリリースまで、すべてのステップで伴走します。</p>
+    </div>
+    <div class="flow-wrap">
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 01</div>
+        <div>
+          <div class="flow-title">無料ヒアリング・要件整理</div>
+          <div class="flow-sub">実現したいこと・課題・予算感をお伺いし、要件を整理します</div>
+        </div>
+        <div class="flow-days">Day 1〜3</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 02</div>
+        <div>
+          <div class="flow-title">提案・設計・お見積り</div>
+          <div class="flow-sub">技術選定・システム設計・スケジュール・費用をご提示</div>
+        </div>
+        <div class="flow-days">Day 4〜7</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 03</div>
+        <div>
+          <div class="flow-title">UI設計・プロトタイプ確認</div>
+          <div class="flow-sub">画面設計・操作フローをプロトタイプで確認・調整</div>
+        </div>
+        <div class="flow-days">Day 8〜14</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 04</div>
+        <div>
+          <div class="flow-title">開発・テスト</div>
+          <div class="flow-sub">フロントエンド・バックエンド開発、AI API統合、動作確認</div>
+        </div>
+        <div class="flow-days">Day 15〜</div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-n">STEP 05</div>
+        <div>
+          <div class="flow-title">リリース・引き渡し・サポート</div>
+          <div class="flow-sub">本番環境デプロイ・操作レクチャー・継続サポート開始</div>
+        </div>
+        <div class="flow-days">リリース後〜</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 制作実績 -->
+<section class="sec" id="works-sec">
+  <div class="sec-in">
+    <div class="sec-head">
+      <p class="sec-label">Works</p>
+      <h2 class="sec-h2">開発実績</h2>
+      <p class="sec-desc">実際に開発したシステム・アプリをご覧ください。</p>
+    </div>
+    <div class="works-grid">
+      <div class="work-card" style="opacity:.35;pointer-events:none">
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">AIチャットボット</span></div></div>
+      </div>
+      <div class="work-card" style="opacity:.35;pointer-events:none">
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">Webアプリ</span></div></div>
+      </div>
+      <div class="work-card" style="opacity:.35;pointer-events:none">
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">業務自動化</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq-sec">
+  <div class="sec-in">
+    <div class="sec-head" style="text-align:center;max-width:560px;margin:0 auto 48px">
+      <p class="sec-label" style="justify-content:center">FAQ</p>
+      <h2 class="sec-h2">よくある質問</h2>
+    </div>
+    <div class="faq-wrap">
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">アイデア段階・要件がまとまっていなくても相談できますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">もちろんです。「こういうことがしたい」というざっくりしたイメージでも大歓迎です。ヒアリングを通じて一緒に要件を整理しますので、まずはお気軽にご相談ください。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">どんな技術・言語に対応していますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">React・Next.js・Node.js・Python等のモダンな技術スタックに対応しています。AI API（OpenAI・Anthropic等）の統合も可能です。要件に合わせて最適な技術を選定します。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">小規模なツールでも対応できますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">はい。大規模システムから小さな業務ツールまで対応しています。スモールスタートで始めて、段階的に機能を追加していくことも可能です。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">開発費用の目安を教えてください</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">機能数・複雑さ・開発期間によって大きく異なります。まずは無料相談でご要件をお伺いし、現実的なお見積りをご提示します。</div></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">リリース後の保守・修正は対応していますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">はい。リリース後の不具合対応・機能追加・運用サポートも継続して対応します。長期的なパートナーとして伴走します。</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <video class="cta-photo" autoplay muted loop playsinline>
+    <source src="hero-bg.mp4" type="video/mp4"/>
+  </video>
+  <div class="cta-shade"></div>
+  <div class="cta-in">
+    <p class="cta-label">Free Consultation</p>
+    <h2 class="cta-h2">アイデアを、<br>一緒に形にしましょう。</h2>
+    <p class="cta-p">「こんなツールがあれば便利なのに」——そのアイデアを実現するのが私たちの仕事です。技術的なことは全部任せてください。まずは気軽にご相談ください。</p>
+    <a href="contact.html" class="cta-btn">無料相談を予約する →</a>
+    <p class="cta-note">通常2営業日以内にご返信します</p>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="index.html#vision">私たちについて</a></li>
+            <li><a href="index.html#culture">会社概要</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Service</h4>
+          <ul>
+            <li><a href="service-corporate.html">Web・LP制作</a></li>
+            <li><a href="service-renewal.html">リニューアル・ポータル</a></li>
+            <li><a href="service-system.html">AI・システム開発</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Works &amp; News</h4>
+          <ul><li><a href="index.html#works">制作実績</a></li></ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="contact.html">無料で相談する</a></li>
+            <li><a href="index.html#faq">よくある質問</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-item').forEach(item=>{
+  item.addEventListener('mouseenter',()=>{
+    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+    item.classList.add('open');
+  });
+  item.addEventListener('mouseleave',()=>item.classList.remove('open'));
+});
+(function(){
+  const btn=document.getElementById('h-burger'),nav=document.getElementById('mob-nav');
+  if(!btn||!nav)return;
+  const close=()=>{nav.classList.remove('open');btn.classList.remove('open');document.body.style.overflow=''};
+  btn.addEventListener('click',()=>{const o=nav.classList.toggle('open');btn.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';});
+  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>a.addEventListener('click',close));
+})();
+</script>
+</body>
+</html>

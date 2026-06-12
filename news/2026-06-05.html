@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>株式会社SENTRIX様 公式ホームページ制作を担当いたしました | 株式会社TeeenS</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;
+  --serif:'Playfair Display','Noto Serif JP',Georgia,serif;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  color:var(--ink);background:#fff;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.7;
+}
+
+/* ── ヘッダー ── */
+.nh{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bd);
+}
+.nh-in{
+  max-width:1200px;margin:0 auto;
+  padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.nh-logo img{height:28px;display:block}
+.nh-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--ink2);
+  text-decoration:none;transition:color .2s,gap .25s;
+}
+.nh-back:hover{color:var(--ink);gap:10px}
+
+/* ── 記事本体 ── */
+.art{
+  max-width:760px;margin:0 auto;
+  padding:80px 32px 40px;
+}
+.art-meta{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:32px;
+  font-size:13px;
+}
+.art-cat{
+  display:inline-block;font-weight:700;
+  padding:5px 11px;border-radius:4px;
+  background:var(--ink);color:#fff;font-size:11px;letter-spacing:.06em;
+}
+.art-date{
+  font-family:'Inter',sans-serif;font-weight:700;
+  color:var(--ink3);letter-spacing:.04em;
+}
+.art-h1{
+  font-size:clamp(28px,3.4vw,42px);font-weight:900;
+  line-height:1.32;letter-spacing:-0.03em;
+  margin-bottom:40px;
+}
+.art-hero{
+  width:100%;aspect-ratio:16/9;
+  background:var(--ink);
+  border-radius:6px;overflow:hidden;
+  margin-bottom:48px;
+  display:flex;align-items:center;justify-content:center;
+}
+.art-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.art-hero-ph{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:clamp(40px,5vw,72px);
+  letter-spacing:-0.04em;color:#fff;
+}
+
+/* ── 本文タイポ ── */
+.art-body{
+  font-size:15.5px;line-height:1.95;color:var(--ink);
+  font-weight:400;
+}
+.art-body > * + *{margin-top:1.4em}
+.art-body h2{
+  font-size:22px;font-weight:900;letter-spacing:-0.02em;
+  margin-top:2.4em;line-height:1.4;
+  padding-top:1em;border-top:1px solid var(--bd);
+}
+.art-body h3{
+  font-size:17px;font-weight:800;letter-spacing:-0.01em;
+  margin-top:2em;
+}
+.art-body p{color:var(--ink);font-size:15.5px}
+.art-body a{
+  color:var(--ink);text-decoration:underline;text-underline-offset:3px;
+}
+.art-body strong{font-weight:800}
+.art-body ul,.art-body ol{padding-left:1.4em}
+.art-body li{margin-top:.4em;line-height:1.85}
+.art-body li::marker{color:var(--ink3)}
+.art-body li strong{display:block;margin-bottom:.1em;font-weight:800}
+.art-body blockquote{
+  border-left:3px solid var(--ink);
+  padding:.4em 0 .4em 1.2em;color:var(--ink2);
+  font-style:italic;
+}
+.art-body img{
+  width:100%;border-radius:6px;
+  margin:1.6em 0;
+}
+
+/* ── フッターアクション ── */
+.art-foot{
+  margin-top:64px;padding-top:32px;
+  border-top:1px solid var(--bd);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;
+}
+.art-share{display:flex;gap:12px;align-items:center;font-size:14px;font-weight:700;color:var(--ink2)}
+.art-share a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;
+  padding:10px 20px;border:1.5px solid var(--ink);border-radius:6px;
+  transition:background .2s,color .2s;
+}
+.art-share a:hover{background:var(--ink);color:#fff}
+.art-visit-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:700;color:#fff;text-decoration:none;
+  padding:10px 20px;background:var(--ink);border-radius:6px;
+  border:1.5px solid var(--ink);
+  transition:opacity .2s;
+}
+.art-visit-btn:hover{opacity:.8}
+.art-back-bottom{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:700;color:var(--ink);text-decoration:none;
+  padding-bottom:3px;border-bottom:1.5px solid var(--ink);
+  transition:gap .25s;
+}
+.art-back-bottom:hover{gap:12px}
+
+/* Responsive */
+@media(max-width:767px){
+  .nh-in{padding:12px 20px}
+  .art{padding:48px 20px 32px}
+  .art-h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="nh">
+  <div class="nh-in">
+    <a href="../index.html" class="nh-logo"><img src="../logo-side-trans.png" alt="TeeenS"/></a>
+    <a href="../index.html#works" class="nh-back">← 制作実績一覧へ</a>
+  </div>
+</header>
+
+<!-- 記事本体 -->
+<article class="art">
+
+  <!-- メタ情報 -->
+  <div class="art-meta">
+    <span class="art-cat">お知らせ</span>
+    <span class="art-date">2026.06.05</span>
+  </div>
+
+  <!-- タイトル -->
+  <h1 class="art-h1">株式会社SENTRIX様の公式ホームページ制作を担当いたしました。</h1>
+
+  <!-- サムネイル -->
+  <div class="art-hero">
+    <img src="../case1.png" alt="株式会社SENTRIX 公式サイト"/>
+  </div>
+
+  <!-- 本文 -->
+  <div class="art-body">
+
+    <p>株式会社SENTRIX様の公式ホームページ制作を担当いたしました。</p>
+
+    <p>今回のプロジェクトでは、ノーコードWeb制作プラットフォーム「<strong>STUDIO</strong>」を採用。洗練されたモダンなデザインを追求しつつ、クライアント様側でのお知らせやコンテンツ更新が直感的に行える運用のしやすさを実現しました。</p>
+
+    <h2>主な制作・実装ポイント</h2>
+
+    <ul>
+      <li>
+        <strong>独自性を表現するデザイン</strong>
+        株式会社SENTRIX様のブランドイメージや強みが一目で伝わるよう、細部までこだわったビジュアル設計を行いました。
+      </li>
+      <li>
+        <strong>STUDIO CMSの導入</strong>
+        今後のニュースや実績をご担当者様がスムーズに更新・管理できる導線を構築いたしました。
+      </li>
+      <li>
+        <strong>レスポンシブ対応</strong>
+        スマートフォン、タブレット、PCなど、あらゆるデバイスで最適に表示される完全レスポンシブデザインを実装。
+      </li>
+      <li>
+        <strong>SEO基盤の構築</strong>
+        検索エンジンに評価されやすい適切なコーディングと基本設定の最適化を実施いたしました。
+      </li>
+    </ul>
+
+    <h2>TeeenSが大切にしていること</h2>
+
+    <p>弊社では、ただ美しいサイトを作るだけでなく、ビジネスの成長に繋がる「<strong>動くWebサイト</strong>」のご提案を心がけております。</p>
+
+    <p>末筆ではございますが、この度の制作にあたり多大なるご協力をいただきました株式会社SENTRIXの皆様に、心より感謝申し上げます。</p>
+
+  </div>
+
+  <!-- フッター -->
+  <div class="art-foot">
+    <div class="art-share">
+      <a href="https://www.instagram.com/haato__takaoka/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </a>
+      <a href="https://sent-rix.com/" target="_blank" rel="noopener" class="art-visit-btn">この制作物を見る →</a>
+    </div>
+    <a href="../index.html#works" class="art-back-bottom">制作実績一覧へ戻る →</a>
+  </div>
+
+</article>
+
+</body>
+</html>

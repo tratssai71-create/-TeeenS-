@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>制作実績 | 株式会社TeeenS</title>
+<meta name="description" content="株式会社TeeenSの制作実績一覧。コーポレートサイト・LP・ポータルサイト・Webアプリなど、これまでに手がけたWebサイトをご紹介します。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;--bg3:#fafafa;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ── ヘッダー ── */
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px;background:transparent}
+.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:16px;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
+.h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px;display:block}
+.h-nav{display:flex;align-items:center}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;text-decoration:none;display:inline-flex;align-items:center}
+.h-cta:hover{background:#333 !important}
+.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;transform-origin:center}
+.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
+.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mob-link{font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em;transition:color .18s}
+.mob-link:first-child{border-top:1px solid var(--bd)}
+.mob-cta-btn{margin-top:36px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;text-decoration:none;letter-spacing:.06em;border-radius:4px;transition:background .2s}
+
+/* ── ページヘッダー ── */
+.page-hero{
+  padding:160px 56px 80px;
+  max-width:1280px;margin:0 auto;
+}
+.page-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:24px;
+}
+.page-eyebrow::before{content:'';width:28px;height:1px;background:var(--ink3)}
+.page-h1{
+  font-size:clamp(40px,6vw,80px);font-weight:900;
+  letter-spacing:-0.04em;line-height:1.05;
+  color:var(--ink);margin-bottom:24px;
+}
+.page-desc{
+  font-size:16px;color:var(--ink2);line-height:1.9;font-weight:400;
+  max-width:520px;
+}
+
+/* ── フィルター ── */
+.filter-bar{
+  padding:0 56px 48px;
+  max-width:1280px;margin:0 auto;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.filter-btn{
+  font-size:13px;font-weight:700;letter-spacing:.04em;
+  padding:9px 20px;border-radius:999px;
+  border:1.5px solid var(--bd2);color:var(--ink2);
+  background:transparent;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s;
+}
+.filter-btn.active,.filter-btn:hover{
+  background:var(--ink);color:#fff;border-color:var(--ink);
+}
+
+/* ── グリッド ── */
+.works-section{
+  padding:0 56px 120px;
+  max-width:1280px;margin:0 auto;
+}
+.works-count{
+  font-size:13px;color:var(--ink3);font-weight:600;
+  letter-spacing:.04em;margin-bottom:32px;
+}
+.works-list{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+}
+
+/* ══════════════════════════════════════
+   カード（box スタイル）
+   新しい実績: .works-list の中に .wc をコピペするだけ
+   data-category="corporate|lp|renewal|system"
+════════════════════════════════════════ */
+.wc{
+  background:#fff;
+  border-radius:18px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(9,9,11,.06),0 8px 28px rgba(9,9,11,.08);
+  transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s;
+  display:flex;flex-direction:column;
+  text-decoration:none;color:var(--ink);
+}
+.wc:hover{
+  transform:translateY(-8px);
+  box-shadow:0 4px 12px rgba(9,9,11,.07),0 24px 52px rgba(9,9,11,.14);
+}
+
+/* 画像エリア */
+.wc-img-wrap{
+  position:relative;overflow:hidden;
+  aspect-ratio:16/10;
+  background:#111;
+}
+.wc-img-wrap img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 1.2s cubic-bezier(.22,1,.36,1);
+}
+.wc:hover .wc-img-wrap img{transform:scale(1.05)}
+
+/* プレースホルダ */
+.wc-ph{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  background:#f3f4f6;
+  font-family:'Inter',sans-serif;font-weight:800;
+  font-size:12px;letter-spacing:.22em;color:rgba(9,9,11,.2);
+}
+
+/* バッジ */
+.wc-badge{
+  position:absolute;top:14px;left:14px;
+  font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;
+  background:rgba(9,9,11,.7);color:#fff;backdrop-filter:blur(6px);
+}
+.wc-badge.new{background:var(--ink);color:#fff}
+
+/* テキスト部 */
+.wc-body{
+  padding:22px 24px 26px;
+  flex:1;display:flex;flex-direction:column;gap:12px;
+}
+.wc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.wc-tag{
+  font-size:11px;font-weight:600;letter-spacing:.02em;
+  padding:4px 10px;border:1px solid var(--bd2);border-radius:999px;color:var(--ink2);
+}
+.wc-title{
+  font-size:16px;font-weight:800;letter-spacing:-0.02em;line-height:1.4;
+  color:var(--ink);
+}
+.wc-desc{
+  font-size:13.5px;color:var(--ink2);line-height:1.85;font-weight:400;
+}
+.wc-links{display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap}
+.wc-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;letter-spacing:.04em;
+  text-decoration:none;
+  padding:8px 16px;border:1.5px solid var(--ink);border-radius:6px;
+  background:var(--ink);color:#fff;
+  transition:opacity .2s;
+}
+.wc-link:hover{opacity:.75}
+.wc-link.ghost{background:transparent;color:var(--ink)}
+.wc-link.ghost:hover{background:var(--ink);color:#fff;opacity:1}
+
+/* COMING SOON */
+.wc-coming{cursor:default;pointer-events:none;}
+.wc-coming .wc-title{color:var(--ink3)}
+.wc-coming .wc-tag{opacity:.4}
+
+/* ── CTA ── */
+.works-cta{
+  padding:80px 56px;
+  text-align:center;
+  background:var(--ink);
+  border-radius:20px;
+  max-width:1180px;margin:0 auto 80px;
+}
+.works-cta-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:20px}
+.works-cta-h2{font-size:clamp(26px,3.6vw,44px);font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1.15;margin-bottom:16px}
+.works-cta-p{font-size:15px;color:rgba(255,255,255,.6);font-weight:400;margin-bottom:36px;line-height:1.9}
+.works-cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;color:var(--ink);
+  font-size:14px;font-weight:800;letter-spacing:.04em;
+  padding:16px 38px;border-radius:8px;
+  transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;
+}
+.works-cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
+
+/* ── フッター ── */
+.ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft-in{max-width:1180px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
+.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
+.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
+.ft-links{display:flex;gap:56px}
+.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
+.ft-col ul li a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
+
+/* ── レスポンシブ ── */
+@media(max-width:1024px){
+  header{padding:12px 24px}
+  .h-item>a{padding:8px 10px;font-size:13px}
+  .h-cta{padding:9px 18px !important;font-size:13px !important}
+  .works-list{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:767px){
+  header{padding:10px 16px}
+  .h-inner{padding:6px 6px 6px 14px}
+  .h-item,.h-cta{display:none !important}
+  .h-logo img{height:28px}
+  .h-burger{display:flex}
+  .page-hero{padding:120px 22px 48px}
+  .filter-bar{padding:0 22px 36px}
+  .works-section{padding:0 22px 80px}
+  .works-list{grid-template-columns:1fr}
+  .works-cta{padding:52px 28px;margin:0 22px 60px}
+  .ft{padding:52px 22px 22px}
+  .ft-top{flex-direction:column}
+  .ft-links{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header>
+<div class="h-inner">
+  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <nav class="h-nav">
+    <div class="h-item"><a href="index.html#vision">About</a></div>
+    <div class="h-item"><a href="index.html#services">Service</a></div>
+    <div class="h-item"><a href="works.html">Works &amp; News</a></div>
+    <div class="h-item"><a href="index.html#faq">Contact</a></div>
+    <a href="contact.html" class="h-cta">無料相談 →</a>
+  </nav>
+  <button class="h-burger" id="h-burger" aria-label="メニューを開く">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</header>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="index.html#vision" class="mob-link">About</a>
+  <a href="index.html#services" class="mob-link">Service</a>
+  <a href="works.html" class="mob-link">Works &amp; News</a>
+  <a href="index.html#faq" class="mob-link">Contact</a>
+  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+</div>
+
+<!-- ページヘッダー -->
+<div class="page-hero">
+  <p class="page-eyebrow">Works</p>
+  <h1 class="page-h1">制作実績</h1>
+  <p class="page-desc">これまでにTeeenSが手がけたWebサイト・LP・システムの一覧です。新しい実績ができ次第、順次追加していきます。</p>
+</div>
+
+<!-- フィルター -->
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">すべて</button>
+  <button class="filter-btn" data-filter="corporate">コーポレート</button>
+  <button class="filter-btn" data-filter="lp">LP</button>
+  <button class="filter-btn" data-filter="renewal">リニューアル</button>
+  <button class="filter-btn" data-filter="system">AI・システム</button>
+</div>
+
+<!-- 実績一覧 -->
+<section class="works-section">
+  <p class="works-count" id="works-count">全 1 件</p>
+
+  <div class="works-list" id="works-list">
+
+    <!--
+    ════════════════════════════════════════════════
+    ▼ ここに実績を追加するだけ ▼
+    コピペ用テンプレートは一番下にコメントで用意してあります
+    ════════════════════════════════════════════════
+    -->
+
+    <!-- ① 株式会社SENTRIX ─────────────────────── -->
+    <div class="wc" data-category="corporate">
+      <div class="wc-img-wrap">
+        <img src="case1.png" alt="株式会社SENTRIX 公式サイト"/>
+        <span class="wc-badge new">NEW</span>
+      </div>
+      <div class="wc-body">
+        <div class="wc-tags">
+          <span class="wc-tag">コーポレート</span>
+          <span class="wc-tag">STUDIO</span>
+        </div>
+        <h2 class="wc-title">株式会社SENTRIX 公式サイト</h2>
+        <p class="wc-desc">ブランドイメージに合わせたモダンなコーポレートサイト。STUDIO CMSを導入し、担当者が自分で更新できる運用体制も構築。</p>
+        <div class="wc-links">
+          <a href="https://sent-rix.com/" target="_blank" rel="noopener" class="wc-link">サイトを見る →</a>
+          <a href="news/2026-06-05.html" class="wc-link ghost">制作記事</a>
+        </div>
+      </div>
+    </div>
+
+    <!--
+    ════════════════════════════════════════════════
+    ▼ COMING SOON（実績が増えたら差し替え）
+    ════════════════════════════════════════════════
+    -->
+
+    <div class="wc wc-coming" data-category="lp">
+      <div class="wc-img-wrap">
+        <div class="wc-ph" style="font-size:14px;letter-spacing:.2em;color:rgba(0,0,0,.2)">COMING SOON</div>
+      </div>
+      <div class="wc-body">
+        <div class="wc-tags">
+          <span class="wc-tag">LP</span>
+        </div>
+        <h2 class="wc-title">準備中</h2>
+        <p class="wc-desc">公開準備中です。しばらくお待ちください。</p>
+      </div>
+    </div>
+
+    <div class="wc wc-coming" data-category="renewal">
+      <div class="wc-img-wrap">
+        <div class="wc-ph" style="font-size:14px;letter-spacing:.2em;color:rgba(0,0,0,.2)">COMING SOON</div>
+      </div>
+      <div class="wc-body">
+        <div class="wc-tags">
+          <span class="wc-tag">リニューアル</span>
+        </div>
+        <h2 class="wc-title">準備中</h2>
+        <p class="wc-desc">公開準備中です。しばらくお待ちください。</p>
+      </div>
+    </div>
+
+    <!--
+    ════════════════════════════════════════════════
+    ▼▼▼ 新しい実績を追加する際はここをコピペ ▼▼▼
+
+    <div class="wc" data-category="corporate">
+      ※ data-category は以下から選択
+        corporate / lp / renewal / system
+
+      <div class="wc-img-wrap">
+        <img src="case2.png" alt="案件名"/>
+        <span class="wc-badge new">NEW</span>  ← 不要なら削除
+      </div>
+      <div class="wc-body">
+        <div class="wc-tags">
+          <span class="wc-tag">コーポレート</span>
+          <span class="wc-tag">STUDIO</span>
+        </div>
+        <h2 class="wc-title">クライアント名 公式サイト</h2>
+        <p class="wc-desc">一言説明文をここに。</p>
+        <div class="wc-links">
+          <a href="https://example.com/" target="_blank" rel="noopener" class="wc-link">サイトを見る →</a>
+          <a href="news/記事ファイル名.html" class="wc-link ghost">制作記事</a>
+        </div>
+      </div>
+    </div>
+
+    ════════════════════════════════════════════════
+    -->
+
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="works-cta">
+  <p class="works-cta-label">Free Consultation</p>
+  <h2 class="works-cta-h2">次は、御社のサイトを<br>一緒につくりませんか。</h2>
+  <p class="works-cta-p">相談・見積もりは完全無料。アイデア段階でも大歓迎です。</p>
+  <a href="contact.html" class="works-cta-btn">無料相談を予約する →</a>
+</div>
+
+<!-- フッター -->
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="index.html#vision">私たちについて</a></li>
+            <li><a href="index.html#culture">会社概要</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Service</h4>
+          <ul>
+            <li><a href="service-corporate.html">Web・LP制作</a></li>
+            <li><a href="service-renewal.html">リニューアル・ポータル</a></li>
+            <li><a href="service-system.html">AI・システム開発</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Works</h4>
+          <ul>
+            <li><a href="works.html">制作実績一覧</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="contact.html">無料で相談する</a></li>
+            <li><a href="index.html#faq">よくある質問</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+/* ── ハンバーガー ── */
+(function(){
+  const btn=document.getElementById('h-burger'),nav=document.getElementById('mob-nav');
+  if(!btn||!nav)return;
+  const close=()=>{nav.classList.remove('open');btn.classList.remove('open');document.body.style.overflow=''};
+  btn.addEventListener('click',()=>{const o=nav.classList.toggle('open');btn.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';});
+  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>a.addEventListener('click',close));
+})();
+
+/* ── フィルター ── */
+(function(){
+  const btns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.wc');
+  const countEl = document.getElementById('works-count');
+
+  function updateCount(visible){
+    // COMING SOON カードは件数に含めない
+    const real = [...visible].filter(c => !c.classList.contains('wc-coming')).length;
+    countEl.textContent = '全 ' + real + ' 件';
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      const visible = [];
+
+      cards.forEach(card => {
+        const cat = card.dataset.category;
+        const show = filter === 'all' || cat === filter;
+        card.style.display = show ? '' : 'none';
+        if(show) visible.push(card);
+      });
+
+      updateCount(visible);
+    });
+  });
+
+  // 初期件数
+  updateCount(cards);
+})();
+</script>
+</body>
+</html>
