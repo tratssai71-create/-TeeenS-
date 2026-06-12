@@ -49,54 +49,69 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ── スプリットヒーロー ── */
+/* ── 全幅ビデオヒーロー ── */
 .ok-hero{
-  min-height:100vh;
-  display:grid;
-  grid-template-columns:55fr 45fr;
+  position:relative;
+  width:100%;min-height:100vh;
+  overflow:hidden;
+  display:flex;align-items:flex-end;
   padding-top:80px;
+  background:#000;
 }
+/* YouTube背景動画 */
+.ok-yt-wrap{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;
+}
+.ok-yt-wrap iframe{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:177.78vh;height:56.25vw;
+  min-width:100%;min-height:100%;
+  border:none;
+}
+/* グラデオーバーレイ */
+.ok-hero::before{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.3) 50%, rgba(0,0,0,.1) 100%),
+    linear-gradient(to right, rgba(0,0,0,.55) 0%, transparent 60%);
+}
+/* テキストエリア */
 .ok-left{
-  background:#07070d;
-  padding:80px 64px 80px 56px;
-  display:flex;flex-direction:column;justify-content:center;
-  position:relative;overflow:hidden;
-}
-/* 左のサブタルグロー */
-.ok-left::before{
-  content:'';position:absolute;
-  bottom:-20%;left:-10%;
-  width:70%;height:70%;
-  background:radial-gradient(ellipse,rgba(251,191,36,.08) 0%,transparent 65%);
-  pointer-events:none;
+  position:relative;z-index:2;
+  max-width:700px;
+  padding:0 56px 72px;
+  display:flex;flex-direction:column;
 }
 .ok-eyebrow{
   display:inline-flex;align-items:center;gap:12px;
   font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(255,255,255,.38);margin-bottom:40px;
+  color:rgba(255,255,255,.5);margin-bottom:28px;
 }
-.ok-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.22)}
+.ok-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.3)}
 .ok-h1{
-  font-size:clamp(34px,4.2vw,58px);
+  font-size:clamp(36px,4.8vw,68px);
   font-weight:900;letter-spacing:-0.04em;line-height:1.1;
-  color:#fff;margin-bottom:28px;
+  color:#fff;margin-bottom:22px;
 }
 .ok-sub{
   font-size:clamp(15px,1.5vw,19px);font-weight:600;
-  color:rgba(251,191,36,.75);letter-spacing:-.01em;
-  margin-bottom:44px;
+  color:rgba(251,191,36,.85);letter-spacing:-.01em;
+  margin-bottom:40px;
 }
 /* アクセスチップ */
-.ok-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:52px}
+.ok-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:44px}
 .ok-chip{
   display:inline-flex;align-items:center;gap:7px;
   font-size:12.5px;font-weight:600;
   padding:9px 16px;border-radius:999px;
-  border:1px solid rgba(255,255,255,.12);
-  color:rgba(255,255,255,.72);
-  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.8);
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(6px);
 }
-.ok-chip::before{content:'✓';font-size:10px;color:rgba(251,191,36,.8);font-weight:900}
+.ok-chip::before{content:'✓';font-size:10px;color:rgba(251,191,36,.9);font-weight:900}
 /* CTA */
 .ok-cta{
   display:inline-flex;align-items:center;gap:10px;
@@ -106,37 +121,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   transition:transform .25s,box-shadow .25s;
   align-self:flex-start;
 }
-.ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
-/* 右：動画パネル */
-.ok-right{
-  position:relative;overflow:hidden;background:#000;
-}
-/* YouTube iframe 背景動画 */
-.ok-yt-wrap{
-  position:absolute;inset:0;overflow:hidden;pointer-events:none;
-}
-.ok-yt-wrap iframe{
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  /* 16:9 を全面カバー */
-  width:177.78vh;  /* 100vh * 16/9 */
-  height:56.25vw;  /* 100vw * 9/16 */
-  min-width:100%;min-height:100%;
-  border:none;
-}
-/* 左端グラデ（継ぎ目を自然に） */
-.ok-right::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:100px;
-  background:linear-gradient(to right,#07070d 0%,transparent 100%);
-  z-index:2;pointer-events:none;
-}
-/* 薄いオーバーレイで明るすぎ防止 */
-.ok-right::after{
-  content:'';position:absolute;inset:0;
-  background:rgba(0,0,0,.18);
-  z-index:1;pointer-events:none;
-}
+.ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
 
 /* リード */
 .lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
@@ -218,8 +203,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 @media(max-width:1024px){
   header{padding:12px 24px}
   .h-item>a{padding:8px 10px;font-size:13px}
-  .ok-hero{grid-template-columns:58fr 42fr}
-  .ok-left{padding:60px 40px}
+  .ok-left{padding:0 40px 60px}
 }
 @media(max-width:767px){
   header{padding:10px 16px}
@@ -227,11 +211,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .h-item,.h-cta{display:none !important}
   .h-logo img{height:28px}
   .h-burger{display:flex}
-  .ok-hero{grid-template-columns:1fr;padding-top:72px}
-  .ok-left{padding:56px 24px 48px}
-  .ok-right{min-height:56vw}
-  .ok-right::before{display:none}
-  .ok-yt-wrap iframe{width:177.78vw;height:100vw}
+  .ok-left{padding:0 22px 52px}
+  .ok-yt-wrap iframe{width:177.78vw;height:56.25vw;min-height:100%}
   .lead{padding:64px 24px 48px}
   .sec{padding:64px 24px}
   .feat-block{grid-template-columns:1fr}
@@ -280,9 +261,18 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
 </div>
 
-<!-- HERO split -->
+<!-- HERO 全幅ビデオ -->
 <div class="ok-hero">
-  <!-- 左：テキストパネル -->
+  <!-- 背景：岡山ドローン動画 -->
+  <div class="ok-yt-wrap">
+    <iframe
+      src="https://www.youtube.com/embed/isaGciN_bqc?autoplay=1&mute=1&loop=1&playlist=isaGciN_bqc&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=5"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+      title="岡山 瀬戸大橋 ドローン空撮"
+    ></iframe>
+  </div>
+  <!-- テキスト -->
   <div class="ok-left">
     <p class="ok-eyebrow">Local Okayama Partner</p>
     <h1 class="ok-h1">岡山の社長さんへ、<br>頼れる隣のWeb担当、います。</h1>
@@ -293,17 +283,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       <span class="ok-chip">岡山生まれ 岡山育ち</span>
     </div>
     <a href="contact.html" class="ok-cta">無料相談してみる →</a>
-  </div>
-  <!-- 右：瀬戸内海 動画パネル -->
-  <div class="ok-right">
-    <div class="ok-yt-wrap">
-      <iframe
-        src="https://www.youtube.com/embed/uh4nu8qdKL4?autoplay=1&mute=1&loop=1&playlist=uh4nu8qdKL4&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=10"
-        allow="autoplay; encrypted-media"
-        allowfullscreen
-        title="瀬戸内海 空撮映像"
-      ></iframe>
-    </div>
   </div>
 </div>
 
