@@ -49,16 +49,77 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ヒーロー */
-.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
-.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
-.hero-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,5,0,.4) 0%,rgba(10,5,0,.1) 35%,rgba(10,5,0,.35) 60%,rgba(10,5,0,.9) 100%)}
-.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 64px;max-width:1280px;margin:0 auto}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:22px}
-.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
-.hero-h1{font-size:clamp(36px,5vw,64px);font-weight:900;letter-spacing:-0.03em;line-height:1.1;color:#fff;margin-bottom:20px}
-.hero-h1 em{font-style:normal;font-size:.46em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);display:block;margin-top:14px}
-.hero-lead{font-size:clamp(14px,1.4vw,17px);font-weight:400;color:rgba(255,255,255,.78);line-height:1.9;max-width:520px}
+/* ── スプリットヒーロー ── */
+.ok-hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:55fr 45fr;
+  padding-top:80px;
+}
+.ok-left{
+  background:#07070d;
+  padding:80px 64px 80px 56px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+}
+/* 左のサブタルグロー */
+.ok-left::before{
+  content:'';position:absolute;
+  bottom:-20%;left:-10%;
+  width:70%;height:70%;
+  background:radial-gradient(ellipse,rgba(251,191,36,.08) 0%,transparent 65%);
+  pointer-events:none;
+}
+.ok-eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.38);margin-bottom:40px;
+}
+.ok-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.22)}
+.ok-h1{
+  font-size:clamp(34px,4.2vw,58px);
+  font-weight:900;letter-spacing:-0.04em;line-height:1.1;
+  color:#fff;margin-bottom:28px;
+}
+.ok-sub{
+  font-size:clamp(15px,1.5vw,19px);font-weight:600;
+  color:rgba(251,191,36,.75);letter-spacing:-.01em;
+  margin-bottom:44px;
+}
+/* アクセスチップ */
+.ok-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:52px}
+.ok-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:600;
+  padding:9px 16px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.72);
+  background:rgba(255,255,255,.05);
+}
+.ok-chip::before{content:'✓';font-size:10px;color:rgba(251,191,36,.8);font-weight:900}
+/* CTA */
+.ok-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;color:#07070d;
+  font-size:14px;font-weight:800;letter-spacing:.04em;
+  padding:15px 32px;border-radius:8px;
+  transition:transform .25s,box-shadow .25s;
+  align-self:flex-start;
+}
+.ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+/* 右：写真パネル */
+.ok-right{
+  position:relative;overflow:hidden;
+}
+.ok-right img{
+  width:100%;height:100%;object-fit:cover;object-position:center;
+}
+/* 左端シャドウ（継ぎ目を自然に） */
+.ok-right::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:80px;
+  background:linear-gradient(to right,#07070d 0%,transparent 100%);
+  z-index:1;pointer-events:none;
+}
 
 /* リード */
 .lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
@@ -141,6 +202,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 @media(max-width:1024px){
   header{padding:12px 24px}
   .h-item>a{padding:8px 10px;font-size:13px}
+  .ok-hero{grid-template-columns:58fr 42fr}
+  .ok-left{padding:60px 40px}
 }
 @media(max-width:767px){
   header{padding:10px 16px}
@@ -148,7 +211,10 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .h-item,.h-cta{display:none !important}
   .h-logo img{height:28px}
   .h-burger{display:flex}
-  .hero-inner{padding:0 22px 48px}
+  .ok-hero{grid-template-columns:1fr;padding-top:72px}
+  .ok-left{padding:56px 24px 48px}
+  .ok-right{min-height:56vw}
+  .ok-right::before{display:none}
   .lead{padding:64px 24px 48px}
   .sec{padding:64px 24px}
   .feat-block{grid-template-columns:1fr}
@@ -197,17 +263,23 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
 </div>
 
-<!-- HERO -->
-<div class="hero">
-  <img class="hero-photo" src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1800&q=80" alt="岡山地元密着"/>
-  <div class="hero-shade"></div>
-  <div class="hero-inner">
-    <p class="hero-eyebrow">Local Okayama Partner</p>
-    <h1 class="hero-h1">
-      岡山の社長さんへ、<br>頼れる隣のWeb担当、います。
-      <em>困ったとき、すぐ会いに行けます。</em>
-    </h1>
-    <p class="hero-lead">岡山市内ならいつでもお伺いします。「ちょっと相談したい」に、誰よりも早く、誰よりも誠実に応えます。</p>
+<!-- HERO split -->
+<div class="ok-hero">
+  <!-- 左：テキストパネル -->
+  <div class="ok-left">
+    <p class="ok-eyebrow">Local Okayama Partner</p>
+    <h1 class="ok-h1">岡山の社長さんへ、<br>頼れる隣のWeb担当、います。</h1>
+    <p class="ok-sub">困ったとき、すぐ会いに行けます。</p>
+    <div class="ok-chips">
+      <span class="ok-chip">岡山市内 即日訪問</span>
+      <span class="ok-chip">初回相談 完全無料</span>
+      <span class="ok-chip">地元密着 10年以上</span>
+    </div>
+    <a href="contact.html" class="ok-cta">無料相談してみる →</a>
+  </div>
+  <!-- 右：写真パネル -->
+  <div class="ok-right">
+    <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&q=80" alt="岡山の風景"/>
   </div>
 </div>
 
