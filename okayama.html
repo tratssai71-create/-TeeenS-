@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>岡山地元密着 | 株式会社TeeenS</title>
+<meta name="description" content="岡山市内ならいつでも対面で打ち合わせに駆けつけます。地元・岡山の経営者様の頼れる近所のWebパートナー、株式会社TeeenS。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;--bg3:#fafafa;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ヘッダー */
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px}
+.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:16px;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
+.h-logo{display:flex;align-items:center;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px}
+.h-nav{display:flex;align-items:center}
+.h-item{position:relative}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
+.h-item>a:hover{color:var(--ink2)}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;display:inline-flex;align-items:center}
+.h-cta:hover{background:#333 !important}
+.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s,opacity .25s;transform-origin:center}
+.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
+.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mob-link{font-size:clamp(22px,5vw,28px);font-weight:700;color:var(--ink);padding:14px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em}
+.mob-link:first-child{border-top:1px solid var(--bd)}
+.mob-cta-btn{margin-top:32px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;border-radius:4px}
+.svc-drop{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(9,9,11,.12),0 2px 8px rgba(9,9,11,.06);border:1px solid rgba(9,9,11,.07);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.22,1,.36,1);z-index:900;padding:6px 0}
+.svc-drop::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
+.svc-drop.open{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
+.svc-drop-link{display:block;padding:11px 20px;font-size:13.5px;font-weight:500;color:var(--ink);border-bottom:1px solid rgba(9,9,11,.05);transition:background .15s,padding-left .2s}
+.svc-drop-link:last-child{border-bottom:none}
+.svc-drop-link:hover{background:var(--bg2);padding-left:26px}
+
+/* ヒーロー */
+.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.05) 35%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.88) 100%)}
+.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 64px;max-width:1280px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:22px}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
+.hero-h1{font-size:clamp(36px,5vw,64px);font-weight:900;letter-spacing:-0.03em;line-height:1.1;color:#fff;margin-bottom:20px}
+.hero-h1 em{font-style:normal;font-size:.46em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);display:block;margin-top:14px}
+.hero-lead{font-size:clamp(14px,1.4vw,17px);font-weight:400;color:rgba(255,255,255,.78);line-height:1.9;max-width:520px}
+
+/* リード */
+.lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
+.lead-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
+.lead-h2{font-size:clamp(24px,3vw,38px);font-weight:900;letter-spacing:-0.03em;line-height:1.5;margin-bottom:24px}
+.lead-p{font-size:15px;color:var(--ink2);line-height:2.1;max-width:640px;margin:0 auto}
+
+/* セクション */
+.sec{padding:96px 56px}
+.sec-in{max-width:1180px;margin:0 auto}
+.sec-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:1.5px;background:var(--ink3)}
+.sec-h2{font-size:clamp(26px,3.2vw,42px);font-weight:900;letter-spacing:-0.04em;line-height:1.15;margin-bottom:14px}
+.sec-desc{font-size:15px;color:var(--ink2);line-height:1.85;max-width:520px}
+
+/* フィーチャーブロック */
+.feat-block{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:28px}
+.feat-block.rev .feat-photo{order:2}
+.feat-photo{overflow:hidden;position:relative;min-height:440px}
+.feat-photo img{width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.22,1,.36,1)}
+.feat-block:hover .feat-photo img{transform:scale(1.04)}
+.feat-tag{position:absolute;top:20px;left:20px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font-size:11px;font-weight:800;letter-spacing:.08em;padding:7px 14px;border-radius:30px}
+.feat-body{padding:64px 56px;display:flex;flex-direction:column;justify-content:center}
+.feat-num{font-size:12px;font-weight:900;letter-spacing:.16em;color:var(--ink3);margin-bottom:20px}
+.feat-h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;letter-spacing:-0.03em;line-height:1.3;margin-bottom:20px}
+.feat-p{font-size:14.5px;color:var(--ink2);line-height:2}
+.feat-p+.feat-p{margin-top:14px}
+.feat-list{list-style:none;margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.feat-list li{display:flex;align-items:flex-start;gap:11px;font-size:14px;line-height:1.6;font-weight:500}
+.feat-list li::before{content:'';width:18px;height:18px;background:var(--ink);border-radius:50%;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:11px;background-position:center;background-repeat:no-repeat}
+
+/* 対応情報カード */
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.info-card{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:36px 32px;display:flex;align-items:flex-start;gap:20px}
+.info-icon{width:52px;height:52px;background:var(--ink);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.info-h4{font-size:16px;font-weight:800;letter-spacing:-0.01em;margin-bottom:8px}
+.info-p{font-size:13.5px;color:var(--ink2);line-height:1.85}
+
+/* 代表メッセージ */
+.msg-wrap{background:var(--ink);border-radius:20px;padding:72px 64px;display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center}
+.msg-img{width:160px;height:160px;border-radius:50%;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,.15)}
+.msg-img img{width:100%;height:100%;object-fit:cover}
+.msg-label{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px}
+.msg-name{font-size:clamp(22px,2.6vw,32px);font-weight:900;letter-spacing:-0.03em;color:#fff;margin-bottom:4px}
+.msg-name small{font-size:.42em;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.02em;display:block;margin-top:4px}
+.msg-p{font-size:14.5px;color:rgba(255,255,255,.72);line-height:2.1;margin-top:20px;max-width:560px}
+.msg-sign{font-size:13px;font-weight:700;color:rgba(255,255,255,.55);margin-top:28px}
+
+/* CTA */
+#cta{position:relative;overflow:hidden;min-height:480px;display:flex;align-items:center;justify-content:center}
+.cta-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cta-shade{position:absolute;inset:0;background:rgba(9,9,11,.72)}
+.cta-in{position:relative;z-index:2;text-align:center;padding:80px 32px;max-width:680px;margin:0 auto}
+.cta-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:24px}
+.cta-h2{font-size:clamp(26px,3.6vw,44px);font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1.15;margin-bottom:16px}
+.cta-p{font-size:15px;color:rgba(255,255,255,.65);line-height:1.9;margin-bottom:36px}
+.cta-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--ink);font-size:14px;font-weight:800;letter-spacing:.04em;padding:17px 40px;border-radius:8px;transition:transform .25s,box-shadow .25s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.3)}
+.cta-note{font-size:12px;color:rgba(255,255,255,.35);margin-top:18px}
+
+/* フッター */
+.ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft-in{max-width:1180px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
+.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
+.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
+.ft-links{display:flex;gap:56px}
+.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
+.ft-col ul li a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
+
+/* アニメ */
+.sa{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.sa.in{opacity:1;transform:none}
+.sd1{transition-delay:.1s}.sd2{transition-delay:.2s}.sd3{transition-delay:.3s}
+
+/* レスポンシブ */
+@media(max-width:1024px){
+  header{padding:12px 24px}
+  .h-item>a{padding:8px 10px;font-size:13px}
+}
+@media(max-width:767px){
+  header{padding:10px 16px}
+  .h-inner{padding:6px 6px 6px 14px}
+  .h-item,.h-cta{display:none !important}
+  .h-logo img{height:28px}
+  .h-burger{display:flex}
+  .hero-inner{padding:0 22px 48px}
+  .lead{padding:64px 24px 48px}
+  .sec{padding:64px 24px}
+  .feat-block{grid-template-columns:1fr}
+  .feat-block.rev .feat-photo{order:0}
+  .feat-photo{min-height:260px}
+  .feat-body{padding:36px 28px}
+  .info-grid{grid-template-columns:1fr}
+  .msg-wrap{grid-template-columns:1fr;text-align:center;padding:40px 28px;gap:28px}
+  .msg-img{margin:0 auto}
+  .ft{padding:52px 22px 22px}
+  .ft-top{flex-direction:column}
+  .ft-links{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="h-inner">
+  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <nav class="h-nav">
+    <div class="h-item"><a href="story.html">ストーリー</a></div>
+    <div class="h-item">
+      <a href="index.html#services">Service</a>
+      <div class="svc-drop">
+        <a href="service-corporate.html" class="svc-drop-link">ホームページ制作</a>
+        <a href="service-lp.html" class="svc-drop-link">ランディングページ（LP）制作</a>
+        <a href="service-system.html" class="svc-drop-link">社内Webアプリ・AI開発</a>
+      </div>
+    </div>
+    <div class="h-item"><a href="works.html">Works</a></div>
+    <div class="h-item"><a href="okayama.html">岡山密着</a></div>
+    <a href="contact.html" class="h-cta">無料相談 →</a>
+  </nav>
+  <button class="h-burger" id="h-burger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</header>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="story.html" class="mob-link">ストーリー</a>
+  <a href="index.html#services" class="mob-link">Service</a>
+  <a href="works.html" class="mob-link">Works</a>
+  <a href="okayama.html" class="mob-link">岡山密着</a>
+  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <img class="hero-photo" src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1800&q=80" alt="岡山地元密着"/>
+  <div class="hero-shade"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Local Okayama Partner</p>
+    <h1 class="hero-h1">
+      岡山の社長さんへ、<br>頼れる隣のWeb担当、います。
+      <em>困ったとき、すぐ会いに行けます。</em>
+    </h1>
+    <p class="hero-lead">岡山市内ならいつでもお伺いします。「ちょっと相談したい」に、誰よりも早く、誰よりも誠実に応えます。</p>
+  </div>
+</div>
+
+<!-- リード -->
+<div class="lead sa">
+  <p class="lead-label">For Okayama Businesses</p>
+  <h2 class="lead-h2">遠い制作会社じゃなくて、<br>近くにいるパートナーを選んでください。</h2>
+  <p class="lead-p">Webの制作会社というと、どこか遠い存在に感じることはありませんか。連絡はメールだけ、打ち合わせはオンラインのみ——そんな会社とは、少し違います。TeeenSは、岡山を拠点に活動する地元のWeb会社です。</p>
+</div>
+
+<!-- コンテンツセクション -->
+<section class="sec" style="padding-top:0">
+  <div class="sec-in">
+
+    <!-- いつでも会いに行けます -->
+    <div class="feat-block sa">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1000&q=80" alt="対面打ち合わせ"/>
+        <span class="feat-tag">FACE TO FACE</span>
+      </div>
+      <div class="feat-body">
+        <span class="feat-num">01 — いつでも駆けつけます</span>
+        <h3 class="feat-h3">「ちょっと相談したい」に、<br>すぐ応えます。</h3>
+        <p class="feat-p">「資料を見ながら話したい」「どんな感じのサイトにしようか一緒に考えてほしい」。そんなご要望があれば、貴社へ直接お伺いします。岡山市内であれば、ご連絡翌日にでもお伺いできます。</p>
+        <p class="feat-p">アイデアの段階でも、困り事が漠然としている段階でも、まずは顔を合わせてお話しましょう。</p>
+        <ul class="feat-list">
+          <li>岡山市内なら翌日訪問も可能</li>
+          <li>カフェ・貴社オフィスどちらでも</li>
+          <li>オンライン対応もOK</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 地元だから分かること -->
+    <div class="feat-block rev sa">
+      <div class="feat-photo">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1000&q=80" alt="岡山の経営者とのつながり"/>
+        <span class="feat-tag">LOCAL KNOW-HOW</span>
+      </div>
+      <div class="feat-body">
+        <span class="feat-num">02 — 地元だから分かること</span>
+        <h3 class="feat-h3">岡山のビジネスの空気を、<br>肌で知っています。</h3>
+        <p class="feat-p">商店街の賑わいも、ものづくり企業の誇りも、農業・食品産業の丁寧さも。岡山で育ったからこそ、この地域のビジネスが持つ個性と強みを深く理解しています。</p>
+        <p class="feat-p">東京の感覚や、どこにでも当てはまるテンプレートではなく、岡山のお客様一人ひとりのビジネスに合わせたWeb戦略をご提案します。</p>
+        <ul class="feat-list">
+          <li>岡山の商慣習・ビジネス文化を理解</li>
+          <li>地元企業の事例・ネットワークあり</li>
+          <li>長く続くお付き合いを大切に</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 対応情報 -->
+<section class="sec" style="background:var(--bg2);padding-top:80px;padding-bottom:80px">
+  <div class="sec-in">
+    <div class="sec-head sa" style="margin-bottom:40px">
+      <span class="sec-label">Access Info</span>
+      <h2 class="sec-h2">相談・打ち合わせについて</h2>
+    </div>
+    <div class="info-grid">
+      <div class="info-card sa">
+        <div class="info-icon">📍</div>
+        <div>
+          <h4 class="info-h4">対応エリア</h4>
+          <p class="info-p">岡山市内・岡山県全域に対応。県外のお客様もオンラインで全国どこからでもご相談いただけます。</p>
+        </div>
+      </div>
+      <div class="info-card sa sd1">
+        <div class="info-icon">🤝</div>
+        <div>
+          <h4 class="info-h4">打ち合わせ方法</h4>
+          <p class="info-p">貴社への訪問・カフェ・オフィス・オンラインなど、ご都合に合わせて柔軟に対応します。</p>
+        </div>
+      </div>
+      <div class="info-card sa sd2">
+        <div class="info-icon">⚡</div>
+        <div>
+          <h4 class="info-h4">レスポンス</h4>
+          <p class="info-p">お問い合わせから原則24時間以内にご連絡します。急ぎのご相談もお気軽にどうぞ。</p>
+        </div>
+      </div>
+      <div class="info-card sa sd3">
+        <div class="info-icon">💬</div>
+        <div>
+          <h4 class="info-h4">相談方法</h4>
+          <p class="info-p">対面・オンライン・電話・LINEなど、使いやすい方法で。「Webのことがよく分からない」という方も大歓迎です。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 代表メッセージ -->
+<section class="sec">
+  <div class="sec-in">
+    <div class="sec-head sa" style="margin-bottom:40px">
+      <span class="sec-label">Message</span>
+      <h2 class="sec-h2">代表より、岡山の経営者の皆さまへ</h2>
+    </div>
+    <div class="msg-wrap sa">
+      <div class="msg-img">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80" alt="新田 拓夢"/>
+      </div>
+      <div>
+        <p class="msg-label">Representative Message</p>
+        <h3 class="msg-name">
+          新田 拓夢
+          <small>代表取締役 — 株式会社TeeenS</small>
+        </h3>
+        <p class="msg-p">はじめまして。株式会社TeeenS代表の新田 拓夢と申します。私はまだ10代ですが、岡山のまちと、ここで真剣にビジネスに向き合う経営者の皆さまを、心から尊敬しています。</p>
+        <p class="msg-p" style="margin-top:14px">だからこそ、皆さまのWebを任せていただく仕事に、全力で取り組んでいます。年齢や規模にかかわらず、誠実に、丁寧に、スピーディーに。それが、TeeenSの約束です。</p>
+        <p class="msg-p" style="margin-top:14px">一度、お気軽に話しかけてみてください。岡山でお待ちしています。</p>
+        <p class="msg-sign">代表取締役　新田 拓夢</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <video class="cta-photo" autoplay muted loop playsinline>
+    <source src="assets/business-meeting.mp4" type="video/mp4">
+  </video>
+  <div class="cta-shade"></div>
+  <div class="cta-in">
+    <p class="cta-label">Free Consultation</p>
+    <h2 class="cta-h2">まずは一度、<br>話しましょう。</h2>
+    <p class="cta-p">相談は完全無料。岡山市内なら直接お伺いします。アイデア段階でも、困り事が漠然としていても、大歓迎です。</p>
+    <a href="contact.html" class="cta-btn">無料相談・お問い合わせ →</a>
+    <p class="cta-note">通常2営業日以内にご返信します</p>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="story.html">代表ストーリー</a></li>
+            <li><a href="okayama.html">岡山地元密着</a></li>
+            <li><a href="index.html#culture">会社概要</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Service</h4>
+          <ul>
+            <li><a href="service-corporate.html">ホームページ制作</a></li>
+            <li><a href="service-lp.html">LP制作</a></li>
+            <li><a href="service-system.html">社内Webアプリ・AI</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Works</h4>
+          <ul><li><a href="works.html">制作実績一覧</a></li></ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="contact.html">無料で相談する</a></li>
+            <li><a href="index.html#faq">よくある質問</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const btn=document.getElementById('h-burger');
+  const nav=document.getElementById('mob-nav');
+  if(!btn||!nav)return;
+  btn.addEventListener('click',()=>{
+    const o=nav.classList.toggle('open');
+    btn.classList.toggle('open',o);
+    document.body.style.overflow=o?'hidden':'';
+  });
+  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>{
+    a.addEventListener('click',()=>{
+      nav.classList.remove('open');btn.classList.remove('open');
+      document.body.style.overflow='';
+    });
+  });
+})();
+(function(){
+  const item=document.querySelector('.h-item:has(.svc-drop)');
+  if(!item)return;
+  const drop=item.querySelector('.svc-drop');
+  let t;
+  item.addEventListener('mouseenter',()=>{clearTimeout(t);drop.classList.add('open')});
+  item.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),120)});
+  drop.addEventListener('mouseenter',()=>clearTimeout(t));
+  drop.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),120)});
+})();
+(function(){
+  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.12});
+  document.querySelectorAll('.sa').forEach(el=>obs.observe(el));
+})();
+</script>
+</body>
+</html>
