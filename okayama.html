@@ -107,17 +107,34 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   align-self:flex-start;
 }
 .ok-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
-/* 右：写真パネル */
+/* 右：動画パネル */
 .ok-right{
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;background:#000;
 }
-.ok-right img{
-  width:100%;height:100%;object-fit:cover;object-position:center;
+/* YouTube iframe 背景動画 */
+.ok-yt-wrap{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
 }
-/* 左端シャドウ（継ぎ目を自然に） */
+.ok-yt-wrap iframe{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  /* 16:9 を全面カバー */
+  width:177.78vh;  /* 100vh * 16/9 */
+  height:56.25vw;  /* 100vw * 9/16 */
+  min-width:100%;min-height:100%;
+  border:none;
+}
+/* 左端グラデ（継ぎ目を自然に） */
 .ok-right::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:80px;
+  content:'';position:absolute;left:0;top:0;bottom:0;width:100px;
   background:linear-gradient(to right,#07070d 0%,transparent 100%);
+  z-index:2;pointer-events:none;
+}
+/* 薄いオーバーレイで明るすぎ防止 */
+.ok-right::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(0,0,0,.18);
   z-index:1;pointer-events:none;
 }
 
@@ -214,6 +231,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .ok-left{padding:56px 24px 48px}
   .ok-right{min-height:56vw}
   .ok-right::before{display:none}
+  .ok-yt-wrap iframe{width:177.78vw;height:100vw}
   .lead{padding:64px 24px 48px}
   .sec{padding:64px 24px}
   .feat-block{grid-template-columns:1fr}
@@ -235,7 +253,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 <div class="h-inner">
   <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
   <nav class="h-nav">
-    <div class="h-item"><a href="story.html">ストーリー</a></div>
     <div class="h-item">
       <a href="index.html#services">Service</a>
       <div class="svc-drop">
@@ -246,6 +263,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
     <div class="h-item"><a href="works.html">Works</a></div>
     <div class="h-item"><a href="okayama.html">岡山密着</a></div>
+    <div class="h-item"><a href="story.html">ストーリー</a></div>
     <a href="contact.html" class="h-cta">無料相談 →</a>
   </nav>
   <button class="h-burger" id="h-burger" aria-label="メニュー">
@@ -255,10 +273,10 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </header>
 
 <div class="mob-nav" id="mob-nav">
-  <a href="story.html" class="mob-link">ストーリー</a>
   <a href="index.html#services" class="mob-link">Service</a>
   <a href="works.html" class="mob-link">Works</a>
   <a href="okayama.html" class="mob-link">岡山密着</a>
+  <a href="story.html" class="mob-link">ストーリー</a>
   <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
 </div>
 
@@ -276,9 +294,16 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
     <a href="contact.html" class="ok-cta">無料相談してみる →</a>
   </div>
-  <!-- 右：写真パネル -->
+  <!-- 右：瀬戸内海 動画パネル -->
   <div class="ok-right">
-    <img src="https://images.unsplash.com/photo-1700055978308-68c7f0ba70be?w=1200&q=80" alt="倉敷美観地区 運河"/>
+    <div class="ok-yt-wrap">
+      <iframe
+        src="https://www.youtube.com/embed/uh4nu8qdKL4?autoplay=1&mute=1&loop=1&playlist=uh4nu8qdKL4&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=10"
+        allow="autoplay; encrypted-media"
+        allowfullscreen
+        title="瀬戸内海 空撮映像"
+      ></iframe>
+    </div>
   </div>
 </div>
 

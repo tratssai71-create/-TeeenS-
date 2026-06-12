@@ -51,44 +51,89 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 
-/* ヒーロー — グラデーションアート */
-.hero{
-  position:relative;width:100%;height:100vh;
-  min-height:560px;max-height:900px;overflow:hidden;
+/* ── エディトリアルヒーロー ── */
+.story-top{
+  min-height:100vh;
+  padding-top:80px;
   background:
-    radial-gradient(ellipse 70% 55% at 8% 65%, rgba(99,102,241,.28) 0%, transparent 60%),
-    radial-gradient(ellipse 55% 45% at 92% 12%, rgba(139,92,246,.22) 0%, transparent 55%),
-    radial-gradient(ellipse 45% 40% at 58% 92%, rgba(14,165,233,.14) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 55% at 5% 70%, rgba(99,102,241,.22) 0%, transparent 58%),
+    radial-gradient(ellipse 50% 45% at 95% 10%, rgba(139,92,246,.18) 0%, transparent 52%),
     #07070d;
+  display:flex;align-items:center;
+  position:relative;overflow:hidden;
 }
-/* ノイズテクスチャ */
-.hero::before{
+/* ノイズ */
+.story-top::before{
   content:'';position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  background-repeat:repeat;background-size:180px;
-  opacity:.055;pointer-events:none;z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px;opacity:.05;pointer-events:none;
 }
-/* 下グラデード */
-.hero::after{
-  content:'';position:absolute;left:0;right:0;bottom:0;height:45%;
-  background:linear-gradient(to top,rgba(7,7,13,.95) 0%,transparent 100%);
-  z-index:1;pointer-events:none;
+.story-top-in{
+  max-width:1280px;margin:0 auto;padding:72px 56px;
+  width:100%;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:0;
+  position:relative;z-index:1;
 }
-/* 背景に大きなデコ文字 */
-.hero-deco{
-  position:absolute;right:-1%;top:50%;transform:translateY(-52%);
-  font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(120px,19vw,260px);
-  letter-spacing:-0.06em;line-height:1;
+.story-top-left{
+  padding-right:72px;
+  border-right:1px solid rgba(255,255,255,.07);
+}
+.story-top-right{
+  padding-left:72px;
+}
+/* 章ラベル */
+.story-chap{
+  display:inline-flex;align-items:center;gap:14px;
+  font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.38);margin-bottom:40px;
+}
+.story-chap::before{content:'';width:32px;height:1px;background:rgba(255,255,255,.22)}
+/* でかい番号（背景装飾） */
+.story-bg-num{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:clamp(100px,16vw,190px);
+  letter-spacing:-0.08em;line-height:.85;
   color:transparent;
   -webkit-text-stroke:1px rgba(255,255,255,.055);
-  user-select:none;pointer-events:none;white-space:nowrap;z-index:1;
+  display:block;margin-bottom:-12px;
+  user-select:none;
 }
-.hero-inner{position:absolute;left:0;right:0;bottom:0;padding:0 56px 68px;max-width:1280px;margin:0 auto;z-index:2}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:22px}
-.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.35)}
-.hero-h1{font-size:clamp(42px,5.8vw,72px);font-weight:900;letter-spacing:-0.04em;line-height:1.06;color:#fff;margin-bottom:20px}
-.hero-h1 em{font-style:normal;font-size:.46em;font-weight:500;letter-spacing:.03em;color:rgba(255,255,255,.38);display:block;margin-top:16px}
-.hero-lead{font-size:clamp(14px,1.4vw,17px);font-weight:400;color:rgba(255,255,255,.62);line-height:1.9;max-width:520px}
+/* メイン見出し */
+.story-h1{
+  font-size:clamp(42px,5.6vw,74px);
+  font-weight:900;letter-spacing:-0.04em;line-height:1.04;
+  color:#fff;
+}
+.story-h1 span{
+  display:block;font-size:.42em;font-weight:500;
+  letter-spacing:.03em;color:rgba(255,255,255,.32);margin-top:18px;
+}
+/* 右カラム：引用 */
+.story-quote{
+  border-left:2px solid rgba(99,102,241,.55);
+  padding:20px 0 20px 28px;
+  margin-bottom:52px;
+}
+.story-quote p{
+  font-size:clamp(16px,1.8vw,21px);font-weight:700;
+  letter-spacing:-0.02em;line-height:1.6;
+  color:rgba(255,255,255,.82);
+}
+.story-quote cite{
+  display:block;font-size:12px;font-style:normal;
+  color:rgba(255,255,255,.32);margin-top:14px;letter-spacing:.06em;
+}
+/* スタッツ */
+.story-stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.07);padding-top:36px}
+.story-stat{flex:1;padding-right:24px}
+.story-stat+.story-stat{border-left:1px solid rgba(255,255,255,.07);padding-left:24px;padding-right:0}
+.story-stat-n{
+  font-family:'Inter',sans-serif;font-weight:900;
+  font-size:clamp(26px,3vw,38px);letter-spacing:-0.04em;
+  color:#fff;display:block;margin-bottom:5px;
+}
+.story-stat-l{font-size:11.5px;color:rgba(255,255,255,.36);font-weight:500;letter-spacing:.04em}
 
 /* リード */
 .lead{padding:104px 56px 72px;max-width:900px;margin:0 auto;text-align:center}
@@ -198,7 +243,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 <div class="h-inner">
   <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
   <nav class="h-nav">
-    <div class="h-item"><a href="story.html">ストーリー</a></div>
     <div class="h-item">
       <a href="index.html#services">Service</a>
       <div class="svc-drop">
@@ -209,6 +253,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
     <div class="h-item"><a href="works.html">Works</a></div>
     <div class="h-item"><a href="okayama.html">岡山密着</a></div>
+    <div class="h-item"><a href="story.html">ストーリー</a></div>
     <a href="contact.html" class="h-cta">無料相談 →</a>
   </nav>
   <button class="h-burger" id="h-burger" aria-label="メニュー">
@@ -218,23 +263,49 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </header>
 
 <div class="mob-nav" id="mob-nav">
-  <a href="story.html" class="mob-link">ストーリー</a>
   <a href="index.html#services" class="mob-link">Service</a>
   <a href="works.html" class="mob-link">Works</a>
   <a href="okayama.html" class="mob-link">岡山密着</a>
+  <a href="story.html" class="mob-link">ストーリー</a>
   <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
 </div>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-deco" aria-hidden="true">FOUNDER</div>
-  <div class="hero-inner">
-    <p class="hero-eyebrow">Founder's Story</p>
-    <h1 class="hero-h1">
-      10代だから、<br>本気になれる。
-      <em>代表 新田 拓夢 — TeeenS</em>
-    </h1>
-    <p class="hero-lead">岡山の社長さんたちのビジネスを、Webの力で本気で前進させたい。その一心で、私は10代で会社を立ち上げました。</p>
+<!-- エディトリアルヒーロー -->
+<div class="story-top">
+  <div class="story-top-in">
+
+    <!-- 左：見出し -->
+    <div class="story-top-left">
+      <p class="story-chap">Founder's Story</p>
+      <span class="story-bg-num" aria-hidden="true">01</span>
+      <h1 class="story-h1">
+        10代だから、<br>本気になれる。
+        <span>代表 新田 拓夢 — 株式会社TeeenS</span>
+      </h1>
+    </div>
+
+    <!-- 右：引用＋スタッツ -->
+    <div class="story-top-right">
+      <blockquote class="story-quote">
+        <p>「良いものをつくる人が、<br>正しく評価される世界をつくりたい。」</p>
+        <cite>— 新田 拓夢 / 代表取締役</cite>
+      </blockquote>
+      <div class="story-stats">
+        <div class="story-stat">
+          <span class="story-stat-n">10代</span>
+          <span class="story-stat-l">起業年齢</span>
+        </div>
+        <div class="story-stat">
+          <span class="story-stat-n">岡山</span>
+          <span class="story-stat-l">拠点エリア</span>
+        </div>
+        <div class="story-stat">
+          <span class="story-stat-n">無料</span>
+          <span class="story-stat-l">初回相談</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
