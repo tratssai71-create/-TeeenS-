@@ -56,15 +56,19 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   overflow:hidden;
   display:flex;align-items:flex-end;
   padding-top:80px;
-  background:
-    url('https://images.unsplash.com/photo-1755199233318-d10434fac092?w=1800&q=85')
-    center 55% / cover no-repeat;
+  background:#bae6fd; /* 動画ロード前フォールバック */
 }
-/* 明るめオーバーレイ：下だけ暗くしてテキスト読みやすく */
+/* 背景動画 */
+.ok-vid{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  z-index:0;
+}
+/* 下部だけ暗くしてテキスト読みやすく、上は明るいまま */
 .ok-hero::before{
   content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:
-    linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.15) 40%, rgba(0,0,0,0) 75%);
+  background:linear-gradient(to top,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 38%,rgba(0,0,0,0) 65%);
 }
 /* テキストエリア */
 .ok-left{
@@ -271,6 +275,9 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 
 <!-- HERO -->
 <div class="ok-hero">
+  <video class="ok-vid" autoplay muted loop playsinline>
+    <source src="assets/okayama-hero.mp4" type="video/mp4">
+  </video>
   <div class="ok-left">
     <p class="ok-eyebrow">Local Okayama Partner</p>
     <h1 class="ok-h1">岡山の社長さんへ、<br>頼れる隣のWeb担当、います。</h1>
