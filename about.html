@@ -111,12 +111,23 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .ab-about-h2{
   font-size:clamp(28px,3.5vw,50px);
   font-weight:900;letter-spacing:-0.04em;line-height:1.2;
-  color:var(--ink);margin-bottom:0;
+  color:var(--ink);margin-bottom:32px;
   font-family:'Noto Sans JP',sans-serif;
 }
-.ab-about-right{}
 .ab-about-p{font-size:15px;color:var(--ink2);line-height:2.1;margin-bottom:20px}
 .ab-about-p:last-child{margin-bottom:0}
+.ab-about-img{border-radius:16px;overflow:hidden;aspect-ratio:4/3;align-self:center}
+.ab-about-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.ab-about-img:hover img{transform:scale(1.03)}
+
+/* ══════════════════════════════════════
+   2b. PHOTO STRIP — 3枚横並び
+══════════════════════════════════════ */
+.ab-strip{overflow:hidden;border-top:1px solid var(--bd)}
+.ab-strip-grid{display:grid;grid-template-columns:repeat(3,1fr);height:360px}
+.ab-strip-item{overflow:hidden;position:relative}
+.ab-strip-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.ab-strip-item:hover img{transform:scale(1.05)}
 
 /* ══════════════════════════════════════
    3. MISSION — 全幅ダーク・大活字
@@ -262,6 +273,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .h-item>a{padding:8px 10px;font-size:13px}
   .ab-about{padding:96px 40px}
   .ab-about-in{grid-template-columns:1fr;gap:48px}
+  .ab-strip-grid{height:260px}
   .ab-mission{padding:96px 40px}
   .ab-promises{padding:96px 40px}
   .ab-ceo-in{grid-template-columns:340px 1fr}
@@ -278,6 +290,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .ab-hero-inner{padding:100px 22px 60px}
   .ab-hero-h1{white-space:normal}
   .ab-about{padding:72px 22px}
+  .ab-strip-grid{grid-template-columns:1fr;height:auto}
+  .ab-strip-item{height:240px}
   .ab-mission{padding:72px 22px}
   .ab-mission-quote{font-size:clamp(20px,5vw,28px);padding-left:20px}
   .ab-mission-body{padding-left:20px}
@@ -353,11 +367,28 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     <div class="ab-about-left sa">
       <p class="ab-about-eyebrow">ABOUT US</p>
       <h2 class="ab-about-h2">「作って終わり」を、<br>業界の常識から消す。</h2>
-    </div>
-    <div class="ab-about-right sa sd1">
       <p class="ab-about-p">「初期費用が高すぎた」「更新を頼んだら時間も費用もかかった」「結局、誰も見ていないページになっている」——多くの企業が同じ不満を抱えています。</p>
       <p class="ab-about-p">TeeenSはこの構造そのものを変えたいと考えています。高額な制作費・遅い対応・硬直した運用体制は、技術の使い方と向き合い方次第で解決できます。</p>
       <p class="ab-about-p">すべての企業がデジタルの力を正しく活用できる社会へ。TeeenSは岡山からその実現に向けて動き続けます。</p>
+    </div>
+    <div class="ab-about-img sa sd1">
+      <img src="assets/ab-workspace1.jpg" alt="Web制作の現場"/>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ 2b. PHOTO STRIP ══ -->
+<section class="ab-strip">
+  <div class="ab-strip-grid">
+    <div class="ab-strip-item sa">
+      <img src="assets/ab-macbook.jpg" alt="開発環境"/>
+    </div>
+    <div class="ab-strip-item sa sd1">
+      <img src="assets/ab-consult.jpg" alt="打ち合わせ"/>
+    </div>
+    <div class="ab-strip-item sa sd2">
+      <img src="assets/ab-team.jpg" alt="チームで作業"/>
     </div>
   </div>
 </section>
