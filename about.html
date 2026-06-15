@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>TeeenSとは | 株式会社TeeenS</title>
-<meta name="description" content="岡山を拠点に、地元の企業を本気で応援するWeb会社です。「作って終わり」じゃない、成果を出し続けるWebをつくります。"/>
+<meta name="description" content="18歳の代表・新田拓夢が岡山市を拠点に立ち上げた次世代Web制作スタジオ。最新AIとSTUDIOで生きたWebサイトを提供します。"/>
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -14,18 +14,18 @@
 :root{
   --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
   --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
-  --bg2:#f5f5f7;--bg3:#fafafa;--ac:#09090b;
+  --bg2:#f5f5f7;--bg3:#fafafa;
 }
 html{scroll-behavior:smooth}
 body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
 img{display:block;max-width:100%}
 a{text-decoration:none;color:inherit}
 
-/* ═══════ ヘッダー ═══════ */
-header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px;background:transparent}
+/* ═══ ヘッダー ═══ */
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px}
 .h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:16px;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
-.h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
-.h-logo img{height:36px;display:block}
+.h-logo{display:flex;align-items:center;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px}
 .h-nav{display:flex;align-items:center}
 .h-item{position:relative}
 .svc-drop{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);width:220px;background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(9,9,11,.12),0 2px 8px rgba(9,9,11,.06);border:1px solid rgba(9,9,11,.07);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.22,1,.36,1);z-index:900;padding:6px 0}
@@ -34,153 +34,215 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .svc-drop-link{display:block;padding:11px 20px;font-size:13.5px;font-weight:500;color:var(--ink);border-bottom:1px solid rgba(9,9,11,.05);transition:background .15s,padding-left .2s}
 .svc-drop-link:last-child{border-bottom:none}
 .svc-drop-link:hover{background:var(--bg2);padding-left:26px}
-.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
-.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;text-decoration:none;display:inline-flex;align-items:center}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:8px}
+.h-item>a:hover{color:var(--ink2)}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:10px !important;transition:background .2s !important;display:inline-flex;align-items:center}
 .h-cta:hover{background:#333 !important}
 .h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
-.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;transform-origin:center}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s,opacity .25s;transform-origin:center}
 .h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
 .h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 .mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
 .mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
-.mob-link{font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em;transition:color .18s}
+.mob-link{font-size:clamp(22px,5vw,28px);font-weight:700;color:var(--ink);padding:14px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em}
 .mob-link:first-child{border-top:1px solid var(--bd)}
-.mob-cta-btn{margin-top:36px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;text-decoration:none;letter-spacing:.06em;border-radius:4px;transition:background .2s}
+.mob-cta-btn{margin-top:32px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;border-radius:4px}
 
-/* ═══════ HERO ═══════ */
-.hero{position:relative;width:100%;height:100vh;min-height:560px;max-height:860px;overflow:hidden}
-.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%}
-.hero-shade{position:absolute;inset:0;background:
-  linear-gradient(to bottom,rgba(0,0,0,.4) 0%,rgba(0,0,0,.08) 30%,rgba(0,0,0,.22) 60%,rgba(0,0,0,.82) 100%)}
-.hero-inner{
-  position:absolute;left:0;right:0;bottom:0;
-  padding:0 56px 64px;
-  max-width:1280px;margin:0 auto;
+/* ═══ アニメ ═══ */
+.sa{opacity:0;transform:translateY(22px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.sa.in{opacity:1;transform:none}
+.sd1{transition-delay:.12s}.sd2{transition-delay:.24s}.sd3{transition-delay:.36s}
+
+/* ══════════════════════════════════════
+   1. HERO — 中央寄せ・フルスクリーン動画
+══════════════════════════════════════ */
+.ab-hero{
+  position:relative;width:100%;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;overflow:hidden;
 }
-.hero-eyebrow{
-  display:inline-flex;align-items:center;gap:12px;
-  font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
-  color:rgba(255,255,255,.72);margin-bottom:22px;
+.ab-hero-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.ab-hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to bottom,rgba(5,7,15,.55) 0%,rgba(5,7,15,.72) 100%);
 }
-.hero-eyebrow::before{content:'';width:28px;height:1px;background:rgba(255,255,255,.5)}
-.hero-h1{
-  font-size:clamp(34px,5vw,62px);
-  font-weight:800;letter-spacing:-0.02em;line-height:1.14;
-  color:#fff;margin-bottom:20px;
+.ab-hero-inner{position:relative;z-index:2;padding:120px 32px 80px;max-width:820px;margin:0 auto}
+.ab-hero-tag{
+  display:inline-block;
+  font-size:11px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);
+  margin-bottom:28px;
 }
-.hero-h1 small{display:block;font-size:.42em;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.55);margin-top:14px}
-.hero-lead{
-  font-size:clamp(14px,1.5vw,17px);font-weight:400;
-  color:rgba(255,255,255,.78);line-height:1.9;max-width:540px;margin-bottom:34px;
+.ab-hero-h1{
+  font-size:clamp(32px,5vw,68px);
+  font-weight:900;letter-spacing:-0.04em;line-height:1.1;
+  color:#fff;margin-bottom:28px;
+  font-family:'Noto Sans JP',sans-serif;
 }
-.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-btn{
+.ab-hero-p{
+  font-size:clamp(14px,1.5vw,17px);
+  color:rgba(255,255,255,.68);
+  line-height:1.95;max-width:600px;margin:0 auto 44px;
+}
+.ab-hero-btn{
   display:inline-flex;align-items:center;gap:10px;
   background:#fff;color:var(--ink);
-  font-size:14px;font-weight:800;letter-spacing:.03em;
-  padding:15px 32px;border-radius:6px;
-  transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s;
+  font-size:14px;font-weight:800;letter-spacing:.05em;
+  padding:16px 36px;border-radius:8px;
+  transition:transform .25s,box-shadow .25s;
 }
-.hero-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
-.hero-btn-ghost{
-  display:inline-flex;align-items:center;gap:8px;
-  color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;
-  padding:15px 24px;border:1px solid rgba(255,255,255,.28);border-radius:6px;
-  transition:background .2s,border-color .2s;
+.ab-hero-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.ab-hero-scroll{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:9px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.3);
 }
-.hero-btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5)}
+.ab-hero-scroll::after{content:'';width:1px;height:36px;background:rgba(255,255,255,.2)}
 
-/* ═══════ リード文 ═══════ */
-.lead{padding:104px 56px 64px;max-width:980px;margin:0 auto;text-align:center}
-.lead-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
-.lead-h2{font-size:clamp(24px,3.2vw,40px);font-weight:900;letter-spacing:-0.03em;line-height:1.5;margin-bottom:24px}
-.lead-h2 mark{background:linear-gradient(transparent 62%,rgba(9,9,11,.1) 62%);padding:0 2px}
-.lead-p{font-size:15px;color:var(--ink2);line-height:2;font-weight:400;max-width:640px;margin:0 auto}
+/* ══════════════════════════════════════
+   2. ABOUT US — 2カラム・エディトリアル
+══════════════════════════════════════ */
+.ab-about{padding:128px 64px;background:#fff}
+.ab-about-in{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.ab-about-left{}
+.ab-about-eyebrow{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
+.ab-about-h2{
+  font-size:clamp(28px,3.5vw,50px);
+  font-weight:900;letter-spacing:-0.04em;line-height:1.2;
+  color:var(--ink);margin-bottom:0;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.ab-about-right{}
+.ab-about-p{font-size:15px;color:var(--ink2);line-height:2.1;margin-bottom:20px}
+.ab-about-p:last-child{margin-bottom:0}
 
-/* ═══════ セクション共通 ═══════ */
-.sec{padding:96px 56px}
-.sec-in{max-width:1180px;margin:0 auto}
-.sec-head{margin-bottom:56px}
-.sec-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
-.sec-label::before{content:'';width:18px;height:1.5px;background:var(--ink3)}
-.sec-h2{font-size:clamp(28px,3.6vw,46px);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px}
-.sec-desc{font-size:15px;color:var(--ink2);line-height:1.85;font-weight:400;max-width:520px}
+/* ══════════════════════════════════════
+   3. MISSION — 全幅ダーク・大活字
+══════════════════════════════════════ */
+.ab-mission{background:var(--ink);padding:128px 64px}
+.ab-mission-in{max-width:960px;margin:0 auto}
+.ab-mission-eyebrow{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:36px}
+.ab-mission-quote{
+  font-size:clamp(24px,3.2vw,46px);
+  font-weight:900;letter-spacing:-0.04em;line-height:1.45;
+  color:#fff;margin-bottom:48px;
+  font-family:'Noto Sans JP',sans-serif;
+  border-left:3px solid rgba(255,255,255,.18);
+  padding-left:32px;
+}
+.ab-mission-body{display:flex;flex-direction:column;gap:18px;max-width:680px;padding-left:32px;border-left:1px solid rgba(255,255,255,.08)}
+.ab-mission-body p{font-size:15px;color:rgba(255,255,255,.58);line-height:2.05}
 
-/* ═══════ 特徴カード ═══════ */
-.reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-.reason-card{border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:#fff;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
-.reason-card:hover{transform:translateY(-6px);box-shadow:0 20px 56px rgba(0,0,0,.09)}
-.reason-img{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg2)}
-.reason-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.22,1,.36,1)}
-.reason-card:hover .reason-img img{transform:scale(1.06)}
-.reason-badge{position:absolute;top:16px;left:16px;width:34px;height:34px;background:var(--ink);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.04em}
-.reason-tag{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:30px}
-.reason-body{padding:30px 28px 34px}
-.reason-h3{font-size:clamp(16px,1.7vw,20px);font-weight:900;letter-spacing:-0.025em;line-height:1.35;margin-bottom:12px}
-.reason-p{font-size:13.5px;color:var(--ink2);line-height:1.95;font-weight:400;margin-bottom:18px}
-.reason-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-.reason-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.6;font-weight:500}
-.reason-list li::before{content:'';width:16px;height:16px;background:var(--ink);border-radius:50%;flex-shrink:0;margin-top:2px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%23fff' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:10px;background-position:center;background-repeat:no-repeat}
+/* ══════════════════════════════════════
+   4. 3 PROMISES — 横ストリップ（番号大）
+══════════════════════════════════════ */
+.ab-promises{background:var(--bg3);padding:128px 64px;border-top:1px solid var(--bd)}
+.ab-promises-in{max-width:1060px;margin:0 auto}
+.ab-promises-hd{margin-bottom:72px}
+.ab-promises-eyebrow{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px}
+.ab-promises-h2{
+  font-size:clamp(26px,3.2vw,44px);
+  font-weight:900;letter-spacing:-0.04em;
+  color:var(--ink);font-family:'Noto Sans JP',sans-serif;
+}
+.ab-promise-list{list-style:none;display:flex;flex-direction:column}
+.ab-promise-item{
+  display:grid;grid-template-columns:96px 1fr;
+  padding:52px 0;border-top:1px solid var(--bd);
+  align-items:start;
+}
+.ab-promise-item:last-child{border-bottom:1px solid var(--bd)}
+.ab-promise-num{
+  font-size:clamp(52px,5.5vw,80px);font-weight:900;
+  color:rgba(9,9,11,.06);letter-spacing:-0.05em;line-height:1;
+  font-family:'Inter',sans-serif;
+}
+.ab-promise-body{padding-left:28px}
+.ab-promise-tag{
+  display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;background:var(--ink);padding:5px 12px;border-radius:4px;margin-bottom:14px;
+}
+.ab-promise-h3{
+  font-size:clamp(18px,2vw,26px);font-weight:900;letter-spacing:-0.03em;
+  color:var(--ink);margin-bottom:14px;font-family:'Noto Sans JP',sans-serif;
+}
+.ab-promise-p{font-size:14.5px;color:var(--ink2);line-height:2.05;max-width:580px}
 
-/* ═══════ TeeenSらしさ（inc-grid流用） ═══════ */
-.inc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.inc-card{background:#fff;padding:38px 34px;border:1px solid var(--bd);border-radius:12px;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
-.inc-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.07)}
-.inc-ic{width:46px;height:46px;border-radius:11px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
-.inc-ic svg{width:22px;height:22px;stroke:#fff;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.inc-h4{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:11px}
-.inc-p{font-size:13.5px;color:var(--ink2);line-height:1.85;font-weight:400}
+/* ══════════════════════════════════════
+   5. MESSAGE FROM CEO — 写真大・横並び
+══════════════════════════════════════ */
+.ab-ceo{background:var(--ink);padding:0}
+.ab-ceo-in{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:420px 1fr;
+  min-height:640px;
+}
+/* 左：写真エリア */
+.ab-ceo-photo{
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,.04);
+}
+.ab-ceo-photo img{
+  width:100%;height:100%;object-fit:cover;object-position:center top;
+  display:block;
+}
+/* 右：テキスト */
+.ab-ceo-text{padding:80px 64px;display:flex;flex-direction:column;justify-content:center}
+.ab-ceo-eyebrow{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:32px}
+.ab-ceo-quote{
+  font-size:clamp(18px,2vw,26px);font-weight:900;letter-spacing:-0.03em;line-height:1.6;
+  color:#fff;margin-bottom:36px;padding-left:20px;border-left:2px solid rgba(255,255,255,.2);
+  font-family:'Noto Sans JP',sans-serif;
+}
+.ab-ceo-body{display:flex;flex-direction:column;gap:16px;margin-bottom:36px}
+.ab-ceo-body p{font-size:14.5px;color:rgba(255,255,255,.58);line-height:2.05;max-width:520px}
+.ab-ceo-sig{
+  font-size:13px;font-weight:700;color:rgba(255,255,255,.32);
+  padding-top:24px;border-top:1px solid rgba(255,255,255,.08);
+}
+.ab-ceo-meta{display:flex;align-items:center;gap:14px;margin-top:20px}
+.ab-ceo-badge{
+  font-size:11px;font-weight:600;
+  padding:5px 12px;border-radius:99px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.5);
+}
 
-/* ═══════ 相談の流れ ═══════ */
-.flow-wrap{display:flex;flex-direction:column;gap:0;border:1px solid var(--bd);border-radius:14px;overflow:hidden}
-.flow-row{display:grid;grid-template-columns:90px 1fr auto;align-items:center;gap:0;background:#fff;padding:30px 44px;border-bottom:1px solid var(--bd);transition:background .25s}
-.flow-row:last-child{border-bottom:none}
-.flow-row:hover{background:var(--bg3)}
-.flow-n{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--ink3)}
-.flow-title{font-size:17px;font-weight:800;letter-spacing:-0.01em;margin-bottom:4px}
-.flow-sub{font-size:13.5px;color:var(--ink2);font-weight:400}
-.flow-days{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ink3);border:1px solid var(--bd2);padding:5px 14px;border-radius:30px;white-space:nowrap}
+/* ══════════════════════════════════════
+   6. 会社概要
+══════════════════════════════════════ */
+.ab-overview{background:#fff;padding:112px 64px;border-top:1px solid var(--bd)}
+.ab-overview-in{max-width:760px;margin:0 auto}
+.ab-overview-eyebrow{font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3);margin-bottom:16px}
+.ab-overview-h2{font-size:clamp(22px,2.6vw,34px);font-weight:900;letter-spacing:-0.04em;color:var(--ink);margin-bottom:48px;font-family:'Noto Sans JP',sans-serif}
+.ab-table{width:100%;border-collapse:collapse}
+.ab-table tr{border-bottom:1px solid var(--bd)}
+.ab-table tr:first-child{border-top:1px solid var(--bd)}
+.ab-table th{width:150px;padding:22px 0;font-size:12.5px;font-weight:700;color:var(--ink3);letter-spacing:.04em;text-align:left;vertical-align:top}
+.ab-table td{padding:22px 0 22px 24px;font-size:14.5px;color:var(--ink);line-height:1.8}
 
-/* ═══════ 代表メッセージ（ダーク） ═══════ */
-.founder-sec{background:var(--ink);padding:96px 56px}
-.founder-in{max-width:1100px;margin:0 auto}
-.founder-label{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:56px;display:flex;align-items:center;gap:12px}
-.founder-label::before{content:'';width:18px;height:1px;background:rgba(255,255,255,.2)}
-.founder-grid{display:grid;grid-template-columns:1fr 400px;gap:72px;align-items:start}
-.founder-catch{font-size:clamp(20px,2.4vw,30px);font-weight:900;letter-spacing:-0.03em;line-height:1.55;color:#fff;margin-bottom:36px;padding-left:22px;border-left:2px solid rgba(255,220,80,.4);font-family:'Noto Sans JP',sans-serif}
-.founder-story{display:flex;flex-direction:column;gap:18px;margin-bottom:36px}
-.founder-story p{font-size:15px;color:rgba(255,255,255,.65);line-height:2.05;max-width:580px}
-.founder-sig{font-size:14px;font-weight:700;color:rgba(255,255,255,.35);padding-top:26px;border-top:1px solid rgba(255,255,255,.08)}
-.founder-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:36px 28px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
-.founder-avatar{width:320px;height:320px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,.18);flex-shrink:0}
-.founder-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top}
-.founder-name{font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.02em}
-.founder-role{font-size:11.5px;color:rgba(255,255,255,.3);letter-spacing:.03em}
-.founder-tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
-.founder-tags span{font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);color:rgba(255,255,255,.5)}
+/* ══════════════════════════════════════
+   7. CTA
+══════════════════════════════════════ */
+.ab-cta{
+  background:var(--ink);padding:120px 64px;text-align:center;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.ab-cta-in{max-width:580px;margin:0 auto}
+.ab-cta-h2{font-size:clamp(28px,3.8vw,52px);font-weight:900;letter-spacing:-0.04em;color:#fff;line-height:1.15;margin-bottom:20px;font-family:'Noto Sans JP',sans-serif}
+.ab-cta-p{font-size:15px;color:rgba(255,255,255,.55);line-height:1.95;margin-bottom:44px}
+.ab-cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:#fff;color:var(--ink);
+  font-size:14px;font-weight:800;letter-spacing:.05em;
+  padding:18px 44px;border-radius:8px;
+  transition:transform .25s,box-shadow .25s;
+}
+.ab-cta-btn:hover{transform:translateY(-2px);box-shadow:0 18px 48px rgba(0,0,0,.4)}
+.ab-cta-note{font-size:12px;color:rgba(255,255,255,.25);margin-top:20px}
 
-/* ═══════ 会社概要テーブル ═══════ */
-.overview-sec{background:var(--bg3);border-top:1px solid var(--bd)}
-.overview-table{width:100%;border-collapse:collapse}
-.overview-table tr{border-bottom:1px solid var(--bd)}
-.overview-table tr:first-child{border-top:1px solid var(--bd)}
-.overview-table th{width:160px;padding:22px 0;font-size:13px;font-weight:700;color:var(--ink3);letter-spacing:.04em;text-align:left;vertical-align:top}
-.overview-table td{padding:22px 0 22px 24px;font-size:14.5px;color:var(--ink);line-height:1.8}
-
-/* ═══════ CTA ═══════ */
-#cta{position:relative;overflow:hidden;padding:60px 56px;text-align:center}
-.cta-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
-.cta-shade{position:absolute;inset:0;background:rgba(255,255,255,.52);backdrop-filter:blur(1px)}
-.cta-in{position:relative;z-index:2;max-width:640px;margin:0 auto;background:rgba(255,255,255,.82);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:20px;padding:56px 52px;box-shadow:0 24px 80px rgba(9,9,11,.1)}
-.cta-label{font-size:10.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:20px}
-.cta-h2{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-0.04em;line-height:1.15;color:var(--ink);margin-bottom:16px}
-.cta-p{font-size:14.5px;color:var(--ink2);font-weight:400;margin-bottom:34px;line-height:1.95}
-.cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em;padding:16px 38px;border-radius:8px;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
-.cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(9,9,11,.25)}
-.cta-note{font-size:12px;color:var(--ink3);margin-top:16px}
-
-/* ═══════ フッター ═══════ */
+/* ═══ フッター ═══ */
 .ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
 .ft-in{max-width:1180px;margin:0 auto}
 .ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
@@ -193,20 +255,18 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .ft-col ul li a:hover{color:#fff}
 .ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
 
-/* ═══════ スクロールアニメ ═══════ */
-.sa{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.sa.in{opacity:1;transform:none}
-.sd1{transition-delay:.1s}.sd2{transition-delay:.2s}.sd3{transition-delay:.3s}
-
-/* ═══════ レスポンシブ ═══════ */
+/* ═══ レスポンシブ ═══ */
 @media(max-width:1024px){
   header{padding:12px 24px}
   .h-item>a{padding:8px 10px;font-size:13px}
-  .h-cta{padding:9px 18px !important;font-size:13px !important}
-  .reason-grid{grid-template-columns:1fr 1fr}
-  .inc-grid{grid-template-columns:repeat(2,1fr)}
-  .founder-grid{grid-template-columns:1fr}
-  .founder-card{flex-direction:row;flex-wrap:wrap;text-align:left;gap:14px}
+  .ab-about{padding:96px 40px}
+  .ab-about-in{grid-template-columns:1fr;gap:48px}
+  .ab-mission{padding:96px 40px}
+  .ab-promises{padding:96px 40px}
+  .ab-ceo-in{grid-template-columns:340px 1fr}
+  .ab-ceo-text{padding:60px 44px}
+  .ab-overview{padding:96px 40px}
+  .ab-cta{padding:96px 40px}
 }
 @media(max-width:767px){
   header{padding:10px 16px}
@@ -214,20 +274,23 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .h-item,.h-cta{display:none !important}
   .h-logo img{height:28px}
   .h-burger{display:flex}
-  .hero{height:88vh;min-height:480px}
-  .hero-inner{padding:0 22px 44px}
-  .lead{padding:72px 22px 48px}
-  .sec{padding:68px 22px}
-  .reason-grid{grid-template-columns:1fr}
-  .inc-grid{grid-template-columns:1fr}
-  .flow-row{grid-template-columns:64px 1fr;padding:24px 22px}
-  .flow-days{display:none}
-  .founder-sec{padding:68px 22px}
-  .founder-grid{grid-template-columns:1fr;gap:40px}
-  .overview-table th{width:100px;font-size:12px}
-  .overview-table td{padding-left:14px;font-size:13.5px}
-  #cta{padding:40px 22px}
-  .cta-in{padding:40px 28px}
+  .ab-hero-inner{padding:100px 22px 60px}
+  .ab-about{padding:72px 22px}
+  .ab-mission{padding:72px 22px}
+  .ab-mission-quote{font-size:clamp(20px,5vw,28px);padding-left:20px}
+  .ab-mission-body{padding-left:20px}
+  .ab-promises{padding:72px 22px}
+  .ab-promises-hd{margin-bottom:48px}
+  .ab-promise-item{grid-template-columns:60px 1fr;padding:36px 0}
+  .ab-promise-num{font-size:38px}
+  .ab-promise-body{padding-left:16px}
+  .ab-ceo-in{grid-template-columns:1fr}
+  .ab-ceo-photo{height:380px}
+  .ab-ceo-text{padding:48px 22px}
+  .ab-overview{padding:72px 22px}
+  .ab-table th{width:100px;font-size:12px}
+  .ab-table td{padding-left:14px;font-size:13.5px}
+  .ab-cta{padding:72px 22px}
   .ft{padding:52px 22px 22px}
   .ft-top{flex-direction:column}
   .ft-links{flex-wrap:wrap;gap:32px}
@@ -236,7 +299,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </head>
 <body>
 
-<!-- ヘッダー -->
 <header>
 <div class="h-inner">
   <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
@@ -253,7 +315,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     <div class="h-item"><a href="about.html">TeeenSとは</a></div>
     <a href="contact.html" class="h-cta">無料相談 →</a>
   </nav>
-  <button class="h-burger" id="h-burger" aria-label="メニューを開く">
+  <button class="h-burger" id="h-burger" aria-label="メニュー">
     <span></span><span></span><span></span>
   </button>
 </div>
@@ -267,310 +329,155 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </div>
 
 
-<!-- ═══════ HERO ═══════ -->
-<section class="hero">
-  <video class="hero-photo" autoplay muted loop playsinline>
+<!-- ══ 1. HERO ══ -->
+<section class="ab-hero">
+  <video class="ab-hero-vid" autoplay muted loop playsinline>
     <source src="assets/moya-bg.mp4" type="video/mp4">
   </video>
-  <div class="hero-shade"></div>
-  <div class="hero-inner">
-    <span class="hero-eyebrow">ABOUT US</span>
-    <h1 class="hero-h1">
-      10代の熱量と最先端の技術で、<br>岡山のビジネスを加速させる。
-    </h1>
-    <p class="hero-lead">株式会社TeeenSは、代表・新田拓夢のもと、岡山市から次世代のWeb制作を発信するスタジオです。最新AIとSTUDIOの強みを活かし、納品後も常にお客様のビジネスに寄り添って進化し続ける「生きたWebサイト」を制作。単なる制作会社を超えて、貴社の頼れるWeb部門として共に歩みます。</p>
-    <div class="hero-actions">
-      <a href="contact.html" class="hero-btn">無料で相談する →</a>
-      <a href="#features" class="hero-btn-ghost">TeeenSについて知る ↓</a>
+  <div class="ab-hero-overlay"></div>
+  <div class="ab-hero-inner">
+    <p class="ab-hero-tag">About TeeenS</p>
+    <h1 class="ab-hero-h1">10代の熱量と最先端の技術で、<br>岡山のビジネスを加速させる。</h1>
+    <p class="ab-hero-p">株式会社TeeenSは、代表・新田拓夢のもと、岡山市から次世代のWeb制作を発信するスタジオです。最新AIとSTUDIOの強みを活かし、納品後も常にお客様のビジネスに寄り添って進化し続ける「生きたWebサイト」を制作。単なる制作会社を超えて、貴社の頼れるWeb部門として共に歩みます。</p>
+    <a href="contact.html" class="ab-hero-btn">無料相談 →</a>
+  </div>
+  <div class="ab-hero-scroll">SCROLL</div>
+</section>
+
+
+<!-- ══ 2. ABOUT US ══ -->
+<section class="ab-about">
+  <div class="ab-about-in">
+    <div class="ab-about-left sa">
+      <p class="ab-about-eyebrow">ABOUT US</p>
+      <h2 class="ab-about-h2">「作って終わり」を、<br>業界の常識から消す。</h2>
+    </div>
+    <div class="ab-about-right sa sd1">
+      <p class="ab-about-p">「初期費用が高すぎた」「更新を頼んだら時間も費用もかかった」「結局、誰も見ていないページになっている」——多くの企業が同じ不満を抱えています。</p>
+      <p class="ab-about-p">TeeenSはこの構造そのものを変えたいと考えています。高額な制作費・遅い対応・硬直した運用体制は、技術の使い方と向き合い方次第で解決できます。</p>
+      <p class="ab-about-p">すべての企業がデジタルの力を正しく活用できる社会へ。TeeenSは岡山からその実現に向けて動き続けます。</p>
     </div>
   </div>
 </section>
 
 
-<!-- ═══════ OUR MISSION ═══════ -->
-<div class="lead sa">
-  <p class="lead-label">OUR MISSION</p>
-  <h2 class="lead-h2">「作って終わり」を、<br><mark>業界の常識</mark>から消す。</h2>
-  <p class="lead-p">「初期費用が高すぎた」「更新を頼んだら時間も費用もかかった」「結局、誰も見ていないページになっている」——多くの企業が同じ不満を抱えています。<br><br>TeeenSはこの構造そのものを変えたいと考えています。高額な制作費・遅い対応・硬直した運用体制は、技術の使い方と向き合い方次第で解決できます。すべての企業がデジタルの力を正しく活用できる社会へ。TeeenSは岡山からその実現に向けて動き続けます。</p>
-</div>
-
-
-<!-- ═══════ 3つの特徴 ═══════ -->
-<section class="sec" id="features">
-  <div class="sec-in">
-    <div class="sec-head sa">
-      <p class="sec-label">3 PROMISES</p>
-      <h2 class="sec-h2">お客様への、3つの約束。</h2>
-      <p class="sec-desc">大げさな言葉ではなく、日々の仕事の中で積み上げてきた、TeeenSの等身大の強みです。</p>
-    </div>
-
-    <div class="reason-grid">
-
-      <div class="reason-card sa">
-        <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=900&q=80&auto=format&fit=crop" alt="圧倒的な機動力"/>
-          <span class="reason-badge">01</span>
-          <span class="reason-tag">SPEED</span>
-        </div>
-        <div class="reason-body">
-          <h3 class="reason-h3">圧倒的な機動力</h3>
-          <p class="reason-p">若さは、スピードです。TeeenSでは代表自らが窓口となり、お問い合わせには原則24時間以内に返信します。「急ぎで修正したい」そんな声にも即レスで対応。岡山市内であれば、翌日の訪問も可能です。</p>
-          <ul class="reason-list">
-            <li>お問い合わせは原則24時間以内に返信</li>
-            <li>岡山市内ならご連絡翌日に訪問可</li>
-            <li>「担当者が変わった」は起こりません</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="reason-card sa sd1">
-        <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=900&q=80&auto=format&fit=crop" alt="柔軟なプラン選択"/>
-          <span class="reason-badge">02</span>
-          <span class="reason-tag">PLAN</span>
-        </div>
-        <div class="reason-body">
-          <h3 class="reason-h3">柔軟なプラン選択</h3>
-          <p class="reason-p">Webへの投資は、会社のフェーズによって最適な形が変わります。初期費用0円で始められる月額制の「サブスクリプションプラン」と、サイトを自社資産として保有する「買い切りプラン」の2種類を用意。どちらが適切かも、状況をお伺いした上でご提案します。</p>
-          <ul class="reason-list">
-            <li>初期費用0円のサブスクプランあり</li>
-            <li>サイトを自社資産化する買い切りプランも</li>
-            <li>状況に合わせて最善の選択肢をご提案</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="reason-card sa sd2">
-        <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80&auto=format&fit=crop" alt="成果を生み出す伴走サポート"/>
-          <span class="reason-badge">03</span>
-          <span class="reason-tag">SUPPORT</span>
-        </div>
-        <div class="reason-body">
-          <h3 class="reason-h3">成果を生み出す伴走サポート</h3>
-          <p class="reason-p">公開はゴールではなく、スタートです。TeeenSは納品後もお客様の「専属Web部門」として機能し続けます。AIや最新ツールを活用したコンテンツ改善、アクセス解析に基づく提案など、変化するビジネスに合わせてWebをアップデートし続けます。</p>
-          <ul class="reason-list">
-            <li>更新・改善提案を継続的にサポート</li>
-            <li>最新AI・STUDIOで常にアップデート</li>
-            <li>社外の専属Web部門として機能します</li>
-          </ul>
-        </div>
-      </div>
-
+<!-- ══ 3. OUR MISSION ══ -->
+<section class="ab-mission">
+  <div class="ab-mission-in">
+    <p class="ab-mission-eyebrow sa">OUR MISSION</p>
+    <p class="ab-mission-quote sa">
+      良いものをつくっている人が、<br>正しく評価される場所をつくりたい。
+    </p>
+    <div class="ab-mission-body sa sd1">
+      <p>岡山には素晴らしい技術を持つ職人さん、地域に根ざして何十年も続く会社、真剣に仕事と向き合う経営者の方がたくさんいます。</p>
+      <p>そういった方々が、デジタルの発信が弱いというだけで本来届くべき人に届いていない。そのもったいなさを解消することが、TeeenSが存在する理由です。</p>
     </div>
   </div>
 </section>
 
 
-<!-- ═══════ TeeenSらしさ6つ ═══════ -->
-<section class="sec" style="background:var(--bg3);border-top:1px solid var(--bd)">
-  <div class="sec-in">
-    <div class="sec-head sa">
-      <p class="sec-label">What Makes Us Different</p>
-      <h2 class="sec-h2">TeeenSについて、<br>もう少し</h2>
+<!-- ══ 4. 3 PROMISES ══ -->
+<section class="ab-promises">
+  <div class="ab-promises-in">
+    <div class="ab-promises-hd sa">
+      <p class="ab-promises-eyebrow">3 PROMISES</p>
+      <h2 class="ab-promises-h2">お客様への、3つの約束。</h2>
     </div>
-    <div class="inc-grid">
+    <ol class="ab-promise-list">
 
-      <div class="inc-card sa">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 5v5l4 2"/></svg>
+      <li class="ab-promise-item sa">
+        <span class="ab-promise-num">01</span>
+        <div class="ab-promise-body">
+          <span class="ab-promise-tag">SPEED</span>
+          <h3 class="ab-promise-h3">圧倒的な機動力</h3>
+          <p class="ab-promise-p">若さは、スピードです。代表自らが窓口となり、お問い合わせには原則24時間以内に返信。岡山市内であれば翌日の訪問も可能です。「担当者が変わった」「返事が来ない」といったストレスとは無縁の、フットワークの軽さがTeeenSの最大の強みです。</p>
         </div>
-        <h4 class="inc-h4">即レス・即動き</h4>
-        <p class="inc-p">原則24時間以内に返信します。「ちょっと聞くだけ」でも大歓迎です。</p>
-      </div>
+      </li>
 
-      <div class="inc-card sa sd1">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <li class="ab-promise-item sa sd1">
+        <span class="ab-promise-num">02</span>
+        <div class="ab-promise-body">
+          <span class="ab-promise-tag">PLAN</span>
+          <h3 class="ab-promise-h3">柔軟なプラン選択</h3>
+          <p class="ab-promise-p">Webへの投資は、会社のフェーズによって最適な形が変わります。初期費用0円で始められる月額制「サブスクリプションプラン」と、サイトを自社資産として保有する「買い切りプラン」の2種類を用意。状況に合わせて最善の選択肢をご提案します。</p>
         </div>
-        <h4 class="inc-h4">代表が直接対応</h4>
-        <p class="inc-p">「担当者が変わりました」は起こりません。窓口から制作まで、一貫して代表が動きます。</p>
-      </div>
+      </li>
 
-      <div class="inc-card sa sd2">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <li class="ab-promise-item sa sd2">
+        <span class="ab-promise-num">03</span>
+        <div class="ab-promise-body">
+          <span class="ab-promise-tag">SUPPORT</span>
+          <h3 class="ab-promise-h3">成果を生み出す伴走サポート</h3>
+          <p class="ab-promise-p">公開はゴールではなく、スタートです。TeeenSは納品後もお客様の「専属Web部門」として機能し続けます。AIや最新ツールを活用した改善提案、アクセス解析、機能追加対応まで——変化するビジネスに合わせてWebをアップデートし続けます。</p>
         </div>
-        <h4 class="inc-h4">岡山に根を張っています</h4>
-        <p class="inc-p">生まれも育ちも岡山。地元の空気感を知った上で、岡山の会社にフィットするWebをつくります。</p>
-      </div>
+      </li>
 
-      <div class="inc-card sa">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        </div>
-        <h4 class="inc-h4">最新技術を使います</h4>
-        <p class="inc-p">ノーコード（STUDIO）、AI活用、スクラッチ開発——目的に合った技術で最善の形をつくります。</p>
-      </div>
-
-      <div class="inc-card sa sd1">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <h4 class="inc-h4">初期費用0円〜</h4>
-        <p class="inc-p">サブスクプランなら初期費用なしでスタートできます。まとまった予算がなくても大丈夫。</p>
-      </div>
-
-      <div class="inc-card sa sd2">
-        <div class="inc-ic">
-          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </div>
-        <h4 class="inc-h4">初回相談は無料</h4>
-        <p class="inc-p">「何をどう頼めばいいか分からない」という方でも全然OK。まず話してみてください。</p>
-      </div>
-
-    </div>
+    </ol>
   </div>
 </section>
 
 
-<!-- ═══════ はじめての流れ ═══════ -->
-<section class="sec" style="background:#fff;border-top:1px solid var(--bd)">
-  <div class="sec-in">
-    <div class="sec-head sa">
-      <p class="sec-label">How It Works</p>
-      <h2 class="sec-h2">はじめての方へ、<br>相談から始まる流れ</h2>
-      <p class="sec-desc">難しいことは何もありません。まず気軽に話しかけてください。</p>
+<!-- ══ 5. MESSAGE FROM CEO ══ -->
+<section class="ab-ceo">
+  <div class="ab-ceo-in">
+
+    <!-- 左：写真（大） -->
+    <div class="ab-ceo-photo sa">
+      <img src="assets/founder.png" alt="代表取締役 新田 拓夢"/>
     </div>
-    <div class="flow-wrap sa">
 
-      <div class="flow-row">
-        <div class="flow-n">STEP 01</div>
-        <div>
-          <div class="flow-title">無料相談</div>
-          <div class="flow-sub">「こんなことできますか？」から始めてください。何も決まってなくて大丈夫です。</div>
-        </div>
-        <div class="flow-days">まず話す</div>
+    <!-- 右：メッセージ -->
+    <div class="ab-ceo-text sa sd1">
+      <p class="ab-ceo-eyebrow">MESSAGE FROM CEO</p>
+      <p class="ab-ceo-quote">
+        岡山市内ならいつでも、<br>何度でも駆けつけます。
+      </p>
+      <div class="ab-ceo-body">
+        <p>はじめまして、TeeenS代表の新田拓夢です。18歳でこの会社を立ち上げました。</p>
+        <p>「若いから」と心配される方もいます。ただ正直に言えば、AI・ノーコード・最新のWeb技術——これらを誰よりも早く、誰よりも深く実務に活かせるのは、今この瞬間を生きている私たちの世代だと確信しています。経験年数ではなく、技術の最前線にいることが、TeeenSの強さです。</p>
+        <p>難しい言葉は使いません。岡山市内ならいつでも何度でも顔を出しに行きます。「何から始めればいいかわからない」という方こそ、まず一度、話しかけてみてください。</p>
       </div>
-
-      <div class="flow-row">
-        <div class="flow-n">STEP 02</div>
-        <div>
-          <div class="flow-title">ヒアリング・お見積り</div>
-          <div class="flow-sub">目的・ターゲット・予算感をじっくり確認。対面でもオンラインでも伺います。</div>
-        </div>
-        <div class="flow-days">Day 1〜3</div>
+      <p class="ab-ceo-sig">株式会社TeeenS　代表取締役　新田 拓夢</p>
+      <div class="ab-ceo-meta">
+        <span class="ab-ceo-badge">岡山出身</span>
+        <span class="ab-ceo-badge">18歳で起業</span>
+        <span class="ab-ceo-badge">初回相談無料</span>
       </div>
-
-      <div class="flow-row">
-        <div class="flow-n">STEP 03</div>
-        <div>
-          <div class="flow-title">制作スタート</div>
-          <div class="flow-sub">デザイン・コーディング・テスト。進捗はこまめに共有します。</div>
-        </div>
-        <div class="flow-days">制作期間</div>
-      </div>
-
-      <div class="flow-row">
-        <div class="flow-n">STEP 04</div>
-        <div>
-          <div class="flow-title">公開・引き渡し</div>
-          <div class="flow-sub">ドメイン設定から公開まで全部対応。使い方もちゃんと説明します。</div>
-        </div>
-        <div class="flow-days">公開日</div>
-      </div>
-
-      <div class="flow-row">
-        <div class="flow-n">STEP 05</div>
-        <div>
-          <div class="flow-title">継続サポート</div>
-          <div class="flow-sub">公開後も頼れる担当として。修正・相談・分析、いつでも言ってください。</div>
-        </div>
-        <div class="flow-days">ずっと</div>
-      </div>
-
     </div>
+
   </div>
 </section>
 
 
-<!-- ═══════ 代表メッセージ ═══════ -->
-<section class="founder-sec">
-  <div class="founder-in">
-    <p class="founder-label sa">MESSAGE FROM CEO</p>
-    <div class="founder-grid">
-
-      <div class="sa">
-        <p class="founder-catch">岡山市内ならいつでも、<br>何度でも駆けつけます。</p>
-        <div class="founder-story">
-          <p>はじめまして、TeeenS代表の新田拓夢です。18歳でこの会社を立ち上げました。</p>
-          <p>「若いから」と心配される方もいます。ただ正直に言えば、AI・ノーコード・最新のWeb技術——これらを誰よりも早く、誰よりも深く実務に活かせるのは、今この瞬間を生きている私たちの世代だと確信しています。経験年数ではなく、技術の最前線にいることが、TeeenSの強さです。</p>
-          <p>岡山には、本当に良い仕事をしている経営者の方がたくさんいます。その方々の魅力が、デジタルの弱さだけで正しく伝わっていない——そのもったいなさを解消したくて、この仕事を選びました。</p>
-          <p>難しい言葉は使いません。岡山市内ならいつでも何度でも顔を出しに行きます。「何から始めればいいかわからない」という方こそ、まず一度、話しかけてみてください。</p>
-        </div>
-        <p class="founder-sig">株式会社TeeenS　代表取締役&emsp;新田 拓夢</p>
-      </div>
-
-      <div class="founder-card sa sd2">
-        <div class="founder-avatar"><img src="assets/founder.png" alt="新田 拓夢"/></div>
-        <p class="founder-name">新田 拓夢</p>
-        <p class="founder-role">代表取締役 / 株式会社TeeenS</p>
-        <div class="founder-tags">
-          <span>岡山出身</span>
-          <span>10代で起業</span>
-          <span>初回無料</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- ═══════ 会社概要 ═══════ -->
-<section class="sec overview-sec">
-  <div class="sec-in">
-    <div class="sec-head sa">
-      <p class="sec-label">Company Info</p>
-      <h2 class="sec-h2">会社概要</h2>
-    </div>
-    <table class="overview-table sa">
-      <tr>
-        <th>会社名</th>
-        <td>株式会社TeeenS</td>
-      </tr>
-      <tr>
-        <th>代表取締役</th>
-        <td>新田 拓夢</td>
-      </tr>
-      <tr>
-        <th>所在地</th>
-        <td>岡山県</td>
-      </tr>
-      <tr>
-        <th>事業内容</th>
-        <td>Webサイト制作 / ランディングページ制作 / 社内Webアプリ開発 / AI活用支援</td>
-      </tr>
-      <tr>
-        <th>対応エリア</th>
-        <td>岡山県全域（対面）/ 全国（オンライン対応）</td>
-      </tr>
-      <tr>
-        <th>初回相談</th>
-        <td>無料</td>
-      </tr>
+<!-- ══ 6. 会社概要 ══ -->
+<section class="ab-overview">
+  <div class="ab-overview-in">
+    <p class="ab-overview-eyebrow sa">COMPANY INFO</p>
+    <h2 class="ab-overview-h2 sa">会社概要</h2>
+    <table class="ab-table sa">
+      <tr><th>会社名</th><td>株式会社TeeenS</td></tr>
+      <tr><th>代表取締役</th><td>新田 拓夢</td></tr>
+      <tr><th>所在地</th><td>岡山県岡山市</td></tr>
+      <tr><th>事業内容</th><td>Webサイト制作 / LP制作 / 社内Webアプリ開発 / AI活用支援</td></tr>
+      <tr><th>対応エリア</th><td>岡山県全域（対面）/ 全国（オンライン）</td></tr>
+      <tr><th>初回相談</th><td>無料</td></tr>
     </table>
   </div>
 </section>
 
 
-<!-- ═══════ CTA ═══════ -->
-<section id="cta">
-  <img class="cta-photo"
-    src="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=1600&q=80&auto=format&fit=crop"
-    alt="商談" loading="lazy"/>
-  <div class="cta-shade"></div>
-  <div class="cta-in sa">
-    <p class="cta-label">Free Consultation</p>
-    <h2 class="cta-h2">まず話しかけて<br>みてください。</h2>
-    <p class="cta-p">相談は完全無料。岡山市内ならいつでも直接お伺いします。何からはじめればいいか分からない、という方こそ大歓迎です。</p>
-    <a href="contact.html" class="cta-btn">無料相談・お問い合わせ →</a>
-    <p class="cta-note">通常2営業日以内にご返信します</p>
+<!-- ══ 7. CTA ══ -->
+<section class="ab-cta">
+  <div class="ab-cta-in sa">
+    <h2 class="ab-cta-h2">まず話しかけて<br>みてください。</h2>
+    <p class="ab-cta-p">相談は完全無料。岡山市内ならいつでも直接お伺いします。何からはじめればいいか分からない、という方こそ大歓迎です。</p>
+    <a href="contact.html" class="ab-cta-btn">無料相談・お問い合わせ →</a>
+    <p class="ab-cta-note">通常2営業日以内にご返信します</p>
   </div>
 </section>
 
 
-<!-- ═══════ フッター ═══════ -->
+<!-- フッター -->
 <footer class="ft">
   <div class="ft-in">
     <div class="ft-top">
@@ -613,7 +520,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 
 <script>
 (function(){
-  /* モバイルメニュー */
   const btn=document.getElementById('h-burger');
   const nav=document.getElementById('mob-nav');
   if(btn&&nav){
@@ -629,8 +535,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       });
     });
   }
-
-  /* ドロップダウン */
   document.querySelectorAll('.h-item').forEach(item=>{
     const drop=item.querySelector('.svc-drop');
     if(!drop)return;
@@ -640,8 +544,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     drop.addEventListener('mouseenter',()=>clearTimeout(t));
     drop.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
   });
-
-  /* スクロールアニメ */
   const io=new IntersectionObserver(entries=>{
     entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
   },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
