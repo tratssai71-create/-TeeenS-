@@ -190,13 +190,16 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   display:grid;grid-template-columns:420px 1fr;
   min-height:640px;
 }
-/* 左：写真エリア */
+/* 左：写真エリア — 透過PNG白背景表示 */
 .ab-ceo-photo{
   position:relative;overflow:hidden;
-  background:rgba(255,255,255,.04);
+  background:#fff;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding:0 20px;
 }
 .ab-ceo-photo img{
-  width:100%;height:100%;object-fit:cover;object-position:center top;
+  width:auto;height:100%;max-width:100%;
+  object-fit:contain;
   display:block;
 }
 /* 右：テキスト */
