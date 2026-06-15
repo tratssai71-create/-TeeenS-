@@ -128,6 +128,12 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .ab-strip-item{overflow:hidden;position:relative}
 .ab-strip-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
 .ab-strip-item:hover img{transform:scale(1.05)}
+.ab-strip-logo{
+  background:#f7f7f5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.ab-strip-logo-img{width:180px;height:auto;display:block}
+.ab-strip-logo-label{font-size:12px;font-weight:700;letter-spacing:.2em;color:var(--ink3);text-transform:uppercase}
 
 /* ══════════════════════════════════════
    3. MISSION — 全幅ダーク・大活字
@@ -387,8 +393,9 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     <div class="ab-strip-item sa">
       <img src="assets/ab-macbook.jpg" alt="開発環境"/>
     </div>
-    <div class="ab-strip-item sa sd1">
-      <img src="assets/ab-consult.jpg" alt="打ち合わせ"/>
+    <div class="ab-strip-item ab-strip-logo sa sd1">
+      <img src="assets/studio-logo.svg" alt="STUDIO" class="ab-strip-logo-img"/>
+      <span class="ab-strip-logo-label">制作ツール</span>
     </div>
     <div class="ab-strip-item sa sd2">
       <img src="assets/ab-team.jpg" alt="チームで作業"/>
