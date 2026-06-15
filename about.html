@@ -190,16 +190,13 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   display:grid;grid-template-columns:420px 1fr;
   min-height:640px;
 }
-/* 左：写真エリア — PNG透過を白で塗りつぶす */
+/* 左：写真エリア */
 .ab-ceo-photo{
   position:relative;overflow:hidden;
-  background:#fff;
-  display:flex;align-items:flex-end;justify-content:center;
-  padding:0 16px;
+  background:rgba(255,255,255,.04);
 }
 .ab-ceo-photo img{
-  width:100%;max-width:380px;height:auto;
-  object-fit:contain;object-position:bottom center;
+  width:100%;height:100%;object-fit:cover;object-position:center top;
   display:block;
 }
 /* 右：テキスト */
