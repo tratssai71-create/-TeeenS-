@@ -1113,6 +1113,13 @@ footer.ft-wrap{
   .hero-inner{grid-template-columns:1fr;padding:80px 40px 64px;gap:40px}
   .imac-wrap{max-width:560px;margin:0 auto}
 
+  /* Section padding */
+  .sec{padding:80px 32px}
+  #services{padding:80px 32px}
+  #cases{padding:80px 32px}
+  #faq{padding:80px 32px}
+  #cta{padding:100px 32px}
+
   /* Vision */
   #vision{padding:80px 40px}
   .vis-wrap{grid-template-columns:1fr;gap:64px}
@@ -1124,10 +1131,25 @@ footer.ft-wrap{
   .val-head{margin-bottom:40px}
   .val-bento{grid-template-columns:1fr 1fr}
 
+  /* Cases */
+  .case-grid{grid-template-columns:1fr}
+  .logo-grid{grid-template-columns:repeat(3,1fr)}
+
   .cul-grid{grid-template-columns:1fr;gap:48px}
   .cul-img{aspect-ratio:16/7}
+  .cul-cards{grid-template-columns:1fr 1fr}
 
   .data-grid{grid-template-columns:1fr 1fr}
+
+  /* Service cards tablet */
+  .svc-stack{margin-top:48px}
+
+  /* CTA box */
+  .cta-in{padding:48px 40px}
+
+  /* Company band */
+  .cp-band{padding:40px 32px}
+  .cp-body{padding:32px 32px 48px}
 
 }
 
@@ -2424,6 +2446,27 @@ footer.ft-wrap{
   .hs-card-r{padding:14px 16px;right:-6px;top:50%}
   .hs-num-big{font-size:32px}
   .hs-tab{padding:6px 12px;font-size:10px}
+  /* Hero h1 word overflow fix */
+  #hero .h1 .ln .w{white-space:normal}
+  /* Hero stat strip wrapping */
+  .h-stats{flex-wrap:wrap;gap:0;padding-top:24px}
+  .hst{padding-right:24px;margin-right:24px;padding-bottom:16px}
+  /* CTA card padding */
+  .cta-in{padding:40px 28px !important}
+  /* Services title no-overflow */
+  .svc-ttl{white-space:normal !important}
+  .svc-ttl-row{flex-wrap:wrap;gap:16px}
+  .svc-ttl-rule{display:none}
+  /* Company profile table */
+  .cp-tbl{display:block}
+  .cp-tbl tbody,.cp-tbl tr,.cp-tbl th,.cp-tbl td{display:block;width:100%}
+  .cp-tbl th{width:100% !important;padding:16px 0 4px;font-size:12px;color:var(--ink3);border-bottom:none}
+  .cp-tbl td{padding:0 0 16px;font-size:15px}
+  .cp-tbl tr{border-bottom:1px solid #e0e0e0}
+  .cp-tbl tr:first-child{border-top:1px solid #e0e0e0}
+  /* band heading size */
+  .cp-band-h{font-size:26px}
+  .cp-band-sub{font-size:14px}
 }
 
 </style>

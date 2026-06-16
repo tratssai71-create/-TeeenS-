@@ -96,6 +96,52 @@
     /* FOOTER */
     footer { background:#060606; padding:40px 80px; border-top:1px solid #181818; text-align:center; }
     .ft-copy { font-size:12px; color:rgba(255,255,255,0.18); font-family:'Inter',sans-serif; }
+
+    /* HAMBURGER */
+    .h-burger { display:none; flex-direction:column; justify-content:center; align-items:center; width:40px; height:40px; background:transparent; border:none; cursor:pointer; gap:5px; padding:8px; }
+    .h-burger span { display:block; width:20px; height:1.5px; background:var(--black); transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s; transform-origin:center; }
+    .h-burger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+    .h-burger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
+    .h-burger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+
+    /* MOBILE NAV */
+    .mob-nav { position:fixed; inset:0; z-index:700; background:rgba(255,255,255,.98); backdrop-filter:blur(24px); display:flex; flex-direction:column; justify-content:center; align-items:center; transform:translateY(-100%); opacity:0; transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s; pointer-events:none; }
+    .mob-nav.open { transform:translateY(0); opacity:1; pointer-events:all; }
+    .mob-link { font-size:clamp(22px,5vw,28px); font-weight:700; color:var(--black); text-decoration:none; padding:14px 0; border-bottom:1px solid #e8e8e8; width:72%; text-align:center; letter-spacing:-0.02em; transition:color .18s; }
+    .mob-link:first-child { border-top:1px solid #e8e8e8; }
+    .mob-cta-btn { margin-top:32px; background:var(--black); color:#fff; font-size:15px; font-weight:700; padding:16px 52px; border-radius:4px; text-decoration:none; }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){
+      header { padding:0 32px; }
+      nav { gap:20px; }
+      nav a { font-size:13px; }
+      .page-hero { padding:120px 40px 72px; }
+      section { padding:72px 40px; }
+      .overview-grid { grid-template-columns:1fr; gap:40px; }
+      .what-grid { grid-template-columns:1fr 1fr; }
+      .cta-section { padding:72px 40px; }
+      footer { padding:32px 40px; }
+    }
+    @media(max-width:767px){
+      header { padding:0 20px; height:60px; }
+      nav { display:none !important; }
+      .h-burger { display:flex; }
+      .page-hero { padding:100px 22px 60px; }
+      .page-title { font-size:clamp(28px,8vw,48px); }
+      section { padding:60px 22px; }
+      .overview-grid { grid-template-columns:1fr; gap:32px; }
+      .what-grid { grid-template-columns:1fr; gap:2px; }
+      .lec-row { grid-template-columns:56px 1fr; }
+      .lec-body { padding:24px 22px; }
+      .price-card { padding:36px 28px; }
+      .cta-section { padding:60px 22px; }
+      footer { padding:28px 22px; }
+    }
+    @media(max-width:480px){
+      .page-title { font-size:clamp(24px,9vw,40px); }
+      .price-val { font-size:clamp(24px,7vw,40px); }
+    }
   </style>
 </head>
 <body>
@@ -109,7 +155,17 @@
       <a href="index.html#flow">制作の流れ</a>
       <a href="index.html#contact" class="hd-cta">お問い合わせ →</a>
     </nav>
+    <button class="h-burger" id="h-burger" aria-label="メニューを開く">
+      <span></span><span></span><span></span>
+    </button>
   </header>
+
+  <div class="mob-nav" id="mob-nav">
+    <a href="index.html" class="mob-link">ホーム</a>
+    <a href="index.html#services" class="mob-link">サービス</a>
+    <a href="index.html#works" class="mob-link">制作実績</a>
+    <a href="index.html#contact" class="mob-cta-btn">お問い合わせ →</a>
+  </div>
 
   <!-- HERO -->
   <div class="page-hero">
@@ -213,6 +269,19 @@
   <script>
     const hdr = document.getElementById('hdr');
     window.addEventListener('scroll', () => hdr.classList.toggle('scrolled', scrollY > 40));
+    /* Mobile nav */
+    const burger = document.getElementById('h-burger');
+    const mobNav = document.getElementById('mob-nav');
+    if(burger && mobNav){
+      burger.addEventListener('click', () => {
+        burger.classList.toggle('open');
+        mobNav.classList.toggle('open');
+      });
+      mobNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        burger.classList.remove('open');
+        mobNav.classList.remove('open');
+      }));
+    }
   </script>
 </body>
 </html>
