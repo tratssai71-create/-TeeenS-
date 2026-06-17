@@ -57,9 +57,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 /* フォーム */
 .ct-form{display:flex;flex-direction:column;gap:20px}
 .ct-field label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
-.ct-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:99px}
-.ct-badge.req{background:#eef2ff;color:#4f46e5;border:1px solid #c7d2fe}
-.ct-badge.opt{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+.ct-badge.req{color:#e53e3e;font-size:16px;font-weight:700;line-height:1}
+.ct-badge.opt{font-size:11px;color:#9ca3af;font-weight:500}
 .ct-field input,.ct-field select,.ct-field textarea{
   width:100%;padding:13px 16px;
   border:1px solid #e5e7eb;background:#fff;
@@ -170,7 +169,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <form class="ct-form" id="ct-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
 
     <div class="ct-field">
-      <label>お名前 <span class="ct-badge req">必須</span></label>
+      <label>お名前 <span class="ct-badge req">*</span></label>
       <input type="text" name="name" placeholder="山田 太郎" required/>
     </div>
 
@@ -180,7 +179,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
 
     <div class="ct-field">
-      <label>メールアドレス <span class="ct-badge req">必須</span></label>
+      <label>メールアドレス <span class="ct-badge req">*</span></label>
       <input type="email" name="email" placeholder="example@mail.com" required/>
     </div>
 
@@ -190,7 +189,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
 
     <div class="ct-field">
-      <label>ご相談内容 <span class="ct-badge req">必須</span></label>
+      <label>ご相談内容 <span class="ct-badge req">*</span></label>
       <select name="service" id="service-select" required>
         <option value="" disabled selected>選択してください</option>
         <option value="ホームページ制作">ホームページ制作</option>
@@ -202,7 +201,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     </div>
 
     <div class="ct-field">
-      <label>メッセージ <span class="ct-badge req">必須</span></label>
+      <label>メッセージ <span class="ct-badge req">*</span></label>
       <textarea name="message" placeholder="ご要望・現状の課題など、自由にお書きください。" required></textarea>
     </div>
 
