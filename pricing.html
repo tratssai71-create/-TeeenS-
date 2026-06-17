@@ -195,7 +195,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .cta-note{font-size:12px;color:rgba(255,255,255,.35);margin-top:16px}
 
 /* フッター */
-.ft{background:var(--ink);padding:72px 56px 32px}
+.ft{background:#0e1726;padding:72px 56px 32px}
 .ft-in{max-width:1200px;margin:0 auto}
 .ft-top{display:flex;justify-content:space-between;gap:48px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.08)}
 .ft-logo img{height:32px;filter:brightness(0) invert(1);opacity:.9;margin-bottom:12px}
@@ -264,9 +264,9 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
         <a href="service-lp.html" class="svc-drop-link">ランディングページ（LP）制作</a>
         <a href="service-system.html" class="svc-drop-link">社内Webアプリ・AI開発</a>      </div>
     </div>
+    <div class="h-item"><a href="about.html">TeeenSとは</a></div>
     <div class="h-item"><a href="works.html">制作実績</a></div>
     <div class="h-item"><a href="pricing.html" class="active">料金プラン</a></div>
-    <div class="h-item"><a href="about.html">TeeenSとは</a></div>
     <a href="contact.html" class="h-cta">無料相談 →</a>
   </nav>
   <button class="h-burger" id="h-burger" aria-label="メニューを開く">
@@ -565,11 +565,15 @@ document.querySelectorAll('.faq-item').forEach(item=>{
 })();
 const observer=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.12});
 document.querySelectorAll('.sa').forEach(el=>observer.observe(el));
-const item=document.querySelector('.h-item:has(.svc-drop)');
-if(item){
-  item.addEventListener('mouseenter',()=>item.querySelector('.svc-drop').classList.add('open'));
-  item.addEventListener('mouseleave',()=>item.querySelector('.svc-drop').classList.remove('open'));
-}
+document.querySelectorAll('.h-item').forEach(item=>{
+  const drop=item.querySelector('.svc-drop');
+  if(!drop)return;
+  let t;
+  item.addEventListener('mouseenter',()=>{clearTimeout(t);drop.classList.add('open')});
+  item.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
+  drop.addEventListener('mouseenter',()=>clearTimeout(t));
+  drop.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
+});
 </script>
 </body>
 </html>
