@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>プライバシーポリシー | 株式会社TeeenS</title>
+<meta name="description" content="株式会社TeeenSのプライバシーポリシーです。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
+  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --bg2:#f5f5f7;--bg3:#fafafa;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ヘッダー */
+header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px}
+.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:0;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
+.h-logo{display:flex;align-items:center;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
+.h-logo img{height:36px}
+.h-nav{display:flex;align-items:center}
+.h-item{position:relative}
+.svc-drop{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);width:220px;background:#fff;border-radius:0;box-shadow:0 8px 40px rgba(9,9,11,.12),0 2px 8px rgba(9,9,11,.06);border:1px solid rgba(9,9,11,.07);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.22,1,.36,1);z-index:900;padding:6px 0}
+.svc-drop::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
+.svc-drop.open{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
+.svc-drop-link{display:block;padding:11px 20px;font-size:13.5px;font-weight:500;color:var(--ink);border-bottom:1px solid rgba(9,9,11,.05);transition:background .15s,padding-left .2s}
+.svc-drop-link:last-child{border-bottom:none}
+.svc-drop-link:hover{background:var(--bg2);padding-left:26px}
+.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:0}
+.h-item>a:hover{color:var(--ink2)}
+.h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:0 !important;transition:background .2s !important;display:inline-flex;align-items:center}
+.h-cta:hover{background:#333 !important}
+.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
+.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s,opacity .25s;transform-origin:center}
+.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
+.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
+.mob-link{font-size:clamp(22px,5vw,28px);font-weight:700;color:var(--ink);padding:14px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em}
+.mob-link:first-child{border-top:1px solid var(--bd)}
+.mob-cta-btn{margin-top:32px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;border-radius:4px}
+
+/* ページ本体 */
+.pp-wrap{max-width:760px;margin:0 auto;padding:140px 40px 100px}
+.pp-title{font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-0.03em;margin-bottom:8px}
+.pp-date{font-size:13px;color:var(--ink3);margin-bottom:60px}
+.pp-sec{margin-bottom:48px}
+.pp-sec h2{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.pp-sec p,.pp-sec li{font-size:14px;color:var(--ink2);line-height:2;font-weight:400}
+.pp-sec ul{padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
+
+/* フッター */
+.ft{background:#09090b;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft-in{max-width:1180px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
+.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
+.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
+.ft-links{display:flex;gap:56px}
+.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
+.ft-col ul li a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
+
+@media(max-width:767px){
+  header{padding:10px 16px}
+  .h-inner{padding:6px 6px 6px 14px}
+  .h-item,.h-cta{display:none !important}
+  .h-logo img{height:28px}
+  .h-burger{display:flex}
+  .pp-wrap{padding:100px 22px 72px}
+  .ft{padding:52px 22px 22px}
+  .ft-top{flex-direction:column}
+  .ft-links{flex-wrap:wrap;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="h-inner">
+  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <nav class="h-nav">
+    <div class="h-item">
+      <a href="index.html#services">事業内容</a>
+      <div class="svc-drop">
+        <a href="service-corporate.html" class="svc-drop-link">ホームページ制作</a>
+        <a href="service-lp.html" class="svc-drop-link">ランディングページ（LP）制作</a>
+        <a href="service-system.html" class="svc-drop-link">社内Webアプリ・AI開発</a>
+      </div>
+    </div>
+    <div class="h-item"><a href="about.html">TeeenSとは</a></div>
+    <div class="h-item"><a href="works.html">制作実績</a></div>
+    <div class="h-item"><a href="pricing.html">料金プラン</a></div>
+    <div class="h-item"><a href="index.html#culture">会社概要</a></div>
+    <a href="contact.html" class="h-cta">無料相談 →</a>
+  </nav>
+  <button class="h-burger" id="h-burger" aria-label="メニュー">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+</header>
+
+<div class="mob-nav" id="mob-nav">
+  <a href="index.html" class="mob-link">トップページ</a>
+  <a href="index.html#services" class="mob-link">事業内容</a>
+  <a href="about.html" class="mob-link">TeeenSとは</a>
+  <a href="works.html" class="mob-link">制作実績</a>
+  <a href="pricing.html" class="mob-link">料金プラン</a>
+  <a href="index.html#culture" class="mob-link">会社概要</a>
+  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+</div>
+
+<main class="pp-wrap">
+  <h1 class="pp-title">プライバシーポリシー</h1>
+  <p class="pp-date">制定日：2026年1月1日</p>
+
+  <div class="pp-sec">
+    <h2>1. 基本方針</h2>
+    <p>株式会社TeeenS（以下「当社」）は、お客様の個人情報を適切に保護することが社会的責務であると認識し、以下のプライバシーポリシーに従って個人情報を取り扱います。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>2. 個人情報の定義</h2>
+    <p>本ポリシーにおける「個人情報」とは、生存する個人に関する情報であって、氏名、住所、電話番号、メールアドレス等、特定の個人を識別できる情報をいいます。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>3. 個人情報の収集</h2>
+    <p>当社は、以下の場合に個人情報を収集することがあります。</p>
+    <ul>
+      <li>お問い合わせフォームからのご連絡時</li>
+      <li>メールやお電話によるご相談時</li>
+      <li>サービスのお申し込み時</li>
+      <li>お見積もりのご依頼時</li>
+    </ul>
+  </div>
+
+  <div class="pp-sec">
+    <h2>4. 個人情報の利用目的</h2>
+    <p>収集した個人情報は、以下の目的のために利用します。</p>
+    <ul>
+      <li>お問い合わせ・ご相談への回答</li>
+      <li>サービスの提供およびサポート</li>
+      <li>お見積もり・ご提案書の作成・送付</li>
+      <li>契約の締結および履行</li>
+      <li>当社サービスに関するご案内（ご希望の方のみ）</li>
+    </ul>
+  </div>
+
+  <div class="pp-sec">
+    <h2>5. 個人情報の第三者提供</h2>
+    <p>当社は、以下の場合を除き、お客様の個人情報を第三者に提供・開示することはありません。</p>
+    <ul>
+      <li>お客様ご本人の同意がある場合</li>
+      <li>法令に基づき開示が求められた場合</li>
+      <li>人の生命・身体・財産の保護のために必要な場合</li>
+    </ul>
+  </div>
+
+  <div class="pp-sec">
+    <h2>6. 個人情報の安全管理</h2>
+    <p>当社は、個人情報の漏えい・滅失・毀損の防止のため、適切なセキュリティ対策を実施し、個人情報の安全管理に努めます。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>7. Cookieの使用について</h2>
+    <p>当社ウェブサイトでは、サービス向上のためにCookieを使用する場合があります。ブラウザの設定によりCookieを無効にすることが可能ですが、一部のサービスが正常に機能しなくなる場合があります。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>8. アクセス解析ツールについて</h2>
+    <p>当社ウェブサイトでは、Googleアナリティクス等のアクセス解析ツールを使用することがあります。これらのツールはCookieを用いて匿名のトラフィックデータを収集しており、個人を特定する情報は収集しません。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>9. 個人情報の開示・訂正・削除について</h2>
+    <p>お客様ご本人から個人情報の開示・訂正・削除のご要望がある場合は、下記お問い合わせ先までご連絡ください。本人確認のうえ、合理的な期間内に対応いたします。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>10. プライバシーポリシーの変更</h2>
+    <p>本ポリシーは、法令の改正やサービスの変更に伴い、予告なく改定する場合があります。改定後のポリシーは当ページに掲載した時点で効力を生じるものとします。</p>
+  </div>
+
+  <div class="pp-sec">
+    <h2>11. お問い合わせ</h2>
+    <p>個人情報の取り扱いに関するご質問・ご要望は、下記までお問い合わせください。</p>
+    <p style="margin-top:12px">
+      株式会社TeeenS<br>
+      所在地：岡山県岡山市<br>
+      お問い合わせ：<a href="contact.html" style="color:#6366f1;text-decoration:underline">お問い合わせフォーム</a>
+    </p>
+  </div>
+</main>
+
+<footer class="ft">
+  <div class="ft-in">
+    <div class="ft-top">
+      <div>
+        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="about.html">TeeenSとは</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>サービス</h4>
+          <ul>
+            <li><a href="service-corporate.html">ホームページ制作</a></li>
+            <li><a href="service-lp.html">LP制作</a></li>
+            <li><a href="service-system.html">社内Webアプリ・AI</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>実績</h4>
+          <ul><li><a href="works.html">制作実績一覧</a></li></ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="contact.html">無料で相談する</a></li>
+            <li><a href="privacy.html">プライバシーポリシー</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const btn=document.getElementById('h-burger');
+  const nav=document.getElementById('mob-nav');
+  if(btn&&nav){
+    btn.addEventListener('click',()=>{
+      const o=nav.classList.toggle('open');
+      btn.classList.toggle('open',o);
+      document.body.style.overflow=o?'hidden':'';
+    });
+    nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>{
+      a.addEventListener('click',()=>{
+        nav.classList.remove('open');btn.classList.remove('open');
+        document.body.style.overflow='';
+      });
+    });
+  }
+  document.querySelectorAll('.h-item').forEach(item=>{
+    const drop=item.querySelector('.svc-drop');
+    if(!drop)return;
+    let t;
+    item.addEventListener('mouseenter',()=>{clearTimeout(t);drop.classList.add('open')});
+    item.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
+    drop.addEventListener('mouseenter',()=>clearTimeout(t));
+    drop.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
+  });
+})();
+</script>
+</body>
+</html>
