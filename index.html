@@ -1165,9 +1165,11 @@ footer.ft-wrap{
   .h-logo img{height:28px}
   .h-burger{display:flex}
 
-  /* Hero */
-  #hero{min-height:auto;padding-top:68px}
-  .hero-inner{grid-template-columns:1fr;padding:52px 20px 56px;gap:32px}
+  /* Hero — 100vhに収める */
+  #hero{height:100svh;min-height:100svh;overflow:hidden;padding-top:0}
+  .hero-inner{grid-template-columns:1fr;padding:80px 24px 36px;gap:0;height:100%;display:flex;flex-direction:column;justify-content:center}
+  .hero-r{display:none}
+  .hero-l{justify-content:center}
   .imac-wrap{max-width:480px;margin:0 auto}
   .h-sub{font-size:14px;max-width:100%}
   .h-btns{flex-direction:column;align-items:stretch;gap:12px}
@@ -2439,14 +2441,7 @@ footer.ft-wrap{
   .mq-item{font-size:clamp(40px,11vw,68px)}
   .ed-h .ed-bn{position:static;display:block;margin-bottom:8px}
   .h-serif{font-size:14px}
-  .hero-inner{padding:60px 20px 60px !important;gap:36px !important}
-  .hero-stage{aspect-ratio:4/5;max-width:100%}
-  .hs-num{font-size:96px;top:-22px}
-  .hs-frame{border-radius:0}
-  .hs-card-l{padding:14px 16px;max-width:240px;left:-6px;bottom:-14px}
-  .hs-card-r{padding:14px 16px;right:-6px;top:50%}
-  .hs-num-big{font-size:32px}
-  .hs-tab{padding:6px 12px;font-size:10px}
+  .hero-inner{padding:80px 24px 36px !important;gap:0 !important}
   /* Hero h1 word overflow fix */
   #hero .h1 .ln .w{white-space:normal}
   /* Hero stat strip wrapping */
