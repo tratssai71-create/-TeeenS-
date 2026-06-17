@@ -2468,6 +2468,54 @@ footer.ft-wrap{
   /* band heading size */
   .cp-band-h{font-size:26px}
   .cp-band-sub{font-size:14px}
+
+  /* ── サービスカード：1カラムに ── */
+  .svc-row-c{grid-template-columns:1fr !important}
+  .svc-row-img{min-height:220px}
+  .svc-row-body{padding:24px 20px}
+  .svc-row-detail{display:none}
+  .svc-row-name{font-size:20px}
+  .svc-row-top{margin-bottom:12px}
+  .svc-row-n{font-size:26px}
+  .svc-row-foot{flex-wrap:wrap;gap:14px}
+  .svc-foot-n{font-size:18px}
+  .svc-row-arr{margin-left:0;width:100%;justify-content:flex-start}
+  .svc-stack{gap:16px;margin-top:40px}
+
+  /* ── Hero ── */
+  .h-sub br{display:none}
+  .h-sub{font-size:13.5px}
+  .h1{font-size:clamp(32px,9vw,52px) !important}
+  .h-tags{gap:6px}
+  .h-tag{font-size:10px;padding:4px 10px}
+  .hst{padding-right:20px;margin-right:20px}
+  .hst-n{font-size:28px}
+
+  /* ── Cases ── */
+  .case-grid{grid-template-columns:1fr}
+  .case-body{padding:20px 18px}
+  .case-name{font-size:17px}
+  .cm-n{font-size:20px}
+  .logo-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* ── Data section ── */
+  .data-grid{grid-template-columns:1fr 1fr}
+  .di{padding:28px 18px}
+  .di-n{font-size:clamp(32px,9vw,52px)}
+
+  /* ── Vision ── */
+  .vis-sig{flex-wrap:wrap;gap:12px}
+
+  /* ── Footer ── */
+  footer.ft-wrap{padding:56px 20px 28px}
+  .ft-inner{gap:40px}
+  .ft-nav-cols{flex-wrap:wrap;gap:28px}
+}
+
+/* Small phones */
+@media(max-width:400px){
+  .svc-row-name{font-size:18px}
+  .data-grid{grid-template-columns:1fr}
 }
 
 </style>
