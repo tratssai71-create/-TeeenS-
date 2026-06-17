@@ -168,7 +168,10 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   <h1 class="ct-h1">CONTACT</h1>
   <p class="ct-lead">サービスの詳細・料金・納期など、どんなことでも歓迎です。「こういうものを作れる？」という段階でも、お気軽にどうぞ。通常2営業日以内にご返信します。</p>
 
-  <form class="ct-form" id="ct-form" action="https://formspree.io/f/xojzzjnz" method="POST">
+  <form class="ct-form" id="ct-form" action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="ebe0b2b8-2ef7-46ec-a4b5-e9a24776f517"/>
+    <input type="hidden" name="subject" value="【TeeenS】お問い合わせが届きました"/>
+    <input type="hidden" name="redirect" value="false"/>
 
     <div class="ct-field">
       <label>お名前 <span class="ct-badge req">*</span></label>
@@ -266,9 +269,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   const submitBtn=document.getElementById('ct-submit');
   if(form&&thanks){
     form.addEventListener('submit',async(e)=>{
-      const action=form.getAttribute('action');
-      if(action.includes('YOUR_FORM_ID'))return;
       e.preventDefault();
+      const action=form.getAttribute('action');
       submitBtn.disabled=true;
       submitBtn.textContent='送信中...';
       const res=await fetch(action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
