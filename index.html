@@ -1167,9 +1167,9 @@ footer.ft-wrap{
 
   /* Hero — 100vhに収める */
   #hero{height:100svh;min-height:100svh;overflow:hidden;padding-top:0}
-  .hero-inner{grid-template-columns:1fr;padding:80px 24px 36px;gap:0;height:100%;display:flex;flex-direction:column;justify-content:center}
+  .hero-inner{grid-template-columns:1fr;padding:0 24px;gap:0;height:100%;display:flex;flex-direction:column;justify-content:center}
   .hero-r{display:none}
-  .hero-l{justify-content:center}
+  .hero-l{display:flex;flex-direction:column;justify-content:center;padding-top:60px;padding-bottom:32px;gap:16px}
   .imac-wrap{max-width:480px;margin:0 auto}
   .h-sub{font-size:14px;max-width:100%}
   .h-btns{flex-direction:column;align-items:stretch;gap:12px}
@@ -2441,11 +2441,12 @@ footer.ft-wrap{
   .mq-item{font-size:clamp(40px,11vw,68px)}
   .ed-h .ed-bn{position:static;display:block;margin-bottom:8px}
   .h-serif{font-size:14px}
-  .hero-inner{padding:80px 24px 36px !important;gap:0 !important}
+  .hero-inner{padding:0 24px !important;gap:0 !important}
   /* Hero h1 word overflow fix */
   #hero .h1 .ln .w{white-space:normal}
   /* Hero stat strip wrapping */
-  .h-stats{flex-wrap:wrap;gap:0;padding-top:24px}
+  .h-stats{flex-wrap:wrap;gap:0;padding-top:8px}
+  .h-sub{margin-bottom:0 !important}
   .hst{padding-right:24px;margin-right:24px;padding-bottom:16px}
   /* CTA card padding */
   .cta-in{padding:40px 28px !important}
