@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /thanks.html
 
-Sitemap: https://tratssai71-create.github.io/-TeeenS-/sitemap.xml
+Sitemap: https://teeen-s.com/sitemap.xml
