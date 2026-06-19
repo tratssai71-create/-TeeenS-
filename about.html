@@ -140,6 +140,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .ab-strip-grid{display:grid;grid-template-columns:repeat(3,1fr);height:360px}
 .ab-strip-item{overflow:hidden;position:relative}
 .ab-strip-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.ab-strip-founder{background:#f5f5f7;display:flex;align-items:center;justify-content:center}
+.ab-strip-founder img{width:auto;height:90%;object-fit:contain}
 .ab-strip-item:hover img{transform:scale(1.05)}
 .ab-strip-logo{
   background:#f0f0ee;
@@ -408,8 +410,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     <div class="ab-strip-item sa">
       <img src="assets/ab-macbook.jpg" alt="開発環境"/>
     </div>
-    <div class="ab-strip-item sa sd1" style="background:#f5f5f7;display:flex;align-items:center;justify-content:center">
-      <img src="assets/ab-founder.png" alt="代表取締役" style="width:auto;height:100%;max-height:100%;object-fit:contain"/>
+    <div class="ab-strip-item ab-strip-founder sa sd1">
+      <img src="assets/ab-founder.png" alt="代表取締役"/>
     </div>
     <div class="ab-strip-item sa sd2">
       <img src="assets/ab-studio-dark.webp" alt="スタジオ"/>
