@@ -2637,8 +2637,8 @@ footer.ft-wrap{
 <!-- ═══════ HERO ═══════ -->
 <section id="hero">
   <!-- 全画面背景動画 -->
-  <video class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="hp-mockup-hero.png">
-    <source src="hero-bg.mp4?v=20260619" type="video/mp4"/>
+  <video id="heroBgVideo" class="hero-bg-video" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg">
+    <source src="hero-bg.mp4?v=20260622" type="video/mp4"/>
   </video>
   <div class="hero-bg-overlay"></div>
   <canvas id="hc"></canvas>
@@ -3428,6 +3428,26 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
     track.style.animationDuration=(38/(1+boost*.05))+'s';
   },{passive:true});
   setInterval(()=>{boost*=.92; if(boost<.05)track.style.animationDuration='38s';},120);
+})();
+
+/* ── Mobile video autoplay retry ── */
+(function(){
+  var v=document.getElementById('heroBgVideo');
+  if(!v)return;
+  function tryPlay(){
+    var p=v.play();
+    if(p&&p.catch)p.catch(function(){});
+  }
+  tryPlay();
+  document.addEventListener('touchstart',function once(){
+    v.muted=true;
+    tryPlay();
+    document.removeEventListener('touchstart',once);
+  },{passive:true});
+  document.addEventListener('scroll',function once(){
+    tryPlay();
+    document.removeEventListener('scroll',once);
+  },{passive:true});
 })();
 
 </script>
