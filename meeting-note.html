@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>書記ツール</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; padding: 20px; }
+.container { max-width: 700px; margin: 0 auto; }
+h1 { font-size: 1.3rem; margin-bottom: 16px; color: #fff; }
+input#title { width: 100%; padding: 10px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 1rem; margin-bottom: 12px; }
+input#title::placeholder { color: #555; }
+textarea#note {
+  width: 100%; min-height: 50vh; padding: 14px; background: #1a1a1a; border: 1px solid #333;
+  border-radius: 12px; color: #e0e0e0; font-size: 1rem; line-height: 1.8; resize: vertical;
+  font-family: inherit;
+}
+textarea#note::placeholder { color: #555; }
+textarea#note:focus, input#title:focus { outline: none; border-color: #555; }
+.actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.actions button {
+  padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
+  font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+}
+.btn-primary { background: #6C5CE7; color: #fff; }
+.btn-primary:hover { background: #5A4BD1; }
+.btn-secondary { background: #2a2a2a; color: #ccc; border: 1px solid #444; }
+.btn-secondary:hover { background: #333; }
+.templates { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.templates button { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+.templates button:hover { background: #2a2a2a; color: #ccc; }
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.info { font-size: 0.8rem; color: #555; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📝 書記ツール</h1>
+
+  <div class="templates">
+    <button onclick="insertTemplate('meeting')">会議テンプレ</button>
+    <button onclick="insertTemplate('brainstorm')">ブレストテンプレ</button>
+    <button onclick="insertTemplate('blank')">白紙</button>
+  </div>
+
+  <input type="text" id="title" placeholder="会議名・タイトル（任意）">
+  <textarea id="note" placeholder="ここにどんどん打ち込んでください..."></textarea>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="sendClaude('summary')">📋 Claudeでまとめる</button>
+    <button class="btn-primary" onclick="sendClaude('minutes')">📄 議事録にする</button>
+    <button class="btn-primary" onclick="sendClaude('action')">✅ アクション抽出</button>
+    <button class="btn-secondary" onclick="copyAll()">コピー</button>
+    <button class="btn-secondary" onclick="saveLocal()">保存</button>
+    <button class="btn-secondary" onclick="loadLocal()">読み込み</button>
+  </div>
+  <div class="info">※ボタンを押すとClaudeが新タブで開きます。貼り付け(⌘V)するだけ。</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const note = document.getElementById('note');
+const title = document.getElementById('title');
+
+note.addEventListener('input', () => {
+  localStorage.setItem('_draft', note.value);
+  localStorage.setItem('_draftTitle', title.value);
+});
+title.addEventListener('input', () => {
+  localStorage.setItem('_draftTitle', title.value);
+});
+
+const saved = localStorage.getItem('_draft');
+if (saved) note.value = saved;
+const savedTitle = localStorage.getItem('_draftTitle');
+if (savedTitle) title.value = savedTitle;
+
+function insertTemplate(type) {
+  const now = new Date();
+  const date = now.toLocaleDateString('ja-JP') + ' ' + now.toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+  const templates = {
+    meeting: `【会議名】${title.value || ''}\n【日時】${date}\n【参加者】\n【議題】\n\n--- メモ ---\n\n`,
+    brainstorm: `【テーマ】${title.value || ''}\n【日時】${date}\n【参加者】\n\n--- アイデア ---\n\n`,
+    blank: ''
+  };
+  note.value = templates[type];
+  note.focus();
+}
+
+const prompts = {
+  summary: 'この書記メモをわかりやすく要約してください。要点を箇条書きでまとめてください。',
+  minutes: 'この書記メモを正式な議事録にしてください。以下の形式で：\n1. 会議概要\n2. 議題と議論内容\n3. 決定事項\n4. アクションアイテム（担当者・期限）\n5. 次回予定',
+  action: 'この書記メモからアクションアイテム（やるべきこと）だけを抽出してください。担当者がわかれば担当者も付けてください。'
+};
+
+function sendClaude(type) {
+  const text = note.value.trim();
+  if (!text) { showToast('メモを入力してください'); return; }
+  const titleText = title.value.trim();
+  const header = titleText ? `【${titleText}】の書記メモ：` : '書記メモ：';
+  const prompt = prompts[type] + '\n\n' + header + '\n\n' + text;
+  navigator.clipboard.writeText(prompt).then(() => {
+    showToast('コピーしました → Claudeに貼り付けてください');
+    window.open('https://claude.ai/new', '_blank');
+  });
+}
+
+function copyAll() {
+  navigator.clipboard.writeText(note.value).then(() => showToast('コピーしました'));
+}
+
+function saveLocal() {
+  const key = 'note_' + Date.now();
+  const data = { title: title.value, text: note.value, time: new Date().toISOString() };
+  localStorage.setItem(key, JSON.stringify(data));
+  showToast('保存しました');
+}
+
+function loadLocal() {
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('note_')).sort().reverse();
+  if (!keys.length) { showToast('保存データがありません'); return; }
+  const data = JSON.parse(localStorage.getItem(keys[0]));
+  title.value = data.title || '';
+  note.value = data.text || '';
+  showToast('読み込みました');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

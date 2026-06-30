@@ -2,23 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8"/>
+<link rel="canonical" href="https://teeen-s.com/service-renewal"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>岡山でLP作成｜リーズナブル・手厚いサポートのTeeenS</title>
-<meta name="robots" content="index,follow"/>
-<link rel="canonical" href="https://teeen-s.com/service-lp.html"/>
-<meta property="og:type" content="website"/>
-<meta property="og:title" content="岡山でLP作成｜リーズナブル・手厚いサポートのTeeenS"/>
-<meta property="og:description" content="集客・採用・販売に特化したLP作成を岡山で。リーズナブルな価格と手厚い継続サポートで、成果につながるランディングページを制作します。"/>
-<meta property="og:url" content="https://teeen-s.com/service-lp.html"/>
-<meta property="og:image" content="https://teeen-s.com/hp-mockup-hero.png"/>
-<meta property="og:site_name" content="株式会社TeeenS"/>
-<meta property="og:locale" content="ja_JP"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="岡山でLP作成｜リーズナブル・手厚いサポートのTeeenS"/>
-<meta name="twitter:description" content="集客・採用・販売に特化したLP作成を岡山で。リーズナブルな価格と手厚い継続サポートで、成果につながるランディングページを制作します。"/>
-<meta name="twitter:image" content="https://teeen-s.com/hp-mockup-hero.png"/>
-<meta name="description" content="集客・採用・販売に特化したLP作成を岡山で。リーズナブルな価格と手厚い継続サポートで、成果につながるランディングページを制作します。"/>
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png"/>
+<title>サイトリニューアル・ポータル構築 | 株式会社TeeenS</title>
+<meta name="description" content="複雑な情報を整理し、使いやすく・見やすく生まれ変わらせる。既存サイトのリニューアルからポータルサイト構築まで、TeeenSが丸ごとサポートします。"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
@@ -38,13 +26,6 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
 .h-logo img{height:36px;display:block}
 .h-nav{display:flex;align-items:center}
-.h-item{position:relative}
-.svc-drop{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);width:220px;background:#fff;border-radius:0;box-shadow:0 8px 40px rgba(9,9,11,.12),0 2px 8px rgba(9,9,11,.06);border:1px solid rgba(9,9,11,.07);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.22,1,.36,1);z-index:900;padding:6px 0}
-.svc-drop::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
-.svc-drop.open{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
-.svc-drop-link{display:block;padding:11px 20px;font-size:13.5px;font-weight:500;color:var(--ink);border-bottom:1px solid rgba(9,9,11,.05);transition:background .15s,padding-left .2s}
-.svc-drop-link:last-child{border-bottom:none}
-.svc-drop-link:hover{background:var(--bg2);padding-left:26px}
 .h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:0}
 .h-cta{margin-left:8px;background:var(--ink) !important;color:#fff !important;font-weight:700 !important;font-size:14px !important;padding:11px 26px !important;letter-spacing:.04em;border-radius:0 !important;transition:background .2s !important;text-decoration:none;display:inline-flex;align-items:center}
 .h-cta:hover{background:#333 !important}
@@ -72,6 +53,12 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .hero-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
 .hero-btn-ghost{display:inline-flex;align-items:center;gap:8px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.03em;padding:15px 24px;border:1px solid rgba(255,255,255,.28);border-radius:2px;transition:background .2s,border-color .2s;}
 .hero-btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.5)}
+.stat-bar{padding:0;background:var(--ink)}
+.stat-bar-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.stat-item{text-align:center;padding:38px 16px;border-right:1px solid rgba(255,255,255,.08)}
+.stat-item:last-child{border-right:none}
+.stat-n{font-size:clamp(26px,3.4vw,42px);font-weight:900;letter-spacing:-0.05em;line-height:1;margin-bottom:8px;color:#fff}
+.stat-l{font-size:12px;color:rgba(255,255,255,.42);font-weight:500;letter-spacing:.04em}
 .lead{padding:104px 56px 64px;max-width:980px;margin:0 auto;text-align:center}
 .lead-label{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);margin-bottom:24px}
 .lead-h2{font-size:clamp(24px,3.2vw,40px);font-weight:900;letter-spacing:-0.03em;line-height:1.5;margin-bottom:24px}
@@ -84,6 +71,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .sec-label::before{content:'';width:18px;height:1.5px;background:var(--ink3)}
 .sec-h2{font-size:clamp(28px,3.6vw,46px);font-weight:900;letter-spacing:-0.04em;line-height:1.1;margin-bottom:14px}
 .sec-desc{font-size:15px;color:var(--ink2);line-height:1.85;font-weight:400;max-width:520px}
+#features{background:#fff}
 .reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .reason-card{border:1px solid var(--bd);border-radius:0;overflow:hidden;background:#fff;transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
 .reason-card:hover{transform:translateY(-6px);box-shadow:0 20px 56px rgba(0,0,0,.09)}
@@ -148,7 +136,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 .cta-btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#fff;font-size:14px;font-weight:800;letter-spacing:.04em;padding:16px 38px;border-radius:0;transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s}
 .cta-btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(9,9,11,.25)}
 .cta-note{font-size:12px;color:var(--ink3);margin-top:16px}
-.ft{background:#09090b;color:rgba(255,255,255,.5);padding:100px 56px 40px}
+.ft{background:#0e1726;color:rgba(255,255,255,.5);padding:100px 56px 40px}
 .ft-in{max-width:1180px;margin:0 auto}
 .ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
 .ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
@@ -173,11 +161,14 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .h-item,.h-cta{display:none !important}
   .h-logo img{height:28px}
   .h-burger{display:flex}
-  .hero{height:100svh;min-height:480px}
-  .hero-inner{padding:0 22px 52px}
-  .hero-lead{display:none}
+  .hero{height:88vh;min-height:480px}
+  .hero-inner{padding:0 22px 44px}
   .hero-actions{flex-direction:column;align-items:stretch}
   .hero-btn,.hero-btn-ghost{justify-content:center;text-align:center}
+  .stat-bar-in{grid-template-columns:repeat(2,1fr)}
+  .stat-item{border-bottom:1px solid rgba(255,255,255,.08)}
+  .stat-item:nth-child(2){border-right:none}
+  .stat-item:nth-child(3),.stat-item:nth-child(4){border-bottom:none}
   .lead{padding:72px 22px 48px}
   .sec{padding:68px 22px}
   .reason-grid{grid-template-columns:1fr}
@@ -192,25 +183,19 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   .ft-links{flex-wrap:wrap;gap:32px}
 }
 </style>
+<meta property="og:url" content="https://teeen-s.com/service-renewal"/>
 </head>
 <body>
 
 <header>
 <div class="h-inner">
-  <a href="index.html" class="h-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+  <a href="/" class="h-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></a>
   <nav class="h-nav">
-    <div class="h-item">
-      <a href="index.html#services">事業内容</a>
-      <div class="svc-drop">
-        <a href="service-corporate.html" class="svc-drop-link">ホームページ制作</a>
-        <a href="service-lp.html" class="svc-drop-link">ランディングページ（LP）制作</a>
-        <a href="service-system.html" class="svc-drop-link">社内Webアプリ・AI開発</a>      </div>
-    </div>
-    <div class="h-item"><a href="about.html">TeeenSとは</a></div>
-    <div class="h-item"><a href="works.html">制作実績</a></div>
-    <div class="h-item"><a href="pricing.html">料金プラン</a></div>
-    <div class="h-item"><a href="index.html#culture">会社概要</a></div>
-    <a href="contact.html" class="h-cta">無料相談 →</a>
+    <div class="h-item"><a href="index.html#vision">TeeenSとは</a></div>
+    <div class="h-item"><a href="index.html#services">Service</a></div>
+    <div class="h-item"><a href="/#works">Works &amp; News</a></div>
+    <div class="h-item"><a href="index.html#faq">Contact</a></div>
+    <a href="/contact" class="h-cta">無料相談 →</a>
   </nav>
   <button class="h-burger" id="h-burger" aria-label="メニューを開く">
     <span></span><span></span><span></span>
@@ -219,96 +204,119 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </header>
 
 <div class="mob-nav" id="mob-nav">
-  <a href="index.html" class="mob-link">トップページ</a>
   <a href="index.html#services" class="mob-link">事業内容</a>
-  <a href="about.html" class="mob-link">TeeenSとは</a>
-  <a href="works.html" class="mob-link">制作実績</a>
-  <a href="pricing.html" class="mob-link">料金プラン</a>
-  <a href="index.html#culture" class="mob-link">会社概要</a>
-  <a href="contact.html" class="mob-cta-btn">無料相談 →</a>
+  <a href="/about" class="mob-link">TeeenSとは</a>
+  <a href="/works" class="mob-link">制作実績</a>
+  <a href="/pricing" class="mob-link">料金プラン</a>  <a href="/contact" class="mob-cta-btn">無料相談 →</a>
+  <a href="/contact" class="mob-cta-btn">無料相談 →</a>
 </div>
 
+<!-- HERO -->
 <section class="hero">
   <img class="hero-photo"
     src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1800&q=80&auto=format&fit=crop"
-    alt="ランディングページ制作"/>
+    alt="サイトリニューアル・ポータル構築"/>
   <div class="hero-shade"></div>
   <div class="hero-inner">
-    <span class="hero-eyebrow">Service 02 — Landing Page</span>
+    <span class="hero-eyebrow">Service 02 — Renewal &amp; Portal</span>
     <h1 class="hero-h1">
-      「見た人が動く」<br>ランディングページ制作。
-      <small>採用・集客・販売——あらゆる目的に特化した1ページ完結のLPを設計します。</small>
+      情報を整理し、使いやすく。<br>リニューアル・ポータル構築。
+      <small>「古い」「わかりにくい」を、スピーディーに解決します。</small>
     </h1>
-    <p class="hero-lead">デザインの美しさだけでなく、コンバージョンを最大化するUI設計・導線・コピーライティングを一体で提供。フォーム設置・計測設定まで込みでお届けします。</p>
+    <p class="hero-lead">情報が増えすぎたサイト、デザインが古くなったサイト、部署ごとにバラバラなポータル——TeeenSが全体を俯瞰して整理・設計し直します。スピード感ある対応で、課題を素早く解消します。</p>
     <div class="hero-actions">
-      <a href="contact.html" class="hero-btn">無料で相談する →</a>
+      <a href="/contact" class="hero-btn">無料で相談する →</a>
       <a href="#features" class="hero-btn-ghost">サービスを見る ↓</a>
     </div>
   </div>
 </section>
 
-<section class="lead">
-  <p class="lead-label">Why Landing Page Matters</p>
-  <h2 class="lead-h2">LPは、<mark>24時間動き続ける営業ツール</mark>。<br>デザインひとつで、成果が変わります。</h2>
-  <p class="lead-p">採用エントリー・資料請求・商品購入——目的が明確だからこそ、導線設計とビジュアルの質が成果に直結します。TeeenSは「見た目」と「結果」を両立するLPを制作します。</p>
+<!-- 数字バー -->
+<section class="stat-bar">
+  <div class="stat-bar-in">
+    <div class="stat-item">
+      <div class="stat-n">即対応</div>
+      <div class="stat-l">即レス・即サポート</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">中〜大</div>
+      <div class="stat-l">規模サイト対応</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">無料</div>
+      <div class="stat-l">現状診断</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-n">丸ごと</div>
+      <div class="stat-l">移行・運用サポート</div>
+    </div>
+  </div>
 </section>
 
+<!-- リード文 -->
+<section class="lead">
+  <p class="lead-label">Why Renewal Matters</p>
+  <h2 class="lead-h2"><mark>「なんとなく使いにくい」</mark>が、<br>機会損失を生んでいる。</h2>
+  <p class="lead-p">古いデザイン・複雑なナビゲーション・スマホ非対応——見た目の問題だけでなく、ユーザーの離脱・問い合わせ減少・採用機会のロスに直結します。TeeenSが現状を丁寧に診断し、課題を根本から解決します。</p>
+</section>
+
+<!-- 特徴 -->
 <section class="sec" id="features">
   <div class="sec-in">
     <div class="sec-head">
       <p class="sec-label">Features</p>
-      <h2 class="sec-h2">TeeenSのLPが選ばれる理由</h2>
-      <p class="sec-desc">デザインだけで終わらない。成果につながる3つのこだわりがあります。</p>
+      <h2 class="sec-h2">TeeenSのリニューアルが選ばれる理由</h2>
+      <p class="sec-desc">「とりあえずデザインを変える」だけでは終わらせない。3つの視点で根本から改善します。</p>
     </div>
     <div class="reason-grid">
 
       <div class="reason-card">
         <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=900&q=80&auto=format&fit=crop" alt="マーケティングデザイン"/>
+          <img src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=900&q=80&auto=format&fit=crop" alt="現状診断"/>
           <span class="reason-badge">01</span>
-          <span class="reason-tag">MARKETING DESIGN</span>
+          <span class="reason-tag">DIAGNOSIS</span>
         </div>
         <div class="reason-body">
-          <h3 class="reason-h3">離脱を防ぎ、成約へ導く<br>「売れる」導線設計</h3>
-          <p class="reason-p">単に綺麗なページを作るのではなく、読者を「購入」や「問い合わせ」へ迷わず導くマーケティング設計を徹底。スクロールする手が止まらなくなり、自然とアクションを起こしたくなるUI構造を構築します。</p>
+          <h3 class="reason-h3">まず「なぜ使いにくいか」を<br>丁寧に診断します</h3>
+          <p class="reason-p">デザインを変える前に、現状サイトの課題を整理します。情報設計・導線・表示速度・SEOなど多角的に分析し、本当に必要な改善を明確にします。</p>
           <ul class="reason-list">
-            <li>最初の3秒で心を掴み、直帰を防ぐファーストビュー構成</li>
-            <li>購買心理の流れに沿ったCTA（ボタン）の最適な配置</li>
-            <li>スマホでの押しやすさと読みやすさを極めたモバイル特化設計</li>
+            <li>現状サイトの無料診断レポートを提供</li>
+            <li>ユーザー導線・情報構造を再設計</li>
+            <li>「やること・やらないこと」を明確に提案</li>
           </ul>
         </div>
       </div>
 
       <div class="reason-card">
         <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&q=80&auto=format&fit=crop" alt="セールスコピーライティング"/>
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format&fit=crop" alt="ポータル構築"/>
           <span class="reason-badge">02</span>
-          <span class="reason-tag">SALES COPYWRITING</span>
+          <span class="reason-tag">PORTAL</span>
         </div>
         <div class="reason-body">
-          <h3 class="reason-h3">顧客の財布を開く<br>「刺さる言葉」の全編執筆</h3>
-          <p class="reason-p">ターゲットの悩みや欲求を徹底的に分析し、共感から信頼、そして購入へと繋げる強力なストーリー（セールスコピー）を構築。御社に代わって文章を【無料】で丸ごと作成するため、書く手間は一切ありません。</p>
+          <h3 class="reason-h3">複数の情報を一元化する<br>ポータルサイト構築</h3>
+          <p class="reason-p">部署・サービス・ブランドごとにバラバラな情報を、ひとつのポータルに集約。社内外問わず「必要な情報に素早くたどり着ける」設計を実現します。</p>
           <ul class="reason-list">
-            <li>社長様への丁寧なヒアリングをもとにした文章の作成代行</li>
-            <li>読者の「欲しい」を刺激する、共感と納得のストーリー構成</li>
-            <li>自社の強みやお客様の声の魅力を最大化するライティング</li>
+            <li>情報アーキテクチャから丁寧に設計</li>
+            <li>検索・カテゴリ分類でスムーズなアクセス</li>
+            <li>中〜大規模サイトへの対応実績あり</li>
           </ul>
         </div>
       </div>
 
       <div class="reason-card">
         <div class="reason-img">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80&auto=format&fit=crop" alt="SEO・アナリティクス"/>
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&q=80&auto=format&fit=crop" alt="運用継続サポート"/>
           <span class="reason-badge">03</span>
-          <span class="reason-tag">HIGH SEO &amp; ANALYTICS</span>
+          <span class="reason-tag">SUPPORT</span>
         </div>
         <div class="reason-body">
-          <h3 class="reason-h3">広告だけに頼らない、<br>強力な「SEO×計測」基盤</h3>
-          <p class="reason-p">LPは広告運用が一般的ですが、TeeenSでは検索からの無料アクセスも狙える強力なSEO対策を標準実装。さらに公開後もデータをもとに改善ができるよう、高度なアクセス解析環境まで一気通貫で整えます。</p>
+          <h3 class="reason-h3">リニューアル後も<br>継続して伴走します</h3>
+          <p class="reason-p">「リニューアルしたのに更新できない」を防ぐため、CMS導入・マニュアル作成・操作レクチャーまで対応。公開後の運用も継続してサポートします。</p>
           <ul class="reason-list">
-            <li>広告費を抑えて資産にするための最新SEO内部対策</li>
-            <li>ボタンのクリックやフォーム送信の動きを可視化する計測設定</li>
-            <li>Google Analytics 4の導入による、次の改善へのデータ蓄積</li>
+            <li>STUDIO CMSで担当者が自分で更新可能</li>
+            <li>操作マニュアル・レクチャー込み</li>
+            <li>公開後の修正・相談を柔軟に対応</li>
           </ul>
         </div>
       </div>
@@ -317,116 +325,147 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
   </div>
 </section>
 
+<!-- 含まれるもの -->
 <section class="sec" id="includes">
   <div class="sec-in">
     <div class="sec-head">
       <p class="sec-label">What's Included</p>
-      <h2 class="sec-h2">制作に含まれるもの</h2>
-      <p class="sec-desc">追加費用なし。LP公開に必要なものをすべてまとめてお届けします。</p>
+      <h2 class="sec-h2">対応内容・含まれるもの</h2>
+      <p class="sec-desc">リニューアル・ポータル構築に必要なことを、まとめてお任せいただけます。</p>
     </div>
     <div class="inc-grid">
 
       <div class="inc-card">
-        <div class="inc-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-        <h4 class="inc-h4">マーケティング設計・導線設計</h4>
-        <p class="inc-p">読者が「購入したい」「問い合わせしたい」と自然に動くよう、購買心理に基づいたLP全体の構成と導線を設計します。</p>
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h4 class="inc-h4">現状サイト無料診断</h4>
+        <p class="inc-p">デザイン・情報構造・表示速度・SEOの観点から現状を分析し、改善ポイントをレポートにまとめます。</p>
       </div>
 
       <div class="inc-card">
-        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-        <h4 class="inc-h4">セールスコピーライティング【無料】</h4>
-        <p class="inc-p">ヒアリングをもとにTeeenSがLP全体の文章を無料で作成代行。キャッチコピーから本文・CTAまで、書く手間は一切不要です。</p>
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h4 class="inc-h4">情報設計・サイトマップ</h4>
+        <p class="inc-p">ユーザーが迷わない導線・ページ構成を再設計。必要なページと不要なページを整理します。</p>
+      </div>
+
+      <div class="inc-card">
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18M3 12h18"/></svg></div>
+        <h4 class="inc-h4">デザイン刷新</h4>
+        <p class="inc-p">ブランドイメージを保ちながら、現代的でわかりやすいデザインにアップデートします。</p>
       </div>
 
       <div class="inc-card">
         <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M8 9l-3 3 3 3M16 9l3 3-3 3M14 6l-4 12"/></svg></div>
-        <h4 class="inc-h4">STUDIOによる高速・軽量実装</h4>
-        <p class="inc-p">ノーコード（STUDIO）で高速かつバグのないLPを構築。スマホ完全対応・表示速度を最適化した状態で納品します。</p>
+        <h4 class="inc-h4">コーディング・コンテンツ移行</h4>
+        <p class="inc-p">既存コンテンツを引き継ぎながら、軽量・高速な新サイトを実装します。</p>
       </div>
 
       <div class="inc-card">
-        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v4H4zM4 12h10M4 16h6"/></svg></div>
-        <h4 class="inc-h4">問い合わせフォーム設置</h4>
-        <p class="inc-p">成約に直結するフォームを最適な位置に設置。自動返信メールや通知設定まで含めて対応します。</p>
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div>
+        <h4 class="inc-h4">レスポンシブ対応</h4>
+        <p class="inc-p">PC・スマホ・タブレット、全デバイスで最適な表示になるよう全ページ対応します。</p>
       </div>
 
       <div class="inc-card">
-        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
-        <h4 class="inc-h4">アクセス解析・コンバージョン計測</h4>
-        <p class="inc-p">GA4・Search Consoleの導入からCTAクリックやフォーム送信の計測設定まで完備。公開後すぐに改善サイクルを回せます。</p>
-      </div>
-
-      <div class="inc-card">
-        <div class="inc-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
-        <h4 class="inc-h4">SEO内部対策・レスポンシブ対応</h4>
-        <p class="inc-p">検索流入も狙える最新SEO設定を標準搭載。PC・スマホ・タブレット全デバイスで崩れのない表示を保証します。</p>
+        <div class="inc-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4-3.5 7.5-8 9-4.5-1.5-8-5-8-9V6z"/></svg></div>
+        <h4 class="inc-h4">CMS導入・運用サポート</h4>
+        <p class="inc-p">公開後に自分で更新できる仕組みを構築。操作マニュアル・レクチャーもセットで提供します。</p>
       </div>
 
     </div>
   </div>
 </section>
 
+<!-- 制作フロー -->
 <section class="sec" id="flow">
   <div class="sec-in">
     <div class="sec-head">
       <p class="sec-label">Process</p>
-      <h2 class="sec-h2">制作の流れ</h2>
-      <p class="sec-desc">最短1週間で公開まで対応。スピード感が必要な案件もお気軽にご相談ください。</p>
+      <h2 class="sec-h2">リニューアルの流れ</h2>
+      <p class="sec-desc">現状診断からリニューアル公開まで、すべてのステップで伴走します。</p>
     </div>
     <div class="flow-wrap">
+
       <div class="flow-row">
         <div class="flow-n">STEP 01</div>
-        <div><div class="flow-title">無料ヒアリング</div><div class="flow-sub">目的・ターゲット・訴求ポイント・参考LPをお伺いします</div></div>
-        <div class="flow-days">Day 1</div>
+        <div>
+          <div class="flow-title">無料ヒアリング・現状診断</div>
+          <div class="flow-sub">現状サイトの課題・改善したい点・目的をお伺いします</div>
+        </div>
+        <div class="flow-days">Day 1〜2</div>
       </div>
+
       <div class="flow-row">
         <div class="flow-n">STEP 02</div>
-        <div><div class="flow-title">構成・コピー提案</div><div class="flow-sub">ワイヤーフレームとコピー案を提示してご確認</div></div>
-        <div class="flow-days">Day 2〜3</div>
+        <div>
+          <div class="flow-title">改善提案・お見積り</div>
+          <div class="flow-sub">診断結果をもとに改善案と費用を提示。ご確認・ご承認</div>
+        </div>
+        <div class="flow-days">Day 3〜5</div>
       </div>
+
       <div class="flow-row">
         <div class="flow-n">STEP 03</div>
-        <div><div class="flow-title">デザイン制作</div><div class="flow-sub">デザインカンプを作成しご確認・修正対応</div></div>
-        <div class="flow-days">Day 4〜6</div>
+        <div>
+          <div class="flow-title">情報設計・デザイン制作</div>
+          <div class="flow-sub">サイトマップ・ワイヤーフレーム・デザインカンプを作成しご確認</div>
+        </div>
+        <div class="flow-days">Day 6〜14</div>
       </div>
+
       <div class="flow-row">
         <div class="flow-n">STEP 04</div>
-        <div><div class="flow-title">実装・フォーム・計測設定</div><div class="flow-sub">コーディング・フォーム設置・GA4・GTM設定</div></div>
-        <div class="flow-days">Day 7〜9</div>
+        <div>
+          <div class="flow-title">実装・コンテンツ移行</div>
+          <div class="flow-sub">コーディング・既存コンテンツの移行・各種設定</div>
+        </div>
+        <div class="flow-days">Day 15〜25</div>
       </div>
+
       <div class="flow-row">
         <div class="flow-n">STEP 05</div>
-        <div><div class="flow-title">公開・引き渡し</div><div class="flow-sub">最終確認・公開処理・レポート設定</div></div>
-        <div class="flow-days">Day 10〜</div>
+        <div>
+          <div class="flow-title">テスト・公開・引き渡し</div>
+          <div class="flow-sub">全ページ動作確認・公開処理・操作レクチャー</div>
+        </div>
+        <div class="flow-days">Day 26〜30</div>
       </div>
+
     </div>
   </div>
 </section>
 
+<!-- 制作実績 -->
 <section class="sec" id="works-sec">
   <div class="sec-in">
     <div class="sec-head">
       <p class="sec-label">Works</p>
       <h2 class="sec-h2">制作実績</h2>
-      <p class="sec-desc">実際に制作したLPをご覧ください。</p>
+      <p class="sec-desc">実際に制作したサイトをご覧ください。</p>
     </div>
     <div class="works-grid">
       <div class="work-card" style="opacity:.35;pointer-events:none">
-        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0"><span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span></div>
-        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">LP制作</span></div></div>
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">リニューアル</span></div></div>
       </div>
       <div class="work-card" style="opacity:.35;pointer-events:none">
-        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0"><span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span></div>
-        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">LP制作</span></div></div>
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">ポータル</span></div></div>
       </div>
       <div class="work-card" style="opacity:.35;pointer-events:none">
-        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0"><span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span></div>
-        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">LP制作</span></div></div>
+        <div class="work-img" style="display:flex;align-items:center;justify-content:center;background:#f0f0f0">
+          <span style="font-size:12px;color:#bbb;font-weight:700;letter-spacing:.1em">COMING SOON</span>
+        </div>
+        <div class="work-info"><div class="work-name">準備中</div><div class="work-tags"><span class="work-tag">リニューアル</span></div></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- FAQ -->
 <section class="sec" id="faq-sec">
   <div class="sec-in">
     <div class="sec-head" style="text-align:center;max-width:560px;margin:0 auto 48px">
@@ -434,56 +473,106 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       <h2 class="sec-h2">よくある質問</h2>
     </div>
     <div class="faq-wrap">
+
       <div class="faq-item">
-        <div class="faq-q"><span class="faq-qlabel">Q</span><span class="faq-qtext">1ページだけ作るのと、普通のホームページ（HP）は何が違うのですか？</span><div class="faq-ic">+</div></div>
-        <div class="faq-a"><div class="faq-ai">ホームページは会社全体の情報を網羅した「看板」です。対してLPは、1つの商品やサービスを売ることに特化した「縦長の営業チラシ」のような役割を持ち、余計なページ移動がないため、問い合わせや成約に繋がりやすいのが特徴です。</div></div>
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">既存サイトのデータはそのまま使えますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">既存のテキスト・画像・コンテンツは可能な限り活用します。移行が難しい場合は新規制作と組み合わせて対応します。まずはご相談ください。</div></div>
       </div>
+
       <div class="faq-item">
-        <div class="faq-q"><span class="faq-qlabel">Q</span><span class="faq-qtext">掲載する文章や構成が全く作れないのですが、お任せできますか？</span><div class="faq-ic">+</div></div>
-        <div class="faq-a"><div class="faq-ai">はい、すべて丸投げで問題ありません。事前のヒアリングをもとに、ターゲットに響く文章（原稿）や全体の構成をTeeenSが【無料】で丸ごと作成します。社長様がパソコンに向かってイチから原稿を書く手間は一切ありません。</div></div>
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">リニューアル中もサイトは公開し続けられますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">はい。既存サイトを稼働させたまま、並行して新サイトを制作します。完成後に切り替えるため、サービス停止なくリニューアル可能です。</div></div>
       </div>
+
       <div class="faq-item">
-        <div class="faq-q"><span class="faq-qlabel">Q</span><span class="faq-qtext">制作にはどれくらいの期間がかかりますか？</span><div class="faq-ic">+</div></div>
-        <div class="faq-a"><div class="faq-ai">掲載するボリュームや内容によって前後しますが、丁寧な競合分析や導線設計を行いながら、段階的に構築を進めていきます。具体的なスケジュールは、無料相談にて御社のプロモーションの時期やご都合をお伺いしたうえで、柔軟に調整いたします。</div></div>
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">ページ数が多いのですが対応できますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">中〜大規模サイトにも対応しています。ページ数・規模に応じてお見積りしますので、まずはご相談ください。</div></div>
       </div>
+
       <div class="faq-item">
-        <div class="faq-q"><span class="faq-qlabel">Q</span><span class="faq-qtext">成果を出すために、公開した後のサポートもしてもらえますか？</span><div class="faq-ic">+</div></div>
-        <div class="faq-a"><div class="faq-ai">はい、もちろんです。公開して終わりにせず、どこがクリックされているか、どこで読者が離脱しているかといった「動きの計測」を標準で行います。データをもとに「どう改善すればもっと売れるか」を一緒に考える伴走パートナーとしてサポートします。</div></div>
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">SEO的に不利にならないようにできますか？</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">リニューアル時のSEO引き継ぎ（301リダイレクト・メタ情報・構造化データの設定）も対応します。既存の検索順位をできる限り維持する設計で進めます。</div></div>
       </div>
+
       <div class="faq-item">
-        <div class="faq-q"><span class="faq-qlabel">Q</span><span class="faq-qtext">公開した後に、自分たちで文字や写真を変更することはできますか？</span><div class="faq-ic">+</div></div>
-        <div class="faq-a"><div class="faq-ai">はい、直感的にいつでも変更可能です。ノーコード（STUDIO）で構築するため、納品後に簡単な操作方法をマスターしていただければ、文字の修正や写真の差し替えは「1秒」で行えます。もちろん、面倒な作業は公開後も弊社へ丸投げしていただいて構いません。</div></div>
+        <div class="faq-q">
+          <span class="faq-qlabel">Q</span>
+          <span class="faq-qtext">費用の目安を教えてください</span>
+          <div class="faq-ic">+</div>
+        </div>
+        <div class="faq-a"><div class="faq-ai">規模・ページ数・機能によって異なります。まずは無料相談で現状をお伺いし、ご要望に合ったお見積りをご提示します。</div></div>
       </div>
+
     </div>
   </div>
 </section>
 
+<!-- CTA -->
 <section id="cta">
   <video class="cta-photo" autoplay muted loop playsinline>
-    <source src="assets/business-meeting.mp4" type="video/mp4">
+    <source src="/assets/business-meeting.mp4" type="video/mp4"/>
   </video>
   <div class="cta-shade"></div>
   <div class="cta-in">
     <p class="cta-label">Free Consultation</p>
-    <h2 class="cta-h2">成果の出るLPを、<br>一緒につくりましょう。</h2>
-    <p class="cta-p">採用・集客・販売、どんな目的でもお任せください。相談・見積もりは完全無料。「どんなLPが必要か分からない」段階でも大丈夫です。</p>
-    <a href="contact.html" class="cta-btn">無料相談を予約する →</a>
+    <h2 class="cta-h2">まず、現状を<br>無料で診断します。</h2>
+    <p class="cta-p">「使いにくい」「古い」「情報がバラバラ」——どんな小さな悩みでも構いません。TeeenSが現状を丁寧にヒアリングし、最適なリニューアルプランをご提案します。</p>
+    <a href="/contact" class="cta-btn">無料相談を予約する →</a>
     <p class="cta-note">通常2営業日以内にご返信します</p>
   </div>
 </section>
 
+<!-- フッター -->
 <footer class="ft">
   <div class="ft-in">
     <div class="ft-top">
       <div>
-        <div class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></div>
+        <div class="ft-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></div>
         <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
       </div>
       <div class="ft-links">
-        <div class="ft-col"><h4>About</h4><ul><li><a href="index.html#vision">私たちについて</a></li><li><a href="index.html#culture">会社概要</a></li></ul></div>
-        <div class="ft-col"><h4>サービス</h4><ul><li><a href="service-corporate.html">コーポレートサイト制作</a></li><li><a href="service-lp.html">LP制作</a></li><li><a href="service-renewal.html">サイトリニューアル</a></li></ul></div>
-        <div class="ft-col"><h4>実績</h4><ul><li><a href="index.html#works">制作実績</a></li></ul></div>
-        <div class="ft-col"><h4>Contact</h4><ul><li><a href="contact.html">無料で相談する</a></li><li><a href="index.html#faq">よくある質問</a></li></ul></div>
+        <div class="ft-col">
+          <h4>About</h4>
+          <ul>
+            <li><a href="index.html#vision">私たちについて</a></li>
+            <li><a href="index.html#culture">会社概要</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Service</h4>
+          <ul>
+            <li><a href="/service-corporate">Web・LP制作</a></li>
+            <li><a href="/service-renewal">リニューアル・ポータル</a></li>
+            <li><a href="/service-system">AI・システム開発</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Works &amp; News</h4>
+          <ul><li><a href="/#works">制作実績</a></li></ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="/contact">無料で相談する</a></li>
+            <li><a href="index.html#faq">よくある質問</a></li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>

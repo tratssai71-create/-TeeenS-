@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TeeenS — セクション書き出し</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f7;
+  --ink:#09090b;--ink2:rgba(9,9,11,.52);--ink3:rgba(9,9,11,.28);
+  --ac:#09090b;--bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
+  --hl:#09090b;--hl-d:#333333;
+  --ax:#09090b;--ax2:#52525b;
+  --ax-grd:linear-gradient(135deg,#09090b 0%,#3f3f46 60%,#71717a 100%);
+  --serif:'Playfair Display','Noto Serif JP',Georgia,serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+/* ── Scroll reveal ── */
+.sa{opacity:0;transform:translateY(30px);transition:opacity .72s cubic-bezier(.16,1,.3,1),transform .72s cubic-bezier(.16,1,.3,1)}
+.sa.in{opacity:1;transform:none}
+.sd1{transition-delay:.12s}
+.sd2{transition-delay:.24s}
+
+/* ── 共通 ── */
+.sec-in{max-width:1280px;margin:0 auto}
+.sec-num{display:inline-flex;align-items:center;gap:12px;font-family:'Inter',sans-serif;font-weight:700;font-size:11px;color:var(--ink3);margin-bottom:22px;letter-spacing:.2em;text-transform:uppercase}
+.sec-num::before{content:'';width:28px;height:1px;background:var(--ink3);flex-shrink:0}
+.ax-text{background:var(--ax-grd);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+
+/* ════════════════════════════════════
+   01  ABOUT / VISION
+════════════════════════════════════ */
+#vision{padding:120px 64px;background:transparent;position:relative;overflow:hidden}
+.vis-wrap{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:80px}
+.vis-content{display:flex;flex-direction:column}
+.vis-h2{font-size:clamp(32px,3.6vw,64px);font-weight:800;line-height:1.05;letter-spacing:-0.04em;color:var(--ink);margin-bottom:36px}
+.vis-quote{font-size:16px;color:var(--ink);line-height:2.0;font-weight:400;border-left:3px solid var(--bd2);padding-left:24px;margin-bottom:32px}
+.vis-p{font-size:14px;color:var(--ink);line-height:1.95;font-weight:400;margin-bottom:16px}
+.vis-photos{position:relative}
+.vis-photo-main{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center top;display:block;box-shadow:0 40px 80px rgba(0,0,0,.14),0 8px 24px rgba(0,0,0,.08)}
+.vis-float-card{position:absolute;bottom:-20px;left:-20px;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:20px 24px;box-shadow:0 20px 56px rgba(9,9,11,.12);display:flex;gap:16px;align-items:flex-start;max-width:260px;border:1px solid rgba(9,9,11,.07)}
+.vis-fc-bar{width:3px;min-height:44px;background:linear-gradient(180deg,var(--ac),var(--hl-d));border-radius:4px;flex-shrink:0;margin-top:2px}
+.vis-fc-q{font-size:12px;font-weight:600;color:var(--ink);line-height:1.7}
+.vis-fc-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ac);font-weight:700;margin-top:6px}
+.vis-photos::after{content:'';position:absolute;bottom:-32px;right:-32px;width:180px;height:180px;background-image:radial-gradient(circle,rgba(9,9,11,.14) 1px,transparent 1px);background-size:16px 16px;z-index:-1}
+
+@media(max-width:960px){
+  #vision{padding:80px 40px}
+  .vis-wrap{grid-template-columns:1fr;gap:64px}
+  .vis-photos{order:-1}
+  .vis-photo-main{aspect-ratio:16/9}
+  .vis-float-card{left:-8px;bottom:-16px}
+}
+@media(max-width:600px){
+  #vision{padding:72px 24px}
+}
+
+/* ════════════════════════════════════
+   02  SERVICES
+════════════════════════════════════ */
+#services{padding:128px 48px}
+.svc-header{margin-bottom:64px}
+.svc-ttl-row{display:flex;align-items:center;gap:32px}
+.svc-ttl{font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(36px,5vw,64px);letter-spacing:-0.02em;line-height:1;color:var(--ink);white-space:nowrap;flex-shrink:0}
+.svc-ttl-rule{flex:1;height:1px;background:var(--ink)}
+.svc-ttl-desc{font-size:14px;color:var(--ink);line-height:1.9;font-weight:400;max-width:560px;margin-top:14px}
+
+.svc-stack{max-width:1200px;margin:72px auto 0;display:flex;flex-direction:column;gap:32px}
+.svc-row-c{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:0;text-decoration:none;color:var(--ink);background:rgba(255,255,255,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(9,9,11,.08);overflow:hidden;transition:transform .55s cubic-bezier(.16,1,.3,1),box-shadow .55s,border-color .55s;position:relative}
+.svc-row-c::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .6s cubic-bezier(.22,1,.36,1);z-index:5}
+.svc-row-c:hover{transform:translate3d(0,-4px,0);box-shadow:0 24px 56px -8px rgba(9,9,11,.16),0 4px 12px rgba(9,9,11,.06);border-color:rgba(9,9,11,.18)}
+.svc-row-c:hover::before{transform:scaleX(1)}
+
+.svc-row-img{position:relative;overflow:hidden;min-height:340px;isolation:isolate}
+.svc-row-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.22,1,.36,1)}
+.svc-row-c:hover .svc-row-img img{transform:scale(1.06)}
+.svc-row-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,9,11,.08) 0%,transparent 35%,transparent 55%,rgba(9,9,11,.38) 100%);pointer-events:none;z-index:1;transition:background .6s}
+.svc-row-c:hover .svc-row-img::after{background:linear-gradient(180deg,rgba(9,9,11,.28) 0%,transparent 40%,transparent 45%,rgba(9,9,11,.7) 100%)}
+.svc-row-tag{position:absolute;top:18px;left:18px;z-index:2;font-family:'Inter',sans-serif;font-weight:800;font-size:10px;letter-spacing:.24em;color:#fff;padding:6px 12px;background:rgba(9,9,11,.55);backdrop-filter:blur(8px);text-transform:uppercase}
+
+.svc-row-body{padding:40px 44px;display:flex;flex-direction:column}
+.svc-row-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.svc-row-n{font-family:'Inter',sans-serif;font-weight:800;font-size:36px;color:var(--ink3);line-height:1;letter-spacing:-0.03em}
+.svc-row-sep{width:24px;height:1px;background:var(--bd2)}
+.svc-row-cat{font-family:'Inter',sans-serif;font-weight:600;font-size:12px;color:var(--ink2);letter-spacing:.08em}
+.svc-row-name{font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-0.03em;line-height:1.2;color:var(--ink);margin-bottom:16px}
+.svc-row-desc{font-size:14px;color:var(--ink2);line-height:1.95;font-weight:400;margin-bottom:22px}
+.svc-row-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
+.svc-row-tags .svc-tag{font-size:10.5px;font-weight:600;letter-spacing:.04em;padding:5px 11px;border:1px solid var(--bd2);color:var(--ink2);background:rgba(255,255,255,.5)}
+.svc-row-foot{display:flex;align-items:flex-end;gap:36px;padding-top:20px;border-top:1px solid var(--bd);margin-top:auto}
+.svc-foot-block{display:flex;flex-direction:column;gap:4px}
+.svc-foot-l{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink2)}
+.svc-foot-n{font-family:'Inter',sans-serif;font-weight:900;font-size:24px;letter-spacing:-0.04em;line-height:1;color:var(--ink)}
+.svc-row-arr{margin-left:auto;font-size:13px;font-weight:700;color:var(--ink2);display:inline-flex;align-items:center;gap:8px;padding-bottom:4px;border-bottom:1.5px solid var(--bd2);transition:color .25s,border-color .25s,gap .3s}
+.svc-row-arr em{font-style:normal;font-size:16px;transition:transform .35s}
+.svc-row-c:hover .svc-row-arr{color:var(--ink);border-color:var(--ink);gap:14px}
+
+.svc-row-detail{grid-column:1 / -1;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+.svc-row-c:hover .svc-row-detail{max-height:120px;opacity:1;transition:max-height .6s cubic-bezier(.22,1,.36,1),opacity .45s ease .12s}
+.svc-row-detail-inner{padding:18px 44px 24px;border-top:1px solid var(--bd);background:rgba(9,9,11,.025);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.svc-row-detail-label{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;margin-right:4px;flex-shrink:0}
+.svc-row-detail-item{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--ink2);padding:6px 13px;background:#fff;border:1px solid var(--bd2)}
+.svc-row-detail-item::before{content:'✓';font-size:10px;font-weight:800;color:var(--ink)}
+
+/* Featured (2枚目) */
+.svc-row-featured{background:var(--ink);color:#fff;border-color:var(--ink)}
+.svc-row-featured:hover{background:#000;border-color:#000;box-shadow:0 30px 60px rgba(9,9,11,.3)}
+.svc-row-featured::before{background:#fff}
+.svc-row-featured .svc-row-name{color:#fff}
+.svc-row-featured .svc-row-desc{color:rgba(255,255,255,.72)}
+.svc-row-featured .svc-row-cat,.svc-row-featured .svc-row-n{color:rgba(255,255,255,.5)}
+.svc-row-featured .svc-row-sep{background:rgba(255,255,255,.22)}
+.svc-row-featured .svc-row-tags .svc-tag{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.06)}
+.svc-row-featured .svc-row-foot{border-top-color:rgba(255,255,255,.14)}
+.svc-row-featured .svc-foot-l{color:rgba(255,255,255,.48)}
+.svc-row-featured .svc-foot-n{color:#fff}
+.svc-row-featured .svc-row-arr{color:rgba(255,255,255,.65);border-bottom-color:rgba(255,255,255,.25)}
+.svc-row-featured:hover .svc-row-arr{color:#fff;border-bottom-color:#fff}
+.svc-row-featured .svc-row-detail-inner{border-top-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04)}
+.svc-row-featured .svc-row-detail-item{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.78)}
+.svc-row-featured .svc-row-detail-item::before{color:#fff}
+.svc-row-featured .svc-row-detail-label{color:rgba(255,255,255,.35)}
+
+@media(max-width:900px){
+  #services{padding:80px 24px}
+  .svc-stack{gap:24px}
+  .svc-row-c{grid-template-columns:1fr}
+  .svc-row-img{min-height:220px}
+  .svc-row-body{padding:28px 24px 24px}
+  .svc-row-name{font-size:21px}
+  .svc-row-foot{gap:20px}
+  .svc-foot-n{font-size:20px}
+}
+
+/* ════════════════════════════════════
+   03  WORKS / 制作実績
+════════════════════════════════════ */
+#works{padding:128px 48px;position:relative;overflow:hidden}
+.works-head{max-width:880px;margin:0 auto 56px;text-align:center}
+.works-eyebrow{font-family:'Inter',sans-serif;font-weight:700;font-size:13px;letter-spacing:.18em;color:var(--ink2);margin-bottom:18px}
+.works-h2{font-size:clamp(34px,4.4vw,56px);font-weight:900;letter-spacing:-0.04em;line-height:1.05;color:var(--ink);margin-bottom:24px}
+.works-sub{font-size:15px;color:var(--ink2);line-height:1.95;font-weight:400}
+.works-grid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:36px 28px}
+.work-c{background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(9,9,11,.06),0 8px 28px rgba(9,9,11,.08);transition:transform .4s cubic-bezier(.22,1,.36,1),box-shadow .4s;display:flex;flex-direction:column;text-decoration:none;color:var(--ink)}
+.work-c:hover{transform:translateY(-8px);box-shadow:0 4px 12px rgba(9,9,11,.07),0 24px 52px rgba(9,9,11,.14)}
+.work-c-img{position:relative;overflow:hidden;aspect-ratio:16/10;background:var(--ink);display:flex;align-items:center;justify-content:center}
+.work-c-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s cubic-bezier(.16,1,.3,1)}
+.work-c:hover .work-c-img img{transform:scale(1.05)}
+.work-c-coming{cursor:default;pointer-events:none}
+.work-c-img-coming{background:#f3f4f6}
+.work-c-soon{font-family:'Inter',sans-serif;font-weight:800;font-size:12px;letter-spacing:.22em;color:rgba(9,9,11,.2);text-align:center}
+.work-c-coming .work-c-title{color:var(--ink3)}
+.work-c-coming .work-tag{opacity:.4}
+.work-c-body{padding:22px 24px 26px;flex:1;display:flex;flex-direction:column;gap:12px}
+.work-c-title{font-size:16px;font-weight:800;letter-spacing:-0.01em;line-height:1.45;color:var(--ink)}
+.work-c-tags{display:flex;flex-wrap:wrap;gap:6px}
+.work-tag{font-size:11px;font-weight:600;letter-spacing:.02em;padding:4px 10px;border:1px solid var(--bd2);color:var(--ink2);background:transparent}
+.works-foot{text-align:center;margin-top:64px}
+.works-more{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--ink);padding:16px 32px;border:1.5px solid var(--ink);text-decoration:none;transition:background .25s,color .25s,gap .3s}
+.works-more em{font-style:normal;transition:transform .3s}
+.works-more:hover{background:var(--ink);color:#fff;gap:14px}
+.works-more:hover em{transform:translateX(4px)}
+
+@media(max-width:1024px){.works-grid{grid-template-columns:repeat(2,1fr);gap:28px 20px}}
+@media(max-width:640px){
+  #works{padding:80px 20px}
+  .works-grid{grid-template-columns:1fr;gap:24px}
+  .works-head{margin-bottom:40px}
+}
+
+/* ════════════════════════════════════
+   04  FOOTER
+════════════════════════════════════ */
+footer.ft-wrap{background:#09090b;color:#fff;padding:80px 64px 36px}
+.ft-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 2.3fr;gap:80px;padding-bottom:80px}
+.ft-brand-block{display:flex;flex-direction:column;gap:24px}
+.ft-logo{display:block}
+.ft-logo img{height:38px;display:block;filter:brightness(0) invert(1);opacity:.98}
+.ft-tag{font-size:14px;color:#fff;line-height:1.85;font-weight:500;letter-spacing:.01em}
+.ft-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:40px 32px}
+.ft-col{display:flex;flex-direction:column;gap:18px}
+.ft-col-title{font-family:'Inter','Noto Sans JP',sans-serif;font-weight:800;font-size:17px;letter-spacing:.01em;color:#fff;margin:0}
+.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;padding:0;margin:0}
+.ft-col ul a{font-size:13.5px;font-weight:400;color:rgba(255,255,255,.7);text-decoration:none;letter-spacing:.01em;transition:color .25s}
+.ft-col ul a:hover{color:#fff}
+.ft-bottom{max-width:1280px;margin:0 auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ft-privacy{font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .25s}
+.ft-privacy:hover{color:#fff}
+.ft-copy{font-size:13px;color:rgba(255,255,255,.7);letter-spacing:.04em;margin:0}
+
+@media(max-width:900px){
+  footer.ft-wrap{padding:64px 32px 32px}
+  .ft-inner{grid-template-columns:1fr;gap:48px;padding-bottom:48px}
+  .ft-cols{grid-template-columns:repeat(2,1fr);gap:32px 24px}
+}
+@media(max-width:480px){
+  footer.ft-wrap{padding:56px 24px 28px}
+  .ft-cols{grid-template-columns:1fr;gap:28px}
+  .ft-bottom{flex-direction:column;align-items:flex-start;gap:8px}
+  .ft-logo img{height:32px}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     01  ABOUT / VISION
+════════════════════════════════════ -->
+<section id="vision">
+  <div class="vis-wrap">
+    <div class="vis-content">
+      <div class="sec-num sa">About</div>
+      <h2 class="vis-h2 sa">
+        「作って終わり」を<br>
+        なくし、ビジネスを<br>
+        <span class="ax-text">加速</span>させる。
+      </h2>
+      <div class="vis-quote sa sd1">
+        動かないホームページは、企業の資産にはなりません。<br>
+        株式会社TeeenSは、納品後も常に最適な状態へアップデートし続ける<br>
+        「生きたWebサイト」を、圧倒的なスピード感で提供します。
+      </div>
+      <p class="vis-p sa sd1">私たちの最大の強みは、他社には真似できないフットワークの軽さです。「お知らせを今すぐ更新したい」「新サービスを急ぎで掲載したい」といった日々の経営課題に、即レス・即対応の圧倒的な機動力でお応えします。</p>
+      <p class="vis-p sa sd2">さらに、手軽に始められる初期費用ゼロの月額プランから、社内資産化のための買い切りプランまで、企業の戦略に合わせた選択が可能。常識にとらわれない新しいWeb運用の形を、私たちが提案します。</p>
+    </div>
+    <div class="vis-photos sa sd1">
+      <img class="vis-photo-main"
+        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&q=85"
+        alt="チームの様子"/>
+      <div class="vis-float-card">
+        <div class="vis-fc-bar"></div>
+        <div>
+          <div class="vis-fc-q">即レス・即対応の<br>圧倒的な機動力</div>
+          <div class="vis-fc-label">Our Strength</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     02  SERVICES
+════════════════════════════════════ -->
+<section id="services">
+  <div class="sec-in">
+    <div class="svc-header sa">
+      <div class="svc-ttl-row">
+        <span class="svc-ttl">SERVICE</span>
+        <span class="svc-ttl-rule"></span>
+      </div>
+      <p class="svc-ttl-desc">企画・デザインから保守・運用まで、Webのことはすべてお任せください。<br>TeeenSが、貴社のWebをまるごとサポートします。</p>
+    </div>
+
+    <div class="svc-stack">
+
+      <!-- 01 HP -->
+      <a href="service-corporate.html" class="svc-row-c sa">
+        <div class="svc-row-img">
+          <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=900&q=85" alt="ホームページ制作"/>
+          <span class="svc-row-tag">HOMEPAGE</span>
+        </div>
+        <div class="svc-row-body">
+          <div class="svc-row-top">
+            <span class="svc-row-n">01</span>
+            <span class="svc-row-sep"></span>
+            <span class="svc-row-cat">Corporate Website</span>
+          </div>
+          <h3 class="svc-row-name">信頼と成果を生み出す<br>ホームページ制作</h3>
+          <p class="svc-row-desc">企業の第一印象を決めるコーポレートサイト。ブランドの魅力を最大限に引き出すデザインと、ビジネスを前進させる設計で、訪問者を顧客へと変える「勝てるWebサイト」を構築します。</p>
+          <div class="svc-row-tags">
+            <span class="svc-tag">STUDIO制作</span><span class="svc-tag">SEO対策</span><span class="svc-tag">スマホ対応</span><span class="svc-tag">更新しやすいCMS</span>
+          </div>
+          <div class="svc-row-foot">
+            <div class="svc-foot-block"><div class="svc-foot-l">対象</div><div class="svc-foot-n">法人・個人事業主</div></div>
+            <div class="svc-foot-block"><div class="svc-foot-l">相談</div><div class="svc-foot-n">無料</div></div>
+            <span class="svc-row-arr">詳細を見る <em>↗</em></span>
+          </div>
+        </div>
+        <div class="svc-row-detail">
+          <div class="svc-row-detail-inner">
+            <span class="svc-row-detail-label">制作内容</span>
+            <span class="svc-row-detail-item">コーポレートサイト制作</span>
+            <span class="svc-row-detail-item">会社案内ページ</span>
+            <span class="svc-row-detail-item">STUDIO / WordPress</span>
+            <span class="svc-row-detail-item">SEO・表示速度対策</span>
+            <span class="svc-row-detail-item">スマホ完全対応</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 02 LP -->
+      <a href="service-lp.html" class="svc-row-c svc-row-featured sa sd1">
+        <div class="svc-row-img">
+          <img src="https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=900&q=85" alt="ランディングページ制作"/>
+          <span class="svc-row-tag">LANDING PAGE</span>
+        </div>
+        <div class="svc-row-body">
+          <div class="svc-row-top">
+            <span class="svc-row-n">02</span>
+            <span class="svc-row-sep"></span>
+            <span class="svc-row-cat">Landing Page Strategy</span>
+          </div>
+          <h3 class="svc-row-name">ターゲットの心を動かす<br>ランディングページ（LP）制作</h3>
+          <p class="svc-row-desc">新商品のプロモーションや採用活動など、特定の目的に特化した1ページ完結のLPを制作します。訪問者を迷わせず、お問い合わせや購入などの「成果」へと直結させる、攻めのWebマーケティングを仕掛けます。</p>
+          <div class="svc-row-tags">
+            <span class="svc-tag">成果重視の構成</span><span class="svc-tag">採用・集客強化</span><span class="svc-tag">最速ローンチ</span><span class="svc-tag">スマホ最適化</span>
+          </div>
+          <div class="svc-row-foot">
+            <div class="svc-foot-block"><div class="svc-foot-l">目的</div><div class="svc-foot-n">採用・販促・集客</div></div>
+            <div class="svc-foot-block"><div class="svc-foot-l">相談</div><div class="svc-foot-n">無料</div></div>
+            <span class="svc-row-arr">詳細を見る <em>↗</em></span>
+          </div>
+        </div>
+        <div class="svc-row-detail">
+          <div class="svc-row-detail-inner">
+            <span class="svc-row-detail-label">制作内容</span>
+            <span class="svc-row-detail-item">採用LP</span>
+            <span class="svc-row-detail-item">商品・サービスLP</span>
+            <span class="svc-row-detail-item">プロモーションページ</span>
+            <span class="svc-row-detail-item">CV最大化設計</span>
+            <span class="svc-row-detail-item">高速表示対応</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 03 System / AI -->
+      <a href="service-system.html" class="svc-row-c sa sd2">
+        <div class="svc-row-img">
+          <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=900&q=85" alt="社内Webアプリ・AI開発"/>
+          <span class="svc-row-tag">SYSTEM & AI</span>
+        </div>
+        <div class="svc-row-body">
+          <div class="svc-row-top">
+            <span class="svc-row-n">03</span>
+            <span class="svc-row-sep"></span>
+            <span class="svc-row-cat">Web App & AI System</span>
+          </div>
+          <h3 class="svc-row-name">「こんなことしたい」を形にする<br>社内Webアプリ・AI開発</h3>
+          <p class="svc-row-desc">「もっと業務を楽にしたい」「こんな社内アプリが欲しい」というお客様の頭の中にあるアイデアを、最新のAI技術とシステム開発で実現します。Webの枠を超えて、あなたの理想を叶えます。</p>
+          <div class="svc-row-tags">
+            <span class="svc-tag">アイデアの実現</span><span class="svc-tag">最新AIツール活用</span><span class="svc-tag">社内専用アプリ開発</span><span class="svc-tag">業務のシステム化</span>
+          </div>
+          <div class="svc-row-foot">
+            <div class="svc-foot-block"><div class="svc-foot-l">種別</div><div class="svc-foot-n">完全オーダーメイド</div></div>
+            <div class="svc-foot-block"><div class="svc-foot-l">相談</div><div class="svc-foot-n">アイデア段階からOK</div></div>
+            <span class="svc-row-arr">詳細を見る <em>↗</em></span>
+          </div>
+        </div>
+        <div class="svc-row-detail">
+          <div class="svc-row-detail-inner">
+            <span class="svc-row-detail-label">制作内容</span>
+            <span class="svc-row-detail-item">AIチャットボット開発</span>
+            <span class="svc-row-detail-item">社内業務アプリ制作</span>
+            <span class="svc-row-detail-item">Webアプリ開発</span>
+            <span class="svc-row-detail-item">業務フローのシステム化</span>
+            <span class="svc-row-detail-item">アイデア段階からOK</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     03  WORKS / 制作実績
+════════════════════════════════════ -->
+<section id="works" class="sec">
+  <div class="sec-in">
+    <div class="works-head">
+      <p class="works-eyebrow sa">Works</p>
+      <h2 class="works-h2 sa sd1">制作実績</h2>
+      <p class="works-sub sa sd2">これまでに制作させていただいた<br>Webサイト・LPの一覧をご紹介します。</p>
+    </div>
+
+    <div class="works-grid">
+      <a href="news/2026-06-05.html" class="work-c work-c-1 sa">
+        <div class="work-c-img">
+          <img src="case1.png" alt="株式会社SENTRIX 公式サイト"/>
+        </div>
+        <div class="work-c-body">
+          <h3 class="work-c-title">株式会社SENTRIX 公式サイト</h3>
+          <div class="work-c-tags">
+            <span class="work-tag">コーポレート</span>
+            <span class="work-tag">STUDIO制作</span>
+          </div>
+        </div>
+      </a>
+
+      <div class="work-c work-c-2 work-c-coming sa sd1">
+        <div class="work-c-img work-c-img-coming">
+          <span class="work-c-soon">COMING SOON</span>
+        </div>
+        <div class="work-c-body">
+          <h3 class="work-c-title">次の実績、公開準備中</h3>
+          <div class="work-c-tags">
+            <span class="work-tag">LP制作</span>
+            <span class="work-tag">採用</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-c work-c-3 work-c-coming sa sd2">
+        <div class="work-c-img work-c-img-coming">
+          <span class="work-c-soon">COMING SOON</span>
+        </div>
+        <div class="work-c-body">
+          <h3 class="work-c-title">次の実績、公開準備中</h3>
+          <div class="work-c-tags">
+            <span class="work-tag">リニューアル</span>
+            <span class="work-tag">STUDIO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="works-foot">
+      <a href="works.html" class="works-more">制作実績をもっと見る <em>→</em></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════
+     04  FOOTER
+════════════════════════════════════ -->
+<footer class="ft-wrap">
+  <div class="ft-inner">
+    <div class="ft-brand-block">
+      <a href="/" class="ft-logo"><img src="logo-side-trans.png" alt="TeeenS"/></a>
+      <p class="ft-tag">10代の熱量で、岡山から<br>Webを変える</p>
+    </div>
+    <div class="ft-cols">
+      <div class="ft-col">
+        <h4 class="ft-col-title">About</h4>
+        <ul>
+          <li><a href="#vision">私たちについて</a></li>
+          <li><a href="#culture">会社概要</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h4 class="ft-col-title">Service</h4>
+        <ul>
+          <li><a href="service-corporate.html">コーポレートサイト制作</a></li>
+          <li><a href="service-lp.html">LP制作</a></li>
+          <li><a href="service-renewal.html">サイトリニューアル</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h4 class="ft-col-title">Works &amp; News</h4>
+        <ul>
+          <li><a href="works.html">制作実績</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h4 class="ft-col-title">Contact</h4>
+        <ul>
+          <li><a href="contact.html">無料で相談する</a></li>
+          <li><a href="#faq">よくある質問</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <a href="privacy.html" class="ft-privacy">プライバシーポリシー</a>
+    <p class="ft-copy">© 2026 株式会社TeeenS</p>
+  </div>
+</footer>
+
+<script>
+/* スクロールアニメ */
+const obs = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting) e.target.classList.add('in');
+}), {threshold:.12});
+document.querySelectorAll('.sa').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音声メモ</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+h1 { font-size: 1.4rem; margin-bottom: 20px; color: #fff; }
+#status { font-size: 0.9rem; color: #888; margin-bottom: 16px; min-height: 1.2em; }
+#status.recording { color: #ff4444; }
+#recordBtn {
+  width: 80px; height: 80px; border-radius: 50%; border: none; cursor: pointer;
+  background: #2a2a2a; color: #fff; font-size: 2rem; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 4px #333;
+}
+#recordBtn.active { background: #ff4444; box-shadow: 0 0 0 4px #ff4444, 0 0 20px rgba(255,68,68,0.4); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 4px #ff4444, 0 0 20px rgba(255,68,68,0.4); } 50% { box-shadow: 0 0 0 8px rgba(255,68,68,0.3), 0 0 30px rgba(255,68,68,0.6); } }
+#currentText { width: 100%; max-width: 600px; margin-top: 20px; padding: 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; min-height: 80px; font-size: 1rem; line-height: 1.6; color: #ccc; white-space: pre-wrap; }
+#memos { width: 100%; max-width: 600px; margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+.memo { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 16px; position: relative; }
+.memo-time { font-size: 0.75rem; color: #666; margin-bottom: 8px; }
+.memo-text { font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
+.memo-actions { display: flex; gap: 8px; margin-top: 10px; }
+.memo-actions button { background: #2a2a2a; border: 1px solid #444; color: #ccc; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+.memo-actions button:hover { background: #333; }
+.toast { position: fixed; bottom: 30px; background: #333; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<h1>🎙 音声メモ</h1>
+<div id="status">タップして録音開始</div>
+<button id="recordBtn">🎤</button>
+<div id="currentText"></div>
+<div id="memos"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+  document.getElementById('status').textContent = '⚠ このブラウザは音声認識に対応していません（Chrome推奨）';
+}
+
+const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+if (recognition) {
+  recognition.lang = 'ja-JP';
+  recognition.interimResults = true;
+  recognition.continuous = true;
+  recognition.maxAlternatives = 1;
+}
+
+const btn = document.getElementById('recordBtn');
+const statusEl = document.getElementById('status');
+const currentTextEl = document.getElementById('currentText');
+const memosEl = document.getElementById('memos');
+let isRecording = false;
+let finalText = '';
+let memos = JSON.parse(localStorage.getItem('voiceMemos') || '[]');
+
+renderMemos();
+
+btn.addEventListener('click', () => {
+  if (!recognition) return;
+  if (isRecording) stopRecording();
+  else startRecording();
+});
+
+function startRecording() {
+  finalText = '';
+  currentTextEl.textContent = '';
+  recognition.start();
+  isRecording = true;
+  btn.classList.add('active');
+  btn.textContent = '⏹';
+  statusEl.textContent = '録音中...';
+  statusEl.classList.add('recording');
+}
+
+function stopRecording() {
+  recognition.stop();
+  isRecording = false;
+  btn.classList.remove('active');
+  btn.textContent = '🎤';
+  statusEl.textContent = 'タップして録音開始';
+  statusEl.classList.remove('recording');
+  if (finalText.trim()) {
+    saveMemo(finalText.trim());
+  }
+}
+
+if (recognition) {
+  recognition.onresult = (e) => {
+    let interim = '';
+    finalText = '';
+    for (let i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+      else interim += e.results[i][0].transcript;
+    }
+    currentTextEl.textContent = finalText + interim;
+  };
+  recognition.onerror = (e) => {
+    if (e.error === 'no-speech') return;
+    statusEl.textContent = 'エラー: ' + e.error;
+    stopRecording();
+  };
+  recognition.onend = () => {
+    if (isRecording) recognition.start();
+  };
+}
+
+function saveMemo(text) {
+  const memo = { text, time: new Date().toISOString() };
+  memos.unshift(memo);
+  localStorage.setItem('voiceMemos', JSON.stringify(memos));
+  renderMemos();
+  showToast('メモを保存しました');
+}
+
+function renderMemos() {
+  memosEl.innerHTML = memos.map((m, i) => {
+    const d = new Date(m.time);
+    const t = d.toLocaleDateString('ja-JP') + ' ' + d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    return `<div class="memo">
+      <div class="memo-time">${t}</div>
+      <div class="memo-text">${esc(m.text)}</div>
+      <div class="memo-actions">
+        <button onclick="copyMemo(${i})">コピー</button>
+        <button onclick="sendToClaude(${i})">Claudeでまとめる</button>
+        <button onclick="deleteMemo(${i})">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function copyMemo(i) {
+  navigator.clipboard.writeText(memos[i].text).then(() => showToast('コピーしました'));
+}
+
+function sendToClaude(i) {
+  const prompt = '以下の会議・打ち合わせの書記録をわかりやすくまとめてください。要点・決定事項・アクションアイテムに分けて整理してください。\n\n---\n' + memos[i].text;
+  navigator.clipboard.writeText(prompt).then(() => {
+    showToast('プロンプトをコピーしました → Claudeに貼り付けてください');
+    window.open('https://claude.ai/new', '_blank');
+  });
+}
+
+function deleteMemo(i) {
+  memos.splice(i, 1);
+  localStorage.setItem('voiceMemos', JSON.stringify(memos));
+  renderMemos();
+  showToast('削除しました');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
