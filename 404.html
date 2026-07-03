@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>404 ページが見つかりません | 株式会社TeeenS</title>
+<meta name="robots" content="noindex,follow"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.52);--ink3:rgba(9,9,11,.28);
+  --bd:rgba(9,9,11,.08);--bg2:#f5f5f7;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  color:var(--ink);background:#fff;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+}
+
+/* ヘッダー */
+.nh{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bd);
+}
+.nh-in{
+  max-width:1200px;margin:0 auto;
+  padding:14px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nh-logo img{height:28px;display:block}
+.nh-home{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--ink2);
+  text-decoration:none;transition:color .2s;
+}
+.nh-home:hover{color:var(--ink)}
+
+/* メイン */
+main{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:80px 32px;
+  text-align:center;
+}
+.num{
+  font-size:clamp(80px,18vw,160px);
+  font-weight:900;letter-spacing:-0.06em;
+  line-height:1;color:var(--bg2);
+  font-family:'Inter',sans-serif;
+  margin-bottom:8px;
+  user-select:none;
+}
+.title{
+  font-size:clamp(20px,3vw,28px);
+  font-weight:800;letter-spacing:-0.02em;
+  margin-bottom:16px;
+}
+.desc{
+  font-size:15px;color:var(--ink2);
+  line-height:1.85;max-width:400px;
+  margin-bottom:48px;
+}
+.btns{
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+}
+.btn-home{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:#fff;
+  font-size:14px;font-weight:700;letter-spacing:.03em;
+  padding:14px 32px;text-decoration:none;
+  border-radius:4px;transition:opacity .2s;
+}
+.btn-home:hover{opacity:.8}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--ink);
+  font-size:14px;font-weight:700;
+  padding:14px 28px;text-decoration:none;
+  border:1.5px solid var(--bd);border-radius:4px;
+  transition:border-color .2s,background .2s;
+}
+.btn-ghost:hover{border-color:var(--ink);background:var(--bg2)}
+
+/* ナビリンク */
+.nav-links{
+  margin-top:64px;
+  padding-top:40px;
+  border-top:1px solid var(--bd);
+  width:100%;max-width:560px;
+}
+.nav-links p{
+  font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:20px;
+}
+.nav-links ul{
+  list-style:none;
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+}
+.nav-links li a{
+  display:inline-block;
+  font-size:13px;font-weight:600;color:var(--ink2);
+  text-decoration:none;padding:7px 16px;
+  border:1px solid var(--bd);border-radius:100px;
+  transition:color .18s,border-color .18s,background .18s;
+}
+.nav-links li a:hover{color:var(--ink);border-color:var(--ink);background:var(--bg2)}
+
+/* フッター */
+footer{
+  text-align:center;padding:24px;
+  font-size:12px;color:var(--ink3);
+  border-top:1px solid var(--bd);
+}
+
+@media(max-width:600px){
+  .nh-in{padding:12px 20px}
+  main{padding:60px 20px}
+  .btns{flex-direction:column;align-items:center}
+  .btn-home,.btn-ghost{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<header class="nh">
+  <div class="nh-in">
+    <a href="/" class="nh-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></a>
+    <a href="/" class="nh-home">← ホームに戻る</a>
+  </div>
+</header>
+
+<main>
+  <div class="num">404</div>
+  <h1 class="title">ページが見つかりません</h1>
+  <p class="desc">お探しのページは移動・削除されたか、URLが間違っている可能性があります。</p>
+
+  <div class="btns">
+    <a href="/" class="btn-home">ホームに戻る →</a>
+    <a href="/contact" class="btn-ghost">お問い合わせ</a>
+  </div>
+
+  <nav class="nav-links">
+    <p>よく見られるページ</p>
+    <ul>
+      <li><a href="/about">TeeenSとは</a></li>
+      <li><a href="/works">制作実績</a></li>
+      <li><a href="/pricing">料金プラン</a></li>
+      <li><a href="/service-corporate">HP制作</a></li>
+      <li><a href="/service-lp">LP制作</a></li>
+      <li><a href="/contact">無料相談</a></li>
+    </ul>
+  </nav>
+</main>
+
+<footer>
+  © 2025 株式会社TeeenS
+</footer>
+
+</body>
+</html>
