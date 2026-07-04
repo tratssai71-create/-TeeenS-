@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="description" content="岡山発のWeb制作会社・TeeenS。ホームページ制作・LP作成を初期費用0円のリーズナブルな月額プランで提供。公開後も継続サポートで伴走します。"/>
+<meta name="description" content="岡山発のWeb制作会社・株式会社TeeenS（ティーンズ）。ホームページ制作・LP作成を初期費用0円のリーズナブルな月額プランで提供。公開後も継続サポートで伴走します。"/>
 
 <title>岡山のHP・LP作成ならTeeenS｜リーズナブルで手厚いサポート</title>
 <meta name="robots" content="index,follow"/>
@@ -269,7 +269,7 @@ header{
   min-height:100vh;
   display:flex;align-items:center;justify-content:center;
   position:relative;overflow:hidden;
-  background:transparent;
+  background:#09090b;
 }
 .hero-inner{
   display:grid;grid-template-columns:1fr 1fr;
@@ -2537,7 +2537,7 @@ footer.ft-wrap{
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "株式会社TeeenS",
-  "alternateName": "TeeenS",
+  "alternateName": ["TeeenS", "株式会社ティーンズ", "ティーンズ"],
   "url": "https://teeen-s.com/",
   "logo": "https://teeen-s.com/logo-side-trans.png",
   "image": "https://teeen-s.com/hp-mockup-hero.png",
@@ -2545,7 +2545,7 @@ footer.ft-wrap{
   "founder": {
     "@type": "Person",
     "name": "新田 拓夢",
-    "url": "https://teeen-s.com/about.html"
+    "url": "https://teeen-s.com/about"
   },
   "address": {
     "@type": "PostalAddress",
@@ -3149,13 +3149,17 @@ footer.ft-wrap{
 <script>
 /* ═══════ GRAIN ═══════ */
 (function(){
-  const c=document.getElementById('grain'),ctx=c.getContext('2d');
-  const SC=3;let W,H;
-  function resize(){W=Math.ceil(window.innerWidth/SC);H=Math.ceil(window.innerHeight/SC);c.width=W;c.height=H;c.style.width='100vw';c.style.height='100vh';}
-  resize();window.addEventListener('resize',resize,{passive:true});
-  let last=0;
-  function tick(ts){if(ts-last>66){last=ts;const id=ctx.createImageData(W,H),d=id.data;for(let i=0;i<d.length;i+=4){const v=(Math.random()*255)|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=(Math.random()*16)|0;}ctx.putImageData(id,0,0);}requestAnimationFrame(tick);}
-  requestAnimationFrame(tick);
+  function startGrain(){
+    const c=document.getElementById('grain');if(!c)return;
+    const ctx=c.getContext('2d');
+    const SC=3;let W,H;
+    function resize(){W=Math.ceil(window.innerWidth/SC);H=Math.ceil(window.innerHeight/SC);c.width=W;c.height=H;c.style.width='100vw';c.style.height='100vh';}
+    resize();window.addEventListener('resize',resize,{passive:true});
+    let last=0;
+    function tick(ts){if(ts-last>66){last=ts;const id=ctx.createImageData(W,H),d=id.data;for(let i=0;i<d.length;i+=4){const v=(Math.random()*255)|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=(Math.random()*16)|0;}ctx.putImageData(id,0,0);}requestAnimationFrame(tick);}
+    requestAnimationFrame(tick);
+  }
+  if('requestIdleCallback' in window){requestIdleCallback(startGrain,{timeout:2000});}else{setTimeout(startGrain,1000);}
 })();
 
 
