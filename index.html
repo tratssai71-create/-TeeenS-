@@ -1120,6 +1120,33 @@ footer.ft-wrap{
 }
 .mob-cta-btn:hover{background:var(--ac);color:var(--ink)}
 
+.mob-toggle-group{width:72%;border-bottom:1px solid var(--bd)}
+.mob-toggle-head{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;background:none;border:none;
+  font-family:inherit;
+  font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);
+  padding:16px 0;letter-spacing:-0.02em;cursor:pointer;
+}
+.mob-toggle-arrow{
+  font-size:.5em;transition:transform .3s cubic-bezier(.22,1,.36,1);
+  display:inline-block;
+}
+.mob-toggle-group.open .mob-toggle-arrow{transform:rotate(180deg)}
+.mob-toggle-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s cubic-bezier(.22,1,.36,1);
+}
+.mob-toggle-group.open .mob-toggle-body{max-height:220px}
+.mob-sublink{
+  display:block;
+  font-size:16px;font-weight:600;color:var(--ink2);
+  text-decoration:none;padding:12px 0;
+  transition:color .18s;
+}
+.mob-sublink:hover{color:var(--ink)}
+.mob-sublink:last-child{padding-bottom:20px}
+
 /* ═══════════════════════════════════
    RESPONSIVE — Tablet (≤1024px)
 ═══════════════════════════════════ */
@@ -2628,7 +2655,18 @@ footer.ft-wrap{
 <!-- ═══════ MOBILE NAV ═══════ -->
 <div class="mob-nav" id="mob-nav">
   <a href="#hero" class="mob-link">トップページ</a>
-  <a href="#services" class="mob-link">事業内容</a>
+
+  <div class="mob-toggle-group" id="mob-svc-toggle">
+    <button type="button" class="mob-toggle-head">
+      事業内容<span class="mob-toggle-arrow">▾</span>
+    </button>
+    <div class="mob-toggle-body">
+      <a href="/service-corporate" class="mob-sublink">ホームページ制作</a>
+      <a href="/service-lp" class="mob-sublink">ランディングページ（LP）制作</a>
+      <a href="/service-system" class="mob-sublink">社内Webアプリ・AI開発</a>
+    </div>
+  </div>
+
   <a href="/about" class="mob-link">TeeenSとは</a>
   <a href="/works" class="mob-link">制作実績</a>
   <a href="/pricing" class="mob-link">料金プラン</a>
@@ -3288,9 +3326,17 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
     btn.classList.toggle('open', open);
     document.body.style.overflow = open ? 'hidden' : '';
   });
-  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>{
+  nav.querySelectorAll('.mob-link,.mob-cta-btn,.mob-sublink').forEach(a=>{
     a.addEventListener('click', close);
   });
+
+  const svcToggle = document.getElementById('mob-svc-toggle');
+  if(svcToggle){
+    const head = svcToggle.querySelector('.mob-toggle-head');
+    head.addEventListener('click', ()=>{
+      svcToggle.classList.toggle('open');
+    });
+  }
 })();
 
 /* ═══════ HERO CAROUSEL (new stage) — skipped when video bg is used ═══════ */
