@@ -3166,12 +3166,15 @@ footer.ft-wrap{
 /* ═══════ SCROLL PROGRESS ═══════ */
 (function(){
   const p=document.getElementById('spb');
-  window.addEventListener('scroll',()=>{p.style.width=Math.min(100,scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';},{passive:true});
+  if(!p)return;
+  window.__tsScrollFns=window.__tsScrollFns||[];
+  window.__tsScrollFns.push(()=>{p.style.width=Math.min(100,scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';});
 })();
 
 /* ═══════ HERO PARTICLES ═══════ */
 (function(){
   const canvas=document.getElementById('hc');if(!canvas)return;
+  if(!window.matchMedia('(hover:hover) and (pointer:fine)').matches)return; // モバイル/タッチ端末では負荷軽減のため無効化
   const ctx=canvas.getContext('2d');
   let W,H,mouse={x:-999,y:-999},particles=[];
   function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;initP();}
@@ -3202,13 +3205,14 @@ footer.ft-wrap{
 
 /* ═══════ HERO PARALLAX ═══════ */
 (function(){
-  if(window.matchMedia('(max-width:1024px)').matches)return;
+  if(window.matchMedia('(max-width:1024px)').matches)return; // モバイルは無効化
   const ghost=document.querySelector('.h-ghost');
   const bw=document.querySelector('.browser-wrap');
-  window.addEventListener('scroll',()=>{
+  window.__tsScrollFns=window.__tsScrollFns||[];
+  window.__tsScrollFns.push(()=>{
     if(ghost)ghost.style.transform=`translateY(${scrollY*.1}px)`;
     if(bw)bw.style.transform=`translateY(${-scrollY*.05}px)`;
-  },{passive:true});
+  });
 })();
 
 /* ═══════ FAQ ACCORDION (hover + tap) ═══════ */
@@ -3408,16 +3412,19 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
   const dots=[...ind.querySelectorAll('.si-dot')];
   const ids=dots.map(d=>d.getAttribute('href').slice(1));
   const sections=ids.map(id=>document.getElementById(id)).filter(Boolean);
+  let offsets=[];
+  function measure(){ offsets=sections.map(s=>s.offsetTop); } // scroll中に読まず、resize時のみ計測
   function update(){
     const y=scrollY+innerHeight*.35;
     let active=0;
-    sections.forEach((s,i)=>{ if(s.offsetTop<=y) active=i; });
+    offsets.forEach((top,i)=>{ if(top<=y) active=i; });
     dots.forEach((d,i)=>d.classList.toggle('active',i===active));
     ind.classList.toggle('show', scrollY>innerHeight*.4);
   }
-  update();
-  window.addEventListener('scroll',update,{passive:true});
-  window.addEventListener('resize',update);
+  measure();update();
+  window.__tsScrollFns=window.__tsScrollFns||[];
+  window.__tsScrollFns.push(update);
+  window.addEventListener('resize',()=>{measure();update();});
   // make dot clickable through pointer-events
   dots.forEach(d=>{d.style.pointerEvents='all';});
 })();
@@ -3427,13 +3434,29 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
   const track=document.querySelector('#marquee .mq-track');
   if(!track) return;
   let lastY=scrollY,boost=0;
-  window.addEventListener('scroll',()=>{
+  window.__tsScrollFns=window.__tsScrollFns||[];
+  window.__tsScrollFns.push(()=>{
     const dy=Math.abs(scrollY-lastY);
     lastY=scrollY;
     boost=Math.min(8,boost+dy*.06);
     track.style.animationDuration=(38/(1+boost*.05))+'s';
-  },{passive:true});
+  });
   setInterval(()=>{boost*=.92; if(boost<.05)track.style.animationDuration='38s';},120);
+})();
+
+/* ── まとめてrAFで一括処理(スクロールjank対策) ── */
+(function(){
+  const fns=window.__tsScrollFns;
+  if(!fns||!fns.length)return;
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return;
+    ticking=true;
+    requestAnimationFrame(()=>{
+      fns.forEach(fn=>fn());
+      ticking=false;
+    });
+  },{passive:true});
 })();
 
 /* ── Mobile video autoplay retry ── */
