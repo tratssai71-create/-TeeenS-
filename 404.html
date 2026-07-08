@@ -132,6 +132,30 @@ footer{
 </head>
 <body>
 
+<script>
+(function(){
+  var map = {
+    '/about.html':'/about',
+    '/pricing.html':'/pricing',
+    '/contact.html':'/contact',
+    '/privacy.html':'/privacy',
+    '/works.html':'/works',
+    '/okayama.html':'/okayama',
+    '/story.html':'/story',
+    '/service-corporate.html':'/service-corporate',
+    '/service-lp.html':'/service-lp',
+    '/service-renewal.html':'/service-renewal',
+    '/service-studio.html':'/service-studio',
+    '/service-system.html':'/service-system',
+    '/news/2026-05-30.html':'/news/2026-05-30',
+    '/news/2026-06-05.html':'/news/2026-06-05',
+    '/news/2026-06-22.html':'/news/2026-06-22'
+  };
+  var dest = map[location.pathname];
+  if(dest) location.replace(dest);
+})();
+</script>
+
 <header class="nh">
   <div class="nh-in">
     <a href="/" class="nh-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></a>
