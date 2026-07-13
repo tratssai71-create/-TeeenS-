@@ -471,7 +471,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 </section>
 
 <section id="cta">
-  <video class="cta-photo" autoplay muted loop playsinline>
+  <video class="cta-photo" autoplay muted loop playsinline preload="auto">
     <source src="/assets/business-meeting.mp4" type="video/mp4">
   </video>
   <div class="cta-shade"></div>
@@ -516,6 +516,35 @@ document.querySelectorAll('.faq-item').forEach(item=>{
   const close=()=>{nav.classList.remove('open');btn.classList.remove('open');document.body.style.overflow=''};
   btn.addEventListener('click',()=>{const o=nav.classList.toggle('open');btn.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';});
   nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>a.addEventListener('click',close));
+})();
+</script>
+<script>
+/* ── 背景動画: 自動再生を維持(再生マーク防止) ── */
+(function(){
+  var vids=document.querySelectorAll('.hero-bg-video,.cta-photo,.ab-hero-vid');
+  if(!vids.length)return;
+  vids.forEach(function(v){
+    function tryPlay(){
+      v.muted=true;
+      var p=v.play();
+      if(p&&p.catch)p.catch(function(){});
+    }
+    tryPlay();
+    v.addEventListener('pause',tryPlay);
+    v.addEventListener('stalled',tryPlay);
+    v.addEventListener('waiting',tryPlay);
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden)tryPlay();
+    });
+    document.addEventListener('touchstart',function once(){
+      tryPlay();
+      document.removeEventListener('touchstart',once);
+    },{passive:true});
+    document.addEventListener('scroll',function once(){
+      tryPlay();
+      document.removeEventListener('scroll',once);
+    },{passive:true});
+  });
 })();
 </script>
 </body>

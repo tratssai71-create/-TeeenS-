@@ -3505,24 +3505,32 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
   },{passive:true});
 })();
 
-/* ── Mobile video autoplay retry ── */
+/* ── 背景動画: 自動再生を維持(再生マーク防止) ── */
 (function(){
-  var v=document.getElementById('heroBgVideo');
-  if(!v)return;
-  function tryPlay(){
-    var p=v.play();
-    if(p&&p.catch)p.catch(function(){});
-  }
-  tryPlay();
-  document.addEventListener('touchstart',function once(){
-    v.muted=true;
+  var vids=document.querySelectorAll('.hero-bg-video,.cta-photo,.ab-hero-vid');
+  if(!vids.length)return;
+  vids.forEach(function(v){
+    function tryPlay(){
+      v.muted=true;
+      var p=v.play();
+      if(p&&p.catch)p.catch(function(){});
+    }
     tryPlay();
-    document.removeEventListener('touchstart',once);
-  },{passive:true});
-  document.addEventListener('scroll',function once(){
-    tryPlay();
-    document.removeEventListener('scroll',once);
-  },{passive:true});
+    v.addEventListener('pause',tryPlay);
+    v.addEventListener('stalled',tryPlay);
+    v.addEventListener('waiting',tryPlay);
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden)tryPlay();
+    });
+    document.addEventListener('touchstart',function once(){
+      tryPlay();
+      document.removeEventListener('touchstart',once);
+    },{passive:true});
+    document.addEventListener('scroll',function once(){
+      tryPlay();
+      document.removeEventListener('scroll',once);
+    },{passive:true});
+  });
 })();
 
 </script>

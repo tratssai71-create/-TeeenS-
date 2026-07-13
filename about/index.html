@@ -411,7 +411,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
 
 <!-- ══ 1. HERO ══ -->
 <section class="ab-hero">
-  <video class="ab-hero-vid" autoplay muted loop playsinline>
+  <video class="ab-hero-vid" autoplay muted loop playsinline preload="auto">
     <source src="/assets/moya-bg.mp4" type="video/mp4">
   </video>
   <div class="ab-hero-overlay"></div>
@@ -641,6 +641,35 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
     entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
   },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('.sa').forEach(el=>io.observe(el));
+})();
+</script>
+<script>
+/* ── 背景動画: 自動再生を維持(再生マーク防止) ── */
+(function(){
+  var vids=document.querySelectorAll('.hero-bg-video,.cta-photo,.ab-hero-vid');
+  if(!vids.length)return;
+  vids.forEach(function(v){
+    function tryPlay(){
+      v.muted=true;
+      var p=v.play();
+      if(p&&p.catch)p.catch(function(){});
+    }
+    tryPlay();
+    v.addEventListener('pause',tryPlay);
+    v.addEventListener('stalled',tryPlay);
+    v.addEventListener('waiting',tryPlay);
+    document.addEventListener('visibilitychange',function(){
+      if(!document.hidden)tryPlay();
+    });
+    document.addEventListener('touchstart',function once(){
+      tryPlay();
+      document.removeEventListener('touchstart',once);
+    },{passive:true});
+    document.addEventListener('scroll',function once(){
+      tryPlay();
+      document.removeEventListener('scroll',once);
+    },{passive:true});
+  });
 })();
 </script>
 </body>
