@@ -300,7 +300,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:
       submitBtn.textContent='送信中...';
       const res=await fetch(action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
       if(res.ok){
-        window.location.href='thanks.html';
+        window.location.href='/thanks.html';
       }else{
         submitBtn.disabled=false;
         submitBtn.textContent='送信する';
