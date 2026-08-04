@@ -2654,6 +2654,11 @@ footer.ft-wrap{
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
   </div>
 </div>
+<script>
+if(localStorage.getItem('teeens_loader_seen')){
+  document.getElementById('page-loader').style.display='none';
+}
+</script>
 
 <div id="bg-blobs">
   <div class="blob blob-1"></div>
@@ -3593,6 +3598,11 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
 (function(){
   var loader=document.getElementById('page-loader');
   if(!loader)return;
+  if(localStorage.getItem('teeens_loader_seen')){
+    loader.remove();
+    return;
+  }
+  localStorage.setItem('teeens_loader_seen','1');
   var done=false;
   var startTime=Date.now();
   var MIN_SHOW=2200; // 最低表示時間(ms): 読み込みが速すぎて一瞬で消えるのを防ぐ
