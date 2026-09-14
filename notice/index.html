@@ -241,7 +241,11 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
     btn.textContent = '送信中…';
     msg.className = 'msg';
     msg.textContent = '';
-    fetch(form.action, { method: 'POST', body: new FormData(form) })
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify((function(){ var o = {}; new FormData(form).forEach(function(v, k){ o[k] = v; }); return o; })())
+    })
       .then(function(r){ return r.json(); })
       .then(function(res){
         if(res.success){ window.location.href = '/thanks.html'; }
