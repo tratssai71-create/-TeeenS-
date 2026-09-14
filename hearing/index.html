@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LP制作 ヒアリングシート | 株式会社TeeenS（ティーンズ）岡山</title>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="description" content="LP制作のヒアリングシート。株式会社TeeenS（岡山）"/>
+<link rel="icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.32);
+  --bd:rgba(9,9,11,.1);--bd2:rgba(9,9,11,.18);
+  --bg2:#f5f5f7;--bg3:#fafafa;--ac:#09090b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.75}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+.hd{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.hd-in{max-width:820px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.hd-in img{height:28px}
+.hd-prog{flex:1;height:2px;background:var(--bd);position:relative;max-width:260px}
+.hd-prog i{position:absolute;inset:0 auto 0 0;width:0;background:var(--ac);transition:width .35s cubic-bezier(.22,1,.36,1)}
+.hd-n{font-size:11.5px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.wrap{max-width:820px;margin:0 auto;padding:56px 24px 0}
+.eyebrow{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-size:clamp(26px,4.4vw,36px);font-weight:700;letter-spacing:-.02em;margin:14px 0 18px;line-height:1.35}
+.lead{color:var(--ink2);font-size:14.5px;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.meta span{font-size:11.5px;color:var(--ink2);border:1px solid var(--bd);padding:4px 10px;background:var(--bg3)}
+
+form{max-width:820px;margin:0 auto;padding:36px 24px 100px;display:flex;flex-direction:column;gap:12px}
+section{border:1px solid var(--bd);background:var(--bg3);padding:24px}
+section h2{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px}
+section .sub{font-size:12.5px;color:var(--ink2);margin-bottom:20px}
+.f{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.f:last-child{margin-bottom:0}
+label.l{font-size:13.5px;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.req{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--ac);padding:1px 6px}
+.opt{font-size:10px;letter-spacing:.08em;color:var(--ink3);border:1px solid var(--bd);padding:0 5px}
+.hint{font-size:12.5px;color:var(--ink2);line-height:1.65}
+input[type=text],input[type=email],input[type=tel],input[type=date],textarea{
+  width:100%;background:#fff;border:1px solid var(--bd2);padding:11px 13px;font:inherit;font-size:14px;border-radius:0;
+  transition:border-color .15s,box-shadow .15s;color:var(--ink)}
+textarea{resize:vertical;min-height:96px;line-height:1.7}
+input:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(9,9,11,.07)}
+::placeholder{color:var(--ink3)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:0;height:0}
+.chip span{display:block;border:1px solid var(--bd2);padding:8px 14px;font-size:13px;cursor:pointer;background:#fff;transition:.15s;user-select:none}
+.chip span:hover{border-color:var(--ink3)}
+.chip input:checked+span{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:500}
+.chip input:focus-visible+span{outline:2px solid var(--ac);outline-offset:2px}
+
+.send{border:1px solid var(--bd);background:var(--bg2);padding:30px 24px;display:flex;flex-direction:column;gap:16px}
+.send h2{font-size:16px;font-weight:700}
+.send p{font-size:13px;color:var(--ink2);max-width:60ch}
+button{border:1px solid var(--ac);background:var(--ac);color:#fff;padding:13px 30px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;align-self:flex-start}
+button:hover{opacity:.85}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.msg{font-size:13px;min-height:20px}
+.msg.ok{color:#1c6b4a}
+.msg.ng{color:#9b2c2c}
+
+.ft{border-top:1px solid var(--bd);background:#fff}
+.ft-in{max-width:820px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11.5px;color:var(--ink3)}
+.ft-in img{height:22px;opacity:.75}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <a href="/"><img src="/logo-side-trans.png" alt="株式会社TeeenS"/></a>
+    <div class="hd-prog"><i id="pf"></i></div>
+    <div class="hd-n" id="pn">必須 0 / 7</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="eyebrow">Landing Page · Hearing Sheet</div>
+  <h1>LP制作 ヒアリングシート</h1>
+  <p class="lead">LP（ランディングページ）は「誰に・何を・どう伝えるか」で成果が決まります。いただいた内容をもとに、構成と文章はすべてこちらで作成します。<strong>書ける範囲で、空欄があっても送信できます。</strong>残りは打ち合わせで一緒に埋めていきましょう。</p>
+  <div class="meta">
+    <span>所要 5〜10分</span>
+    <span>入力内容は自動保存されます</span>
+    <span>途中で閉じても再開できます</span>
+    <span>全17問</span>
+  </div>
+</div>
+
+<form id="hf" action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="ebe0b2b8-2ef7-46ec-a4b5-e9a24776f517"/>
+  <input type="hidden" name="subject" value="【TeeenS】LPヒアリングシートが届きました"/>
+  <input type="hidden" name="redirect" value="false"/>
+  <input type="text" name="botcheck" style="display:none" tabindex="-1" autocomplete="off"/>
+
+  <section>
+    <h2>1. ご連絡先</h2>
+    <p class="sub">まずは基本の情報をお聞かせください。</p>
+    <div class="f">
+      <label class="l" for="q1">会社名・屋号 <span class="req">必須</span></label>
+      <input type="text" id="q1" name="会社名・屋号" required/>
+    </div>
+    <div class="f">
+      <label class="l" for="q2">ご記入者のお名前 <span class="req">必須</span></label>
+      <input type="text" id="q2" name="ご記入者のお名前" required/>
+    </div>
+    <div class="f">
+      <label class="l" for="q3">メールアドレス <span class="req">必須</span></label>
+      <input type="email" id="q3" name="メールアドレス" required/>
+    </div>
+    <div class="f">
+      <label class="l" for="q4">お電話番号 <span class="opt">任意</span></label>
+      <input type="tel" id="q4" name="電話番号"/>
+    </div>
+    <div class="f">
+      <label class="l" for="q5">内容を最終的に決定される方 <span class="opt">任意</span></label>
+      <p class="hint">ご記入者と別の方の場合、お名前と役職をお書きください。ここが決まっていると、確認のたびに止まることがなくなります。</p>
+      <input type="text" id="q5" name="最終決定される方"/>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 目的と、届けたい相手</h2>
+    <p class="sub">ここがページの骨組みになります。</p>
+    <div class="f">
+      <label class="l">ページの目的 <span class="req">必須</span></label>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="ページの目的" value="採用" required/><span>採用</span></label>
+        <label class="chip"><input type="radio" name="ページの目的" value="商品・サービスの販売"/><span>商品・サービスの販売</span></label>
+        <label class="chip"><input type="radio" name="ページの目的" value="問い合わせ・資料請求"/><span>問い合わせ・資料請求</span></label>
+        <label class="chip"><input type="radio" name="ページの目的" value="予約・来店"/><span>予約・来店</span></label>
+        <label class="chip"><input type="radio" name="ページの目的" value="その他"/><span>その他</span></label>
+      </div>
+    </div>
+    <div class="f">
+      <label class="l" for="q7">いちばん届けたい相手 <span class="req">必須</span></label>
+      <p class="hint">年齢・職業・地域など。実在するお客様を一人思い浮かべて書いていただくのがおすすめです。「誰でも歓迎」が、実はいちばん刺さらない書き方になります。</p>
+      <textarea id="q7" name="届けたい相手" required></textarea>
+    </div>
+    <div class="f">
+      <label class="l" for="q8">その方の悩み・不安、申し込みをためらう理由 <span class="opt">任意</span></label>
+      <p class="hint">お客様が実際に口にした言葉があれば、そのまま書いてください。ここに挙げていただいた分だけ、ページ側で先回りして解消できます。</p>
+      <textarea id="q8" name="悩み・ためらう理由"></textarea>
+    </div>
+    <div class="f">
+      <label class="l" for="q9">「これが叶えば成功」と言える状態 <span class="opt">任意</span></label>
+      <p class="hint">例：月に問い合わせが5件くる／半年で3名採用できる</p>
+      <input type="text" id="q9" name="成功の状態"/>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 商品・サービス</h2>
+    <p class="sub">文章はこちらで作成します。素材になる情報をお聞かせください。</p>
+    <div class="f">
+      <label class="l" for="q10">商品・サービス名と、その内容 <span class="req">必須</span></label>
+      <textarea id="q10" name="商品・サービスの内容" required></textarea>
+    </div>
+    <div class="f">
+      <label class="l" for="q11">価格 <span class="opt">任意</span></label>
+      <p class="hint">ページに載せるかは後で決められます。まずは実際の金額を。</p>
+      <input type="text" id="q11" name="価格"/>
+    </div>
+    <div class="f">
+      <label class="l" for="q12">他社と比べて優れている点・こだわり <span class="opt">任意</span></label>
+      <p class="hint">ご自身で「当たり前」と思っていることほど強みになります。実績や数字、お客様の声があればぜひ。</p>
+      <textarea id="q12" name="強み・実績"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. デザインと素材</h2>
+    <p class="sub">言葉にしにくい部分なので、参考ページを挙げていただくのが確実です。</p>
+    <div class="f">
+      <label class="l" for="q13">参考にしたいページ（URL）と、良いと感じた点 <span class="opt">任意</span></label>
+      <p class="hint">3つほどあると精度が上がります。「こういうのは避けたい」も歓迎です。</p>
+      <textarea id="q13" name="参考ページ"></textarea>
+    </div>
+    <div class="f">
+      <label class="l" for="q14">使いたい色／使ってほしくない色・目指したい印象 <span class="opt">任意</span></label>
+      <p class="hint">例：コーポレートカラーの青／誠実・力強い・親しみやすい</p>
+      <input type="text" id="q14" name="色・印象"/>
+    </div>
+    <div class="f">
+      <label class="l">お写真とロゴ <span class="opt">任意</span></label>
+      <p class="hint">スマホで撮ったものでも構いません。</p>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="写真・ロゴ" value="写真もロゴも用意できる"/><span>写真もロゴも用意できる</span></label>
+        <label class="chip"><input type="radio" name="写真・ロゴ" value="一部ある"/><span>一部ある</span></label>
+        <label class="chip"><input type="radio" name="写真・ロゴ" value="ない（相談したい）"/><span>ない（相談したい）</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. ページに入れるもの</h2>
+    <p class="sub">全部は入れられない場合、「絶対に必要」と書かれたものを必ず優先します。</p>
+    <div class="f">
+      <label class="l" for="q16">絶対に必要な機能 <span class="opt">任意</span></label>
+      <p class="hint">例：問い合わせフォーム／電話ボタン／LINE友だち追加／予約受付／地図／動画／写真ギャラリー／よくある質問／お客様の声／料金表／資料ダウンロード／オンライン支払い</p>
+      <textarea id="q16" name="必要な機能"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. スケジュールと費用</h2>
+    <p class="sub">お急ぎの事情があればお書きください。最短1週間で公開できます。</p>
+    <div class="f">
+      <label class="l" for="q17">公開のご希望日 <span class="req">必須</span></label>
+      <input type="date" id="q17" name="公開希望日" required/>
+    </div>
+    <div class="f">
+      <label class="l">ご希望のお支払い方法 <span class="opt">任意</span></label>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="お支払い方法" value="月額プラン（初期費用0円）"/><span>月額プラン（初期費用0円）</span></label>
+        <label class="chip"><input type="radio" name="お支払い方法" value="買い切りプラン（一括）"/><span>買い切りプラン（一括）</span></label>
+        <label class="chip"><input type="radio" name="お支払い方法" value="相談したい"/><span>相談したい</span></label>
+      </div>
+    </div>
+    <div class="f">
+      <label class="l" for="q19">その他、伝えておきたいこと <span class="opt">任意</span></label>
+      <p class="hint">「何から決めればいいかわからない」でも大歓迎です。</p>
+      <textarea id="q19" name="その他"></textarea>
+    </div>
+  </section>
+
+  <div class="send">
+    <h2>ご記入ありがとうございました</h2>
+    <p>送信すると、内容がTeeenSに届きます。空欄が残っていても送信できます。通常2営業日以内にご返信します。</p>
+    <button type="submit" id="sb">送信する</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</form>
+
+<footer class="ft">
+  <div class="ft-in">
+    <img src="/logo-side-trans.png" alt="TeeenS"/>
+    <span>ご記入いただいた内容は本件の制作目的以外には使用しません。　© 2026 株式会社TeeenS</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var form = document.getElementById('hf');
+  var KEY = 'teeens-lp-hearing-web';
+
+  // 自動保存
+  function save(){
+    try{
+      var d = {};
+      new FormData(form).forEach(function(v,k){
+        if(k === 'access_key' || k === 'subject' || k === 'redirect' || k === 'botcheck') return;
+        d[k] = v;
+      });
+      localStorage.setItem(KEY, JSON.stringify(d));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      var d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if(!d) return;
+      Object.keys(d).forEach(function(k){
+        var els = form.querySelectorAll('[name="' + CSS.escape(k) + '"]');
+        if(!els.length) return;
+        if(els[0].type === 'radio'){
+          els.forEach(function(el){ if(el.value === d[k]) el.checked = true; });
+        } else {
+          els[0].value = d[k];
+        }
+      });
+    }catch(e){}
+  }
+
+  // 進捗
+  var reqEls = Array.prototype.slice.call(form.querySelectorAll('[required]'));
+  var names = [];
+  reqEls.forEach(function(el){ if(names.indexOf(el.name) < 0) names.push(el.name); });
+  function prog(){
+    var done = names.filter(function(n){
+      var els = form.querySelectorAll('[name="' + CSS.escape(n) + '"]');
+      if(els[0].type === 'radio'){
+        return Array.prototype.some.call(els, function(el){ return el.checked; });
+      }
+      return els[0].value.trim() !== '';
+    }).length;
+    document.getElementById('pf').style.width = Math.round(done / names.length * 100) + '%';
+    document.getElementById('pn').textContent = '必須 ' + done + ' / ' + names.length;
+  }
+
+  form.addEventListener('input', function(){ save(); prog(); });
+  form.addEventListener('change', function(){ save(); prog(); });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = document.getElementById('sb');
+    var msg = document.getElementById('msg');
+    btn.disabled = true;
+    btn.textContent = '送信中…';
+    msg.className = 'msg';
+    msg.textContent = '';
+    fetch(form.action, { method: 'POST', body: new FormData(form) })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if(res.success){
+          try{ localStorage.removeItem(KEY); }catch(e){}
+          window.location.href = '/thanks.html';
+        } else {
+          throw new Error(res.message || '送信できませんでした');
+        }
+      })
+      .catch(function(){
+        btn.disabled = false;
+        btn.textContent = '送信する';
+        msg.className = 'msg ng';
+        msg.textContent = '送信できませんでした。お手数ですが、時間をおいて再度お試しいただくか、お電話・LINEでご連絡ください。';
+      });
+  });
+
+  restore();
+  prog();
+})();
+</script>
+</body>
+</html>
