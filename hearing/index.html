@@ -95,7 +95,7 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
     <span>所要 5〜10分</span>
     <span>入力内容は自動保存されます</span>
     <span>途中で閉じても再開できます</span>
-    <span>全17問</span>
+    <span>全16問</span>
   </div>
 </div>
 
@@ -124,11 +124,6 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
       <label class="l" for="q4">お電話番号 <span class="opt">任意</span></label>
       <input type="tel" id="q4" name="電話番号"/>
     </div>
-    <div class="f">
-      <label class="l" for="q5">内容を最終的に決定される方 <span class="opt">任意</span></label>
-      <p class="hint">ご記入者と別の方の場合、お名前と役職をお書きください。ここが決まっていると、確認のたびに止まることがなくなります。</p>
-      <input type="text" id="q5" name="最終決定される方"/>
-    </div>
   </section>
 
   <section>
@@ -150,11 +145,6 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
       <textarea id="q7" name="届けたい相手" required></textarea>
     </div>
     <div class="f">
-      <label class="l" for="q8">その方の悩み・不安、申し込みをためらう理由 <span class="opt">任意</span></label>
-      <p class="hint">お客様が実際に口にした言葉があれば、そのまま書いてください。ここに挙げていただいた分だけ、ページ側で先回りして解消できます。</p>
-      <textarea id="q8" name="悩み・ためらう理由"></textarea>
-    </div>
-    <div class="f">
       <label class="l" for="q9">「これが叶えば成功」と言える状態 <span class="opt">任意</span></label>
       <p class="hint">例：月に問い合わせが5件くる／半年で3名採用できる</p>
       <input type="text" id="q9" name="成功の状態"/>
@@ -163,7 +153,12 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 
   <section>
     <h2>3. 商品・サービス</h2>
-    <p class="sub">文章はこちらで作成します。素材になる情報をお聞かせください。</p>
+    <p class="sub">入れたいキャッチコピーや、載せたい言葉があればお聞かせください。</p>
+    <div class="f">
+      <label class="l" for="q20">入れたいキャッチコピー・言葉 <span class="opt">任意</span></label>
+      <p class="hint">ページの一番上に大きく出る言葉です。すでにお使いのスローガンや、「この言葉は必ず入れたい」というものがあればお書きください。方向性だけ（力強く／やさしく など）でも構いません。</p>
+      <textarea id="q20" name="入れたいキャッチコピー"></textarea>
+    </div>
     <div class="f">
       <label class="l" for="q10">商品・サービス名と、その内容 <span class="req">必須</span></label>
       <textarea id="q10" name="商品・サービスの内容" required></textarea>
