@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "3030"],
       "port": 3030
+    },
+    {
+      "name": "origin-medaka-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8811", "--directory", "origin-medaka"],
+      "port": 8811
     }
   ]
 }
