@@ -4,21 +4,54 @@
 <style>body{margin:0;background:#f4f4f4;font-family:sans-serif}.page{max-width:412px;margin:0 auto;background:#fff;min-height:200vh;padding:24px 16px;color:#333}</style>
 </head><body>
 <div class="page"><h1>プレビュー</h1><p>右下にLINE CTAが固定表示されます。スクロールしても追従します。</p></div>
-<!-- ===== 右下固定 LINE CTA ===== -->
+<!-- ===== 右下固定 LINE CTA（Studio埋め込み用） ===== -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet">
 <style>
   .hm-fcta, .hm-fcta * { box-sizing:border-box; margin:0; padding:0; }
-  .hm-fcta { position:fixed; right:max(12px, calc((100vw - 412px) / 2 + 12px)); bottom:calc(16px + env(safe-area-inset-bottom)); z-index:9990; display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; font-family:"Noto Sans JP",sans-serif; -webkit-tap-highlight-color:transparent; }
-  .hm-fcta-balloon { position:relative; background:#fff; color:#121212; border-radius:999px; padding:6px 11px; box-shadow:0 2px 8px rgba(0,0,0,.16); font:700 11px/1.3 "Noto Sans JP",sans-serif; white-space:nowrap; }
-  .hm-fcta-balloon::after { content:""; position:absolute; left:50%; bottom:-5px; margin-left:-5px; border:5px solid transparent; border-top-color:#fff; border-bottom:0; }
-  .hm-fcta-btn { width:72px; height:72px; border-radius:50%; background:#06C755; box-shadow:0 3px 8px rgba(0,0,0,.18); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
-  .hm-fcta-btn svg { width:34px; height:34px; display:block; }
-  .hm-fcta-btn span { font:700 10px/1 "Noto Sans JP",sans-serif; color:#fff; }
+  .hm-fcta {
+    position:fixed;
+    right:max(12px, calc((100vw - 412px) / 2 + 12px));
+    bottom:calc(16px + env(safe-area-inset-bottom));
+    z-index:9990;
+    display:flex; flex-direction:column; align-items:flex-end;
+    text-decoration:none;
+    font-family:"Noto Sans JP",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .hm-fcta-balloon {
+    position:relative; margin-right:34px; margin-bottom:10px;
+    background:#fff; color:#121212;
+    border:3px solid #121212; border-radius:14px;
+    padding:9px 14px;
+    font:900 15px/1.2 "Noto Sans JP",sans-serif;
+    white-space:nowrap;
+  }
+  .hm-fcta-balloon em { font-style:normal; color:#06C755; }
+  .hm-fcta-balloon::after {
+    content:""; position:absolute; right:22px; bottom:-11px;
+    border:9px solid transparent; border-top:10px solid #121212; border-bottom:0;
+  }
+  .hm-fcta-btn {
+    width:112px; height:112px; border-radius:50%;
+    background:#5BC766;
+    border:4px solid #121212;
+    box-shadow:inset 0 0 0 4px #fff, 0 6px 14px rgba(0,0,0,.2);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    transition:transform .15s;
+  }
+  .hm-fcta:active .hm-fcta-btn { transform:scale(.95); }
+  .hm-fcta-btn svg { width:44px; height:38px; display:block; }
+  .hm-fcta-btn span { font:900 16px/1 "Noto Sans JP",sans-serif; color:#fff; }
 </style>
+
+<!-- href をLINE友だち追加URLに差し替え -->
 <a class="hm-fcta" href="https://lin.ee/XXXXXXX" target="_blank" rel="noopener" aria-label="LINEで相談する（友だち追加）">
-  <span class="hm-fcta-balloon">まずはLINEで相談</span>
+  <span class="hm-fcta-balloon">まずは<em>LINE</em>で相談</span>
   <span class="hm-fcta-btn">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+    <svg viewBox="0 0 44 38" aria-hidden="true">
+      <path fill="#fff" d="M22 1C10.4 1 1 8.2 1 17.1c0 7.9 7.4 14.5 17.4 15.8.7.1 1.6.4 1.8 1 .2.5.1 1.3.1 1.8l-.3 1.8c-.1.5-.4 2 1.8 1.1 2.2-.9 12-7 16.4-12.1C41.6 23.6 43 20.4 43 17.1 43 8.2 33.6 1 22 1z"/>
+      <text x="22" y="21.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="10" fill="#5BC766">LINE</text>
+    </svg>
     <span>友だち追加</span>
   </span>
 </a>
