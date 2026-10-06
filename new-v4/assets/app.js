@@ -19,7 +19,7 @@
     {ax:0.56,ratio:.78,rot:.20, spin:-.030,k:-.00090,sp: .26,ph:3.0,blue:false,w:1.4,al:.5, n:1},
     {ax:1.26,ratio:.38,rot:2.10,spin: .008,k: .00025,sp:-.08,ph:5.2,blue:false,w:1.1,al:.4, n:2},
     {ax:0.94,ratio:.14,rot:-1.8,spin: .012,k:-.00040,sp: .14,ph:0.7,blue:false,w:1.2,al:.45,n:1},
-    {ax:0.42,ratio:.88,rot:.90, spin: .034,k: .00100,sp:-.30,ph:2.6,blue:true, w:1.8,al:.6, n:1},
+    {ax:0.42,ratio:.88,rot:.90, spin: .034,k: .00100,sp:-.30,ph:2.6,blue:false, w:1.8,al:.6, n:1},
     {ax:1.40,ratio:.52,rot:-.25,spin:-.006,k: .00020,sp: .07,ph:4.4,blue:false,w:1.0,al:.32,n:1},
     {ax:0.78,ratio:.26,rot:2.7, spin:-.022,k: .00070,sp: .18,ph:1.8,blue:false,w:1.3,al:.48,n:1}
   ];

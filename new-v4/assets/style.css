@@ -3,7 +3,7 @@
 :root{
   --ink:#222;
   --ink2:#666;
-  --red:#2f6bff;
+  --red:#222;
   --panel:#faf9f8;
   --line:#dcdcdc;
 }
@@ -60,7 +60,7 @@ header{
 .copy-main span:nth-child(2){animation-delay:.25s}
 .copy-main i{font-style:normal;display:inline-block}
 @media(max-width:520px){.copy-main{font-size:clamp(24px,7.4vw,34px);letter-spacing:.05em}}
-.copy-sub{font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-weight:200;font-size:clamp(15px,1.7vw,20px);letter-spacing:.22em;color:var(--red);margin-top:26px;opacity:0;animation:up 1.2s .7s cubic-bezier(.22,1,.36,1) forwards}
+.copy-sub{font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-weight:200;font-size:clamp(15px,1.7vw,20px);letter-spacing:.22em;color:var(--ink2);margin-top:26px;opacity:0;animation:up 1.2s .7s cubic-bezier(.22,1,.36,1) forwards}
 .copy-txt{font-size:14px;color:var(--ink2);margin-top:22px;line-height:2.1;opacity:0;animation:up 1.2s 1s cubic-bezier(.22,1,.36,1) forwards}
 @keyframes up{to{opacity:1;transform:none}}
 .scroll-ind{
@@ -305,7 +305,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 .form .opt{background:#eee;color:#777}
 .form input[type=text],.form input[type=email],.form input[type=tel],.form select,.form textarea{width:100%;font-family:inherit;font-size:15px;padding:15px 16px;border:1px solid var(--line);background:rgba(255,255,255,.9);border-radius:6px;transition:border-color .2s,box-shadow .2s;color:var(--ink)}
 .form textarea{min-height:170px;resize:vertical}
-.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(47,107,255,.12)}
+.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(0,0,0,.10)}
 .form .agree{font-size:13px;display:flex;gap:10px;align-items:flex-start}
 .form .agree a{color:var(--red);text-decoration:underline}
 .form button[type=submit]{font-family:inherit;border:none;cursor:pointer;margin-top:10px;font-size:15px}
@@ -343,3 +343,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 .featured.featured-after{background:#fff;box-shadow:none}
 
 .about-photo img{border:1px solid var(--line);background:#fff}
+
+/* ロゴ画像（黒のロゴをそのまま使用） */
+.logo img{height:30px;width:auto;display:block}
+.ft .logo img{height:30px}
