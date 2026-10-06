@@ -347,3 +347,5 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 /* ロゴ画像（黒のロゴをそのまま使用） */
 .logo img{height:30px;width:auto;display:block}
 .ft .logo img{height:30px}
+
+.about-photo img{height:auto;max-height:none}
