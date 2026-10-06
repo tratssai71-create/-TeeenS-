@@ -24,7 +24,20 @@
     {ax:0.78,ratio:.26,rot:2.7, spin:-.022,k: .00070,sp: .18,ph:1.8,blue:false,w:1.3,al:.48,n:1}
   ];
 
+  var NP=84, FORM=3.4, HOLD=4.8, DISP=3.0, CYC=FORM+HOLD+DISP, GATH=2.6;
+  function clamp01(t){return t<0?0:t>1?1:t}
+  function easeIO(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+  function gEase(t){return 1-Math.pow(1-clamp01(t),3.2)}
+  for(var oi=0;oi<ORBITS.length;oi++){var oo=ORBITS[oi];oo.off=(oi*2.3)%CYC;oo.cyc=-1;oo.sc=null;oo.X=new Float32Array(NP);oo.Y=new Float32Array(NP);}
+
   var W,H,dpr,cx,cy,R,isPC=true;
+  function makeScatter(o){
+    o.sc=[];
+    for(var k=0;k<NP;k++){
+      var ang=Math.random()*TAU, rr=R*(.45+Math.random()*1.15);
+      o.sc.push({x:cx+Math.cos(ang)*rr*1.15,y:cy+Math.sin(ang)*rr*.85,d:Math.random()*.25});
+    }
+  }
   function build(){
     var r=canvas.getBoundingClientRect();
     W=r.width;H=r.height;
@@ -34,6 +47,7 @@
     isPC=W>=1024;
     cx=W*.5;cy=H*.5;
     R=isPC?Math.min(640,W*.44):W*.62;
+    for(var q=0;q<ORBITS.length;q++)ORBITS[q].sc=null;
   }
 
   var contents=document.getElementById('contents');
@@ -80,26 +94,66 @@
       var o=ORBITS[i];
       var rx=R*o.ax*scale*breath, ry=rx*o.ratio;
       var th=o.rot+t*o.spin+sy*o.k;
-      ctx.lineWidth=o.w;
-      ctx.strokeStyle=o.blue?'rgba('+BLUE+','+o.al+')':'rgba('+INK+','+o.al+')';
-      ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,th,0,TAU);ctx.stroke();
-
-      /* 軌道上を回る点と、その後ろに伸びる光の尾 */
-      for(var pk=0;pk<o.n;pk++){
-      var a=o.ph+pk*TAU/o.n+t*o.sp*TAU*.35+sy*o.k*3;
       var cs=Math.cos(th),sn=Math.sin(th);
-      function pt(ang){var ex=rx*Math.cos(ang),ey=ry*Math.sin(ang);return [cx+ex*cs-ey*sn,cy+ex*sn+ey*cs];}
-      var dir=o.sp>=0?1:-1, steps=16;
-      for(var s=0;s<steps;s++){
-        var a1=a-dir*(s/steps)*1.1, a2=a-dir*((s+1)/steps)*1.1;
-        var p1=pt(a1),p2=pt(a2);
-        ctx.strokeStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+((1-s/steps)*(o.blue?.95:.8)).toFixed(3)+')';
-        ctx.lineWidth=o.w+2.2*(1-s/steps);
-        ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
+
+      /* 軌道ごとに時間をずらして、「集まる → 保つ → 散る」を繰り返す */
+      var tt=reduce?(FORM+HOLD*.4):(t+o.off);
+      var cyc=Math.floor(tt/CYC), lt=tt-cyc*CYC;
+      var inForm=lt<FORM, inDisp=lt>=FORM+HOLD, inHold=!inForm&&!inDisp;
+      var dp=inDisp?clamp01((lt-FORM-HOLD)/DISP):0;
+      if(!o.sc||(inDisp&&o.cyc!==cyc)){makeScatter(o);o.cyc=cyc;}
+      var A_disp=1-easeIO(dp);
+      var lineDp=clamp01(dp*2.2);
+      var conn=inForm?easeIO(clamp01((lt-.4-i*.04)/1.6)):inHold?1:(1-easeIO(lineDp));
+      var lineFade=inForm?(.3+.7*clamp01((lt-1.7)/1.0)):inHold?1:(1-easeIO(lineDp));
+      var dotsA=inForm?(1-clamp01((lt-1.4)/.6))*.8:clamp01((1-conn)/.6)*.8;
+      var pf=inForm?clamp01((lt-(FORM-.6))/.6):inHold?1:1-clamp01(dp*3);
+
+      var X=o.X,Y=o.Y;
+      for(var k=0;k<NP;k++){
+        var ang=k/NP*TAU, ex=rx*Math.cos(ang), ey=ry*Math.sin(ang);
+        var tx=cx+ex*cs-ey*sn, ty=cy+ex*sn+ey*cs;
+        var A=inForm?gEase((lt-o.sc[k].d)/GATH):inHold?1:A_disp;
+        X[k]=o.sc[k].x+(tx-o.sc[k].x)*A;
+        Y[k]=o.sc[k].y+(ty-o.sc[k].y)*A;
       }
-      var p=pt(a);
-      ctx.fillStyle=o.blue?'rgb('+BLUE+')':'rgb('+INK+')';
-      ctx.beginPath();ctx.arc(p[0],p[1],o.blue?5.5:4,0,TAU);ctx.fill();
+
+      if(dotsA>.01){
+        ctx.fillStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+dotsA.toFixed(3)+')';
+        ctx.beginPath();
+        for(var d=0;d<NP;d++){ctx.moveTo(X[d]+2,Y[d]);ctx.arc(X[d],Y[d],2,0,TAU);}
+        ctx.fill();
+      }
+      var la=o.al*lineFade;
+      if(la>.01){
+        ctx.lineWidth=o.w;
+        ctx.strokeStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+la.toFixed(3)+')';
+        var limit=conn*NP, start=(i*17)%NP;
+        ctx.beginPath();
+        for(var sg=0;sg<NP;sg++){
+          if(((sg-start+NP)%NP)>=limit)continue;
+          var nx=(sg+1)%NP;
+          ctx.moveTo(X[sg],Y[sg]);ctx.lineTo(X[nx],Y[nx]);
+        }
+        ctx.stroke();
+      }
+
+      /* 軌道上を回る点と、その後ろに伸びる光の尾（軌道が整っている間だけ） */
+      if(pf>.02){
+        function pt(ang){var ex=rx*Math.cos(ang),ey=ry*Math.sin(ang);return [cx+ex*cs-ey*sn,cy+ex*sn+ey*cs];}
+        for(var pk=0;pk<o.n;pk++){
+          var a0=o.ph+pk*TAU/o.n+t*o.sp*TAU*.35+sy*o.k*3;
+          var dir=o.sp>=0?1:-1, steps=16;
+          for(var st=0;st<steps;st++){
+            var p1=pt(a0-dir*(st/steps)*1.1),p2=pt(a0-dir*((st+1)/steps)*1.1);
+            ctx.strokeStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+((1-st/steps)*(o.blue?.95:.8)*pf).toFixed(3)+')';
+            ctx.lineWidth=o.w+2.2*(1-st/steps);
+            ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
+          }
+          var pp=pt(a0);
+          ctx.fillStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+pf.toFixed(3)+')';
+          ctx.beginPath();ctx.arc(pp[0],pp[1],o.blue?5.5:4,0,TAU);ctx.fill();
+        }
       }
     }
 
