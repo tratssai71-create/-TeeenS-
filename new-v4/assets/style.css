@@ -349,3 +349,5 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 .ft .logo img{height:30px}
 
 .about-photo img{height:auto;max-height:none}
+
+.featured[hidden]{display:none!important}
