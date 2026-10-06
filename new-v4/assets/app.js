@@ -24,11 +24,11 @@
     {ax:0.78,ratio:.26,rot:2.7, spin:-.022,k: .00070,sp: .18,ph:1.8,blue:false,w:1.3,al:.48,n:1}
   ];
 
-  var NP=84, FORM=3.4, HOLD=4.8, DISP=3.0, CYC=FORM+HOLD+DISP, GATH=2.6;
+  var NP=84, FORM=3.2, HOLD=7.0, DISP=2.4, CYC=FORM+HOLD+DISP, GATH=2.4;   // 揃って静かな時間(HOLD)を長く、散る時間(DISP)を短く
   function clamp01(t){return t<0?0:t>1?1:t}
   function easeIO(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
   function gEase(t){return 1-Math.pow(1-clamp01(t),3.2)}
-  for(var oi=0;oi<ORBITS.length;oi++){var oo=ORBITS[oi];oo.off=(oi*2.3)%CYC;oo.cyc=-1;oo.sc=null;oo.X=new Float32Array(NP);oo.Y=new Float32Array(NP);}
+  for(var oi=0;oi<ORBITS.length;oi++){var oo=ORBITS[oi];oo.off=oi*.16;oo.cyc=-1;oo.sc=null;oo.X=new Float32Array(NP);oo.Y=new Float32Array(NP);}
 
   var W,H,dpr,cx,cy,R,isPC=true;
   function makeScatter(o){
