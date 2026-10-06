@@ -265,3 +265,57 @@ document.documentElement.classList.add('js-draw');
     if(empty)empty.hidden=n>0;
   });
 })();
+
+
+/* ═══════ 出現時のモーション（各所）═══════ */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var root=document.documentElement; root.classList.add('mo');
+
+  /* 1. 見出しの英字：1文字ずつ下からせり上がる */
+  document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t').forEach(function(el){
+    var t=el.textContent; el.setAttribute('aria-label',t); el.textContent='';
+    var i=0; Array.prototype.forEach.call(t,function(c){
+      var s=document.createElement('span'); s.className='ch'; s.setAttribute('aria-hidden','true');
+      s.style.setProperty('--i',i++); s.textContent=(c===' ')?'\u00a0':c; el.appendChild(s);
+    });
+  });
+
+  /* 2. カード・行は、順番にずれて現れる（横並びの中の位置で遅れを付ける） */
+  var groups=[['.sgrid','.scell'],['.wgrid','.wcell'],['.grid3','.cell'],['.plans','.plan'],['.flow','.step'],['.nlist','.nitem'],['.faq','.faq-item'],['.vs','div']];
+  var all=[];
+  groups.forEach(function(g){
+    document.querySelectorAll(g[0]).forEach(function(box){
+      var kids=g[0]==='.vs'?[].slice.call(box.children):[].slice.call(box.querySelectorAll(':scope > '+g[1]));
+      kids.forEach(function(k,idx){ k.classList.add('rvi'); k.style.setProperty('--i',idx); all.push(k); });
+    });
+  });
+
+  /* 3. アイコンの線を、描くように見せる */
+  document.querySelectorAll('.wicon,.sicon').forEach(function(svg){
+    svg.classList.add('draw');
+    svg.querySelectorAll('path,circle,rect,line').forEach(function(p){
+      var L=60; try{L=Math.ceil(p.getTotalLength())+2;}catch(e){}
+      p.style.setProperty('--len',L);
+    });
+  });
+
+  /* 4. 数字は 0 から数え上がる */
+  function countUp(el){
+    var m=el.textContent.match(/^(\d+)(.*)$/); if(!m||+m[1]===0)return;
+    var to=+m[1], rest=m[2], t0=null;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/1100); var e=1-Math.pow(1-p,3);
+      el.textContent=Math.round(to*e)+rest; if(p<1)requestAnimationFrame(step); }
+    el.textContent='0'+rest; requestAnimationFrame(step);
+  }
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting)return;
+      var el=e.target; el.classList.add('in'); io.unobserve(el);
+      setTimeout(function(){el.classList.add('done');},1400);
+      el.querySelectorAll('.wmeta b').forEach(countUp);
+    });
+  },{threshold:.12,rootMargin:'0px 0px -30px 0px'});
+  all.forEach(function(k){io.observe(k);});
+})();

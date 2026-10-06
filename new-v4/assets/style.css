@@ -424,3 +424,21 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
   .ntitle{grid-column:1 / -1}
   .narr{display:none}
 }
+
+/* ═══════ 出現時のモーション ═══════ */
+/* 見出しの英字：1文字ずつ、下から押し上げられる */
+.mo .sec-title .en-t,.mo .page-hero .eyebrow,.mo .cta-band .en-t{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
+.mo .ch{display:inline-block;transform:translateY(112%);transition:transform .9s cubic-bezier(.22,1,.36,1);transition-delay:calc(var(--i) * 38ms + .05s)}
+.mo .in .ch,.mo .rv.in .ch{transform:none}
+/* カード・行：順番にずれて現れる */
+.mo .rvi{opacity:0;transform:translateY(36px) scale(.985);transition:opacity .8s cubic-bezier(.22,1,.36,1),transform .95s cubic-bezier(.22,1,.36,1),background .25s;transition-delay:calc(var(--i,0) * 110ms),calc(var(--i,0) * 110ms),0s}
+.mo .rvi.in{opacity:1;transform:none}
+.mo .rvi.done{transition-delay:0s}
+.mo .nitem.rvi,.mo .faq-item.rvi,.mo .step.rvi{transform:translateX(-30px)}
+.mo .nitem.rvi.in,.mo .faq-item.rvi.in,.mo .step.rvi.in{transform:none}
+/* アイコン：線が描かれる */
+.mo .draw path,.mo .draw circle,.mo .draw rect,.mo .draw line{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);transition-delay:calc(var(--i,0) * 110ms + .35s)}
+.mo .in .draw path,.mo .in .draw circle,.mo .in .draw rect,.mo .in .draw line{stroke-dashoffset:0}
+/* 写真：カーテンが開くように現れ、少し縮む */
+.mo .about-photo.rv img{clip-path:inset(0 0 100% 0);transform:scale(1.14);transition:clip-path 1.4s cubic-bezier(.77,0,.18,1) .15s,transform 1.8s cubic-bezier(.22,1,.36,1) .15s}
+.mo .about-photo.in img{clip-path:inset(0 0 0 0);transform:none}
