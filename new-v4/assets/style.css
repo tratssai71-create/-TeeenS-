@@ -341,3 +341,5 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 /* トップ：最初に覆いかぶさるのは About。Featured はその後ろで背景を透かす */
 .first-panel{background:var(--panel);box-shadow:0 -24px 60px rgba(0,0,0,.04)}
 .featured.featured-after{background:#fff;box-shadow:none}
+
+.about-photo img{border:1px solid var(--line);background:#fff}
