@@ -12,10 +12,16 @@
 
   /* 軌道：ax=横の大きさ ratio=縦横比 rot=初期の傾き spin=自転の速さ k=スクロール連動の強さ sp=点の周回の速さ */
   var ORBITS=[
-    {ax:1.00,ratio:.30,rot:.35, spin: .020,k: .00045,sp: .16,ph:0.0,blue:false,w:1.6},
-    {ax:0.86,ratio:.46,rot:-.55,spin:-.015,k:-.00060,sp:-.12,ph:2.1,blue:false,w:1.6},
-    {ax:0.70,ratio:.62,rot:1.25,spin: .026,k: .00080,sp: .22,ph:4.0,blue:true, w:2.4},
-    {ax:1.12,ratio:.20,rot:-1.0,spin:-.010,k: .00030,sp: .10,ph:1.0,blue:false,w:1.2}
+    {ax:1.00,ratio:.30,rot:.35, spin: .020,k: .00045,sp: .16,ph:0.0,blue:false,w:1.6,al:.55,n:2},
+    {ax:0.86,ratio:.46,rot:-.55,spin:-.015,k:-.00060,sp:-.12,ph:2.1,blue:false,w:1.6,al:.55,n:1},
+    {ax:0.70,ratio:.62,rot:1.25,spin: .026,k: .00080,sp: .22,ph:4.0,blue:true, w:2.4,al:.8, n:2},
+    {ax:1.12,ratio:.20,rot:-1.0,spin:-.010,k: .00030,sp: .10,ph:1.0,blue:false,w:1.2,al:.5, n:1},
+    {ax:0.56,ratio:.78,rot:.20, spin:-.030,k:-.00090,sp: .26,ph:3.0,blue:false,w:1.4,al:.5, n:1},
+    {ax:1.26,ratio:.38,rot:2.10,spin: .008,k: .00025,sp:-.08,ph:5.2,blue:false,w:1.1,al:.4, n:2},
+    {ax:0.94,ratio:.14,rot:-1.8,spin: .012,k:-.00040,sp: .14,ph:0.7,blue:false,w:1.2,al:.45,n:1},
+    {ax:0.42,ratio:.88,rot:.90, spin: .034,k: .00100,sp:-.30,ph:2.6,blue:true, w:1.8,al:.6, n:1},
+    {ax:1.40,ratio:.52,rot:-.25,spin:-.006,k: .00020,sp: .07,ph:4.4,blue:false,w:1.0,al:.32,n:1},
+    {ax:0.78,ratio:.26,rot:2.7, spin:-.022,k: .00070,sp: .18,ph:1.8,blue:false,w:1.3,al:.48,n:1}
   ];
 
   var W,H,dpr,cx,cy,R,isPC=true;
@@ -75,11 +81,12 @@
       var rx=R*o.ax*scale*breath, ry=rx*o.ratio;
       var th=o.rot+t*o.spin+sy*o.k;
       ctx.lineWidth=o.w;
-      ctx.strokeStyle=o.blue?'rgba('+BLUE+',.8)':'rgba('+INK+',.55)';
+      ctx.strokeStyle=o.blue?'rgba('+BLUE+','+o.al+')':'rgba('+INK+','+o.al+')';
       ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,th,0,TAU);ctx.stroke();
 
       /* 軌道上を回る点と、その後ろに伸びる光の尾 */
-      var a=o.ph+t*o.sp*TAU*.35+sy*o.k*3;
+      for(var pk=0;pk<o.n;pk++){
+      var a=o.ph+pk*TAU/o.n+t*o.sp*TAU*.35+sy*o.k*3;
       var cs=Math.cos(th),sn=Math.sin(th);
       function pt(ang){var ex=rx*Math.cos(ang),ey=ry*Math.sin(ang);return [cx+ex*cs-ey*sn,cy+ex*sn+ey*cs];}
       var dir=o.sp>=0?1:-1, steps=16;
@@ -93,6 +100,7 @@
       var p=pt(a);
       ctx.fillStyle=o.blue?'rgb('+BLUE+')':'rgb('+INK+')';
       ctx.beginPath();ctx.arc(p[0],p[1],o.blue?5.5:4,0,TAU);ctx.fill();
+      }
     }
 
     if(reduce&&openRaw===openTarget){running=false;return;}
