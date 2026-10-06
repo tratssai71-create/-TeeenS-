@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&amp;text=0123456789.%2C%25%2B%3A&amp;display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/style.css?v=202610061058"/>
+<link rel="stylesheet" href="assets/style.css?v=202610061221"/>
 </head>
 <body>
 
@@ -57,27 +57,8 @@
 
 <div class="contents" id="contents">
 
-  <!-- FEATURED -->
-  <div class="featured">
-    <div class="wrap">
-      <div class="feat-in">
-        <div class="rv">
-          <p class="feat-label">Featured Plan</p>
-          <h2 class="feat-h">初期費用0円で始める<br>月額制ホームページ</h2>
-          <p class="feat-p">アカウントを共有し、日々の更新や管理をTeeenSにお任せいただけるサブスクプラン。長期的なコストパフォーマンスを重視する方には一括の買い切りプランもご用意しています。</p>
-          <a href="contact/index.html" class="btn-line">無料相談をする</a>
-        </div>
-        <div class="feat-stats rv d1">
-          <div class="feat-stat"><b>2026</b><span>Founded</span></div>
-          <div class="feat-stat"><b>10代</b><span>Founders</span></div>
-          <div class="feat-stat"><b>岡山</b><span>Based</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ABOUT（透明地：背景の円が透ける） -->
-  <section id="about" class="plain">
+  <!-- ABOUT（最初に画面へ覆いかぶさる不透明パネル） -->
+  <section id="about" class="plain first-panel">
     <div class="wrap">
       <div class="sec-title rv"><span class="en-t">About Us</span><span class="jp-t">私たちについて</span></div>
       <div class="about-grid">
@@ -94,6 +75,25 @@
       </div>
     </div>
   </section>
+
+  <!-- FEATURED -->
+  <div class="featured featured-after">
+    <div class="wrap">
+      <div class="feat-in">
+        <div class="rv">
+          <p class="feat-label">Featured Plan</p>
+          <h2 class="feat-h">初期費用0円で始める<br>月額制ホームページ</h2>
+          <p class="feat-p">アカウントを共有し、日々の更新や管理をTeeenSにお任せいただけるサブスクプラン。長期的なコストパフォーマンスを重視する方には一括の買い切りプランもご用意しています。</p>
+          <a href="contact/index.html" class="btn-line">無料相談をする</a>
+        </div>
+        <div class="feat-stats rv d1">
+          <div class="feat-stat"><b>2026</b><span>Founded</span></div>
+          <div class="feat-stat"><b>10代</b><span>Founders</span></div>
+          <div class="feat-stat"><b>岡山</b><span>Based</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- WHY（左→右ワイプで灰色の面が現れる） -->
   <section id="why" class="wipe" data-wipe>
@@ -243,6 +243,6 @@
   </footer>
 </div>
 
-<script src="assets/app.js?v=202610061058"></script>
+<script src="assets/app.js?v=202610061221"></script>
 </body>
 </html>
