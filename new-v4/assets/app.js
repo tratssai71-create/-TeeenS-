@@ -82,7 +82,7 @@
     else if(openRaw>openTarget)openRaw=Math.max(openTarget,openRaw-dt/2.2);
     var oe=ease(openRaw);
     var sy=window.scrollY||0;
-    var op=1-(isPC?.5:.78)*oe;
+    var op=1-(isPC?.74:.82)*oe;
     var ops=op.toFixed(3);
     if(ops!==lastOp){canvas.style.opacity=ops;lastOp=ops;}
 
