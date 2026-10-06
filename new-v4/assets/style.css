@@ -373,3 +373,31 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
   .wcell:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
   .wcell:last-child{border-bottom:none}
 }
+
+/* 事業内容：4つの事業（2×2）。見出し=一言＋太字タイトル、アイコンは右上に自作の線画 */
+.svc-head2{display:flex;justify-content:space-between;align-items:flex-end;gap:48px;margin-bottom:56px}
+.svc-head2 .sec-title::after{margin-top:26px}
+.svc-lead{max-width:440px;font-size:14px;color:var(--ink2);line-height:2.05;font-weight:500}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--line);background:rgba(255,255,255,.7)}
+.scell{position:relative;display:block;padding:46px 48px 42px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .25s}
+.scell:nth-child(2n){border-right:none}
+.scell:nth-last-child(-n+2){border-bottom:none}
+.scell:hover{background:#fff}
+.sicon{position:absolute;top:42px;right:48px;width:56px;height:56px;color:var(--ink)}
+.skick{font-size:14px;font-weight:500;letter-spacing:.06em;color:var(--ink2);margin-top:70px;margin-bottom:8px}
+.stitle{font-size:26px;font-weight:700;letter-spacing:.05em;line-height:1.45;margin-bottom:18px}
+.sdesc{font-size:14px;color:var(--ink2);line-height:2.05;max-width:34em}
+.smore{display:inline-block;margin-top:22px;font-size:13px;font-weight:700;letter-spacing:.08em;border-bottom:1px solid var(--ink);padding-bottom:2px}
+.scell:hover .smore{opacity:.7}
+@media(max-width:900px){
+  .svc-head2{flex-direction:column;align-items:flex-start;gap:22px;margin-bottom:36px}
+  .sgrid{grid-template-columns:1fr}
+  .scell{border-right:none;padding:34px 26px 32px}
+  .scell:nth-last-child(-n+2){border-bottom:1px solid var(--line)}
+  .scell:last-child{border-bottom:none}
+  .sicon{top:30px;right:26px;width:46px;height:46px}
+  .skick{margin-top:58px}
+  .stitle{font-size:19px;letter-spacing:.03em}
+}
+
+.stitle,.wh{text-wrap:balance}
