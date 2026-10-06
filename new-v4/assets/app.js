@@ -1,86 +1,33 @@
-
 /* ════════════════════════════════════════════════════════════
-   背景キャンバス
-   点が散らばる → 円に集まる → 線でつながる → 1本だけ赤く染まる
-   → しばらく保つ → また散る、を繰り返す。
-   コンテンツが画面中央を越えたら、円がゆっくり大きく・薄くなる。
+   背景キャンバス（TeeenSオリジナル：軌道）
+   細い楕円の軌道が、ゆっくり傾きながら回る。軌道の上を小さな点（青）が周回する。
+   スクロールすると軌道が回転・拡大し、コンテンツが画面中央を越えると薄くなる。
    ════════════════════════════════════════════════════════════ */
 (function(){
   var canvas=document.getElementById('bg'); if(!canvas) return;
   var ctx=canvas.getContext('2d',{alpha:false});
   var TAU=Math.PI*2;
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var BLUE='47,107,255', INK='70,74,88';
 
-  /* 調整値 */
-  var N=72;                  // 1つの円を作る点の数
-  // 集まって円になる → 円のまま保つ → 「T」に変形 → 「T」で保つ → 散る（秒）
-  var FORM=4.6, HOLD_R=5.4, MORPH=1, HOLD_T=0, DISPERSE=2.8;   // 「T」への変形はオフ（円だけ）
-  var T1=FORM+HOLD_R, T2=T1+MORPH, HOLD_END=T2+HOLD_T;
-  var CYCLE=HOLD_END+DISPERSE;
-  var GATHER=2.9;            // 点が円に収まるまで
-  var LINE_W=2.6, LINE_A=0.8, SHADE=70;
-  var RED=[47,107,255];
-  var DOT_R=2.1, DOT_RGB='108,108,114';
-  var BREATH=0.06, BREATH_SPEED=0.26;
-  var OPEN_MAX=1.45, OPEN_OPACITY=0.5, OPEN_DUR=2.2, OPEN_TRIGGER=0.55;
-
-  /* 4つの円：ゆっくり揺れる位相をずらしてある（赤は最前面＝最後に描く） */
-  var RINGS=[
-    {red:false,rf:1.00,ax:.040,ay:.050,sx:.30,sy:.22,px:1.7,py:2.3,pb:1.6},
-    {red:false,rf:.80, ax:.055,ay:.034,sx:.22,sy:.32,px:3.1,py:.4, pb:3.2},
-    {red:true, rf:.60, ax:.045,ay:.040,sx:.26,sy:.30,px:0,  py:.7, pb:0}
+  /* 軌道：ax=横の大きさ ratio=縦横比 rot=初期の傾き spin=自転の速さ k=スクロール連動の強さ sp=点の周回の速さ */
+  var ORBITS=[
+    {ax:1.00,ratio:.30,rot:.35, spin: .020,k: .00045,sp: .16,ph:0.0,blue:false,w:1.6},
+    {ax:0.86,ratio:.46,rot:-.55,spin:-.015,k:-.00060,sp:-.12,ph:2.1,blue:false,w:1.6},
+    {ax:0.70,ratio:.62,rot:1.25,spin: .026,k: .00080,sp: .22,ph:4.0,blue:true, w:2.4},
+    {ax:1.12,ratio:.20,rot:-1.0,spin:-.010,k: .00030,sp: .10,ph:1.0,blue:false,w:1.2}
   ];
 
-  var W,H,dpr,cx,cy,R,openMax=OPEN_MAX,isPC=true;
-  var cosT=new Float32Array(N),sinT=new Float32Array(N);
-  for(var i=0;i<N;i++){var th=i/N*TAU;cosT[i]=Math.cos(th);sinT[i]=Math.sin(th);}
-  var X=new Float32Array(N),Y=new Float32Array(N);
-  var scat=[], TP=[], tGap=-1;   // TP[リング番号] = 「T」の輪郭上の点 [{x,y}...]
-
-  /* 内側の円だけが、1本線の「T」に変わる（左→右へ横棒、戻って中央から下へ縦棒） */
-  function makeT(){
-    var s=isPC?Math.min(H*.5,W*.38):Math.min(W*.5,H*.34);
-    var top=-s/2, bw=s*.82, bot=s/2;
-    var n1=Math.round(N*.36), n2=Math.round(N*.17), n3=N-n1-n2, pts=[], j;
-    for(j=0;j<n1;j++){pts.push([-bw/2+bw*(j/(n1-1)),top]);}
-    for(j=1;j<=n2;j++){pts.push([bw/2-(bw/2)*(j/n2),top]);}
-    for(j=1;j<=n3;j++){pts.push([0,top+(bot-top)*(j/n3)]);}
-    var off=Math.round(N*225/360);   // 円の左上あたりが、横棒の左端になるように回す
-    tGap=(off-1+N)%N;               // 「T」の途切れ目（縦棒の下端と横棒の左端の間）
-    var arr=[];
-    for(var i=0;i<N;i++){var p=pts[(i-off+N*2)%N];arr.push({x:p[0],y:p[1]});}
-    TP=[null,null,arr];
-  }
-
-  function clamp01(t){return t<0?0:t>1?1:t}
-  function easeInOut(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
-  function easeInOut3(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
-  function gatherEase(t){return 1-Math.pow(1-clamp01(t),3.4)}   // 出だしが速く、最後にすっと収まる
-
-  function makeScatter(){
-    scat=[];
-    for(var r=0;r<RINGS.length;r++){
-      var a=[];
-      for(var k=0;k<N;k++){
-        var ang=Math.random()*TAU, rr=R*(1.12+Math.random()*.5);
-        a.push({x:cx+Math.cos(ang)*rr,y:cy+Math.sin(ang)*rr,d:Math.random()*.15});
-      }
-      scat.push(a);
-    }
-  }
+  var W,H,dpr,cx,cy,R,isPC=true;
   function build(){
     var r=canvas.getBoundingClientRect();
     W=r.width;H=r.height;
     dpr=Math.min(window.devicePixelRatio||1,1.5);
     canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
     isPC=W>=1024;
     cx=W*.5;cy=H*.5;
-    R=isPC?Math.min(700,W*.47):W*.5;
-    openMax=isPC?Math.max(1,Math.min(OPEN_MAX,(W*.5+100-R*.3)/(R*1.06))):OPEN_MAX;
-    makeScatter();
-    makeT();
+    R=isPC?Math.min(640,W*.44):W*.62;
   }
 
   var contents=document.getElementById('contents');
@@ -92,11 +39,11 @@
     if(copy){copyTop=copy.getBoundingClientRect().top}
   }
   var SUB=document.body.hasAttribute('data-sub');
-  var openRaw=SUB?1:0,openTarget=SUB?1:0;
+  var openTarget=SUB?1:0, openRaw=openTarget;
   function applyScroll(){
     if(SUB||!contents)return;
     var top=contentsTop-window.scrollY;
-    openTarget=(top<H*OPEN_TRIGGER)?1:0;
+    openTarget=(top<H*.55)?1:0;
     var hide=top<=copyTop;
     if(hide!==copyHidden){
       copy.classList.toggle('is-hidden',hide);
@@ -104,98 +51,64 @@
       copyHidden=hide;
     }
   }
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
 
-  var t0=performance.now(),last=t0,lastOp='',pause=0,hiddenAt=0,lastCycle=-1;
+  var t0=performance.now(),last=t0,lastOp='',running=false;
   function frame(now){
     applyScroll();
-    var tg=reduce?0:(now-t0-pause)/1000;
+    var t=reduce?0:(now-t0)/1000;
     var dt=Math.min(.05,(now-last)/1000);last=now;
-    var step=dt/OPEN_DUR;
-    if(openRaw<openTarget)openRaw=Math.min(openTarget,openRaw+step);
-    else if(openRaw>openTarget)openRaw=Math.max(openTarget,openRaw-step);
-    var oe=easeInOut3(openRaw);
-    var scale=isPC?(1+(openMax-1)*oe):OPEN_MAX;
-    var op=1+((isPC?OPEN_OPACITY:.2)-1)*oe;
+    if(openRaw<openTarget)openRaw=Math.min(openTarget,openRaw+dt/2.2);
+    else if(openRaw>openTarget)openRaw=Math.max(openTarget,openRaw-dt/2.2);
+    var oe=ease(openRaw);
+    var sy=window.scrollY||0;
+    var op=1-(isPC?.5:.78)*oe;
     var ops=op.toFixed(3);
     if(ops!==lastOp){canvas.style.opacity=ops;lastOp=ops;}
 
-    var cyc=Math.floor(tg/CYCLE);
-    var lt=reduce?(T1+MORPH*.5):(tg-cyc*CYCLE);
-    var inForm=lt<FORM, inDisp=lt>=HOLD_END, inHold=!inForm&&!inDisp;
-    var m=0;   // 「T」への変形はオフ   // 円 → 「T」への変形の進み具合
-    var dp=inDisp?clamp01((lt-HOLD_END)/DISPERSE):0;
-    if(inDisp&&cyc!==lastCycle){makeScatter();lastCycle=cyc;}
-    var disperseA=1-easeInOut(dp);
-    var lineDp=clamp01(dp*2.2);   // 散る時は線を先に消して、点だけがふわっと散る
-    var lineFade=inForm?(.32+.68*clamp01((lt-1.9)/1.1)):inHold?1:(1-easeInOut(lineDp));
-    var redMix=clamp01((lt-2.8)/1.1)*(1-clamp01((lt-(HOLD_END-1))/1));
-
     ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-    ctx.lineJoin='round';ctx.lineCap='round';
-    var Rb=R*scale;
+    var scale=1+.38*oe;
+    var breath=reduce?1:1+.025*Math.sin(t*.5);
 
-    for(var ri=0;ri<RINGS.length;ri++){
-      var g=RINGS[ri],sc=scat[ri];
-      var breath=reduce?1:(1+BREATH*Math.sin(tg*BREATH_SPEED*Math.PI+g.pb));
-      var rad=Rb*breath*g.rf;
-      var ox=g.ax*R*(1+oe*.3)*Math.sin(tg*g.sx*Math.PI+g.px);
-      var oy=g.ay*R*(1+oe*.3)*Math.sin(tg*g.sy*Math.PI+g.py);
+    for(var i=0;i<ORBITS.length;i++){
+      var o=ORBITS[i];
+      var rx=R*o.ax*scale*breath, ry=rx*o.ratio;
+      var th=o.rot+t*o.spin+sy*o.k;
+      ctx.lineWidth=o.w;
+      ctx.strokeStyle=o.blue?'rgba('+BLUE+',.8)':'rgba('+INK+',.55)';
+      ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,th,0,TAU);ctx.stroke();
 
-      for(var i=0;i<N;i++){
-        var circX=cx+ox+rad*cosT[i], circY=cy+oy+rad*sinT[i];
-        var tx=circX, ty=circY;
-        if(ri===2){var tp=TP[2][i];tx=circX+(cx+ox*.4+tp.x*scale-circX)*m;ty=circY+(cy+oy*.4+tp.y*scale-circY)*m;}
-        var A=inForm?gatherEase((lt-sc[i].d)/GATHER):inHold?1:disperseA;
-        X[i]=sc[i].x+(tx-sc[i].x)*A;
-        Y[i]=sc[i].y+(ty-sc[i].y)*A;
+      /* 軌道上を回る点と、その後ろに伸びる光の尾 */
+      var a=o.ph+t*o.sp*TAU*.35+sy*o.k*3;
+      var cs=Math.cos(th),sn=Math.sin(th);
+      function pt(ang){var ex=rx*Math.cos(ang),ey=ry*Math.sin(ang);return [cx+ex*cs-ey*sn,cy+ex*sn+ey*cs];}
+      var dir=o.sp>=0?1:-1, steps=16;
+      for(var s=0;s<steps;s++){
+        var a1=a-dir*(s/steps)*1.1, a2=a-dir*((s+1)/steps)*1.1;
+        var p1=pt(a1),p2=pt(a2);
+        ctx.strokeStyle=(o.blue?'rgba('+BLUE+',':'rgba('+INK+',')+((1-s/steps)*(o.blue?.95:.8)).toFixed(3)+')';
+        ctx.lineWidth=o.w+2.2*(1-s/steps);
+        ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
       }
-
-      var conn=inForm?easeInOut(clamp01((lt-.5-ri*.12)/1.8)):inHold?1:(1-easeInOut(lineDp));
-      var limit=conn*N, start=Math.round(ri/RINGS.length*N);
-      var dotsA=inForm?(1-clamp01((lt-1.6)/.6))*.85:clamp01((1-conn)/.6)*.85;
-      if(dotsA>.01){
-        ctx.fillStyle='rgba('+DOT_RGB+','+dotsA.toFixed(3)+')';
-        ctx.beginPath();
-        for(var d=0;d<N;d++){ctx.moveTo(X[d]+DOT_R,Y[d]);ctx.arc(X[d],Y[d],DOT_R,0,TAU);}
-        ctx.fill();
-      }
-
-      var a=LINE_A*lineFade;
-      if(g.red){
-        var rr=Math.round(SHADE+(RED[0]-SHADE)*redMix),gg=Math.round(SHADE+(RED[1]-SHADE)*redMix),bb=Math.round(SHADE+4+(RED[2]-SHADE-4)*redMix);
-        ctx.strokeStyle='rgba('+rr+','+gg+','+bb+','+clamp01(a*(1+.1*redMix)).toFixed(3)+')';
-      }else{
-        ctx.strokeStyle='rgba('+SHADE+','+SHADE+','+(SHADE+4)+','+clamp01(a).toFixed(3)+')';
-      }
-      ctx.lineWidth=(ri===2)?LINE_W*(1+.7*m):LINE_W;
-      ctx.beginPath();
-      for(var s=0;s<N;s++){
-        if(((s-start+N)%N)>=limit)continue;
-        if(ri===2&&m>.02&&s===tGap)continue;   // 「T」は輪ではないので、最後の点と最初の点はつなげない
-        var nx=(s+1)%N;
-        ctx.moveTo(X[s],Y[s]);ctx.lineTo(X[nx],Y[nx]);
-      }
-      ctx.stroke();
+      var p=pt(a);
+      ctx.fillStyle=o.blue?'rgb('+BLUE+')':'rgb('+INK+')';
+      ctx.beginPath();ctx.arc(p[0],p[1],o.blue?5.5:4,0,TAU);ctx.fill();
     }
 
     if(reduce&&openRaw===openTarget){running=false;return;}
     requestAnimationFrame(frame);
   }
-
-  var running=false;
   function start(){if(!running){running=true;requestAnimationFrame(frame);}}
-  build();measure();applyScroll();start();
-  window.addEventListener('load',function(){measure();applyScroll();});
+
+  build();measure();start();
+  window.addEventListener('load',function(){measure();});
   window.addEventListener('resize',function(){
     var r=canvas.getBoundingClientRect();
     if(r.width===W&&r.height===H)return;
     build();measure();start();
   });
-  if(reduce)window.addEventListener('scroll',function(){applyScroll();start();},{passive:true});
-  document.addEventListener('visibilitychange',function(){
-    if(document.hidden){hiddenAt=performance.now();}
-    else{pause+=performance.now()-hiddenAt;last=performance.now();start();}
-  });
+  if(reduce)window.addEventListener('scroll',function(){start();},{passive:true});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){last=performance.now();start();}});
 })();
 
 /* スクロールで現れる動き（フェードアップ・灰色面のワイプ・見出し下線） */
