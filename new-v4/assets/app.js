@@ -247,3 +247,21 @@ document.documentElement.classList.add('js-draw');
       });
   });
 })();
+
+
+/* ── お知らせのタブ切り替え ── */
+(function(){
+  var bar=document.querySelector('.ntabs'); if(!bar)return;
+  var items=document.querySelectorAll('.nitem'), empty=document.querySelector('.nempty');
+  bar.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b)return;
+    bar.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+    var c=b.getAttribute('data-n'), n=0;
+    items.forEach(function(it){
+      var show=(c==='all')||it.getAttribute('data-cat')===c;
+      it.classList.toggle('hide',!show);
+      if(show)n++;
+    });
+    if(empty)empty.hidden=n>0;
+  });
+})();

@@ -401,3 +401,26 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 }
 
 .stitle,.wh{text-wrap:balance}
+
+/* お知らせ（タブ切り替え） */
+.news-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:40px;flex-wrap:wrap}
+.news-head .sec-title::after{margin-top:26px}
+.ntabs{display:flex;gap:8px;flex-wrap:wrap}
+.ntabs button{font-family:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:#fff;padding:9px 20px;border-radius:99px;cursor:pointer;transition:all .2s}
+.ntabs button.on,.ntabs button:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.nlist{list-style:none;border-top:1px solid var(--ink)}
+.nitem{border-bottom:1px solid var(--line)}
+.nitem a{display:grid;grid-template-columns:110px 96px 1fr 24px;gap:20px;align-items:center;padding:26px 6px;transition:background .2s}
+.nitem a:hover{background:rgba(255,255,255,.8)}
+.nitem time{font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-size:14px;letter-spacing:.04em;color:var(--ink2)}
+.ncat{font-size:11.5px;font-weight:700;letter-spacing:.06em;border:1px solid var(--ink);padding:3px 12px;border-radius:99px;text-align:center;justify-self:start}
+.ntitle{font-size:15px;font-weight:500;line-height:1.7}
+.narr{font-family:'Poppins','Inter',sans-serif;text-align:right;transition:transform .2s}
+.nitem a:hover .narr{transform:translateX(4px)}
+.nitem.hide{display:none}
+.nempty{padding:34px 6px;color:var(--ink2);font-size:14px;border-bottom:1px solid var(--line)}
+@media(max-width:700px){
+  .nitem a{grid-template-columns:auto 1fr;gap:6px 14px;padding:22px 4px}
+  .ntitle{grid-column:1 / -1}
+  .narr{display:none}
+}

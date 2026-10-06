@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&amp;text=0123456789.%2C%25%2B%3A&amp;display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="assets/style.css?v=20261007004458"/>
+<link rel="stylesheet" href="assets/style.css?v=20261007005206"/>
 </head>
 <body>
 
@@ -196,6 +196,25 @@
     </div>
   </section>
 
+  <!-- NEWS（タブで切り替え。お知らせを足すときは .nitem を1行コピーして日付・種類・タイトル・リンクを書き換える） -->
+  <section id="news" class="plain">
+    <div class="wrap">
+      <div class="news-head rv">
+        <div class="sec-title" style="margin-bottom:0"><span class="en-t">Updates</span><span class="jp-t">お知らせ</span></div>
+        <div class="ntabs" role="tablist" aria-label="お知らせの種類">
+          <button class="on" data-n="all" role="tab">すべて</button>
+          <button data-n="info" role="tab">お知らせ</button>
+          <button data-n="works" role="tab">制作実績</button>
+        </div>
+      </div>
+      <ul class="nlist rv d1">
+        <li class="nitem" data-cat="works"><a href="news/2026-06-22/index.html"><time datetime="2026-06-22">2026.06.22</time><span class="ncat">制作実績</span><span class="ntitle">ブルーマウス様の採用LP制作を担当いたしました。</span><span class="narr" aria-hidden="true">→</span></a></li>
+        <li class="nitem" data-cat="works"><a href="news/2026-06-05/index.html"><time datetime="2026-06-05">2026.06.05</time><span class="ncat">制作実績</span><span class="ntitle">株式会社SENTRIX様の公式ホームページ制作を担当いたしました。</span><span class="narr" aria-hidden="true">→</span></a></li>
+        <li class="nempty" hidden>この種類のお知らせは、まだありません。</li>
+      </ul>
+    </div>
+  </section>
+
   <!-- FAQ（透明地） -->
   <section id="faq" class="plain">
     <div class="wrap" style="max-width:940px">
@@ -259,6 +278,6 @@
   </footer>
 </div>
 
-<script src="assets/app.js?v=20261007004458"></script>
+<script src="assets/app.js?v=20261007005206"></script>
 </body>
 </html>
