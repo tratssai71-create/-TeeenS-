@@ -705,3 +705,6 @@ footer{padding:84px 40px 34px}
 .sbtn:hover .a2,.sbtn:focus-visible .a2{transform:translate(0,0)}
 @media (hover:none){.svrow .sbtn::before{display:none}.sbtn .l2,.sbtn .a2{display:none}}
 @media (prefers-reduced-motion:reduce){.svrow .sbtn::before,.sbtn .slbl>span,.sbtn .sarr>span{transition:none}}
+
+.sbtn .slbl{min-width:104px;white-space:nowrap}
+.sbtn .l2{white-space:nowrap}
