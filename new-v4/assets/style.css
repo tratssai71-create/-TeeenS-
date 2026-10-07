@@ -680,3 +680,10 @@ footer{padding:84px 40px 34px}
 
 .svrow{margin:0 5.55vw}
 @media (max-width:900px){.svrow{margin:0}}
+
+/* もっと横長に */
+.svlist{width:min(90vw,1800px)}
+.svrow,.svrow{margin:0}
+.svrow .simg{aspect-ratio:16/9}
+.svrow .scard{padding:36px 48px;gap:clamp(28px,4vw,80px)}
+@media (max-width:900px){.svlist{width:auto;margin:0 16px}.svrow .simg{aspect-ratio:16/10}.svrow .scard{padding:20px 18px 26px}}
