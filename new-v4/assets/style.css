@@ -554,3 +554,7 @@ footer{padding:84px 40px 34px}
 
 .aph-color img{filter:none}
 .aph-tall{aspect-ratio:4/5}
+
+.aboutsplit.rev{grid-template-columns:1fr 1.5fr}
+.aboutsplit.rev .aph{aspect-ratio:4/5}
+@media (max-width:820px){.aboutsplit.rev{grid-template-columns:1fr}}
