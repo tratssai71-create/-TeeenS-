@@ -581,3 +581,9 @@ footer{padding:84px 40px 34px}
 }
 
 .lead-h{font-weight:800;line-height:1.5;letter-spacing:.03em}
+
+.wcell:not(.wcell-main){display:flex;flex-direction:column}
+.wcell:not(.wcell-main) .wh{font-size:clamp(18px,1.55vw,22px);line-height:1.5;min-height:1.5em;white-space:nowrap}
+.wcell:not(.wcell-main) .wp{flex:1}
+.wcell:not(.wcell-main) .wmeta{margin-top:26px}
+@media (max-width:980px){.wcell:not(.wcell-main) .wh{white-space:normal}}
