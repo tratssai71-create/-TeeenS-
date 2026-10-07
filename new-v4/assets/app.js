@@ -282,7 +282,7 @@ document.documentElement.classList.add('js-draw');
   });
 
   /* 2. カード・行は、順番にずれて現れる（横並びの中の位置で遅れを付ける） */
-  var groups=[['.sgrid','.scell'],['.wgrid','.wcell'],['.grid3','.cell'],['.plans','.plan'],['.flow','.step'],['.nlist','.nitem'],['.faq','.faq-item'],['.vs','div']];
+  var groups=[['.sgrid','.scell'],['.wgrid','.wcell'],['.grid3','.cell'],['.plans','.plan'],['.flow','.step'],['.nlist','.nitem'],['.cinfo','.crow'],['.faq','.faq-item'],['.vs','div']];
   var all=[];
   groups.forEach(function(g){
     document.querySelectorAll(g[0]).forEach(function(box){

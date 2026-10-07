@@ -510,3 +510,22 @@ footer{padding:84px 40px 34px}
 }
 
 @media(max-width:560px){.ft-links2{grid-template-columns:1fr}.ft-links2 a{white-space:nowrap}}
+
+/* 会社情報：左に見出し、右に情報。項目名と内容は同じ線にそろえる */
+.company-grid{display:grid;grid-template-columns:minmax(240px,1fr) 2.1fr;gap:56px 72px;align-items:start}
+.company-grid .sec-title{margin-bottom:0;position:sticky;top:120px}
+.cinfo{border-top:1px solid var(--ink)}
+.crow{display:grid;grid-template-columns:150px 1fr;gap:12px 28px;align-items:baseline;padding:26px 4px;border-bottom:1px solid var(--line)}
+.crow dt{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--ink2)}
+.crow dd{font-size:16px;font-weight:500;line-height:1.85;letter-spacing:.02em}
+.cmap{display:inline-block;margin-left:14px;font-size:12.5px;font-weight:700;letter-spacing:.06em;border-bottom:1px solid var(--ink);padding-bottom:1px;white-space:nowrap}
+.cmap:hover{opacity:.65}
+@media(max-width:900px){
+  .company-grid{grid-template-columns:1fr;gap:34px}
+  .company-grid .sec-title{position:static}
+  .crow{grid-template-columns:1fr;gap:4px;padding:20px 2px}
+  .cmap{margin-left:0;margin-top:6px}
+  .crow dd .cmap{display:block;width:fit-content}
+}
+
+.company-grid .sec-title::after{display:none}
