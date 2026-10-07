@@ -677,3 +677,6 @@ footer{padding:84px 40px 34px}
 .svrow .svhead .svt,.svrow .svhead .sve{opacity:0;transform:translateY(10px);transition:opacity .7s ease .15s,transform .8s cubic-bezier(.22,1,.36,1) .15s}
 .svrow.in .svhead .svt,.svrow.in .svhead .sve{opacity:1;transform:none}
 @media (max-width:900px){.svrow{padding:18px 16px 16px}.svrow .sve{display:none}}
+
+.svrow{margin:0 5.55vw}
+@media (max-width:900px){.svrow{margin:0}}
