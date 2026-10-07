@@ -587,3 +587,9 @@ footer{padding:84px 40px 34px}
 .wcell:not(.wcell-main) .wp{flex:1}
 .wcell:not(.wcell-main) .wmeta{margin-top:26px}
 @media (max-width:980px){.wcell:not(.wcell-main) .wh{white-space:normal}}
+
+/* 見出しの行間を詰める */
+.lead-h,.about-h,.feat-h,.card-h,.page-hero h1,.art h1,.thanks h1{line-height:1.38}
+.wh,.stitle,.cell h3{line-height:1.35}
+.page-hero .eyebrow,.sec-title .en-t{line-height:1.08}
+.sec-title .jp-t{line-height:1.4}
