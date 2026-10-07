@@ -551,3 +551,6 @@ footer{padding:84px 40px 34px}
   .aboutsplit{grid-template-columns:1fr;gap:36px}
   .aboutsplit .aph{position:static;aspect-ratio:4/3}
 }
+
+.aph-color img{filter:none}
+.aph-tall{aspect-ratio:4/5}
