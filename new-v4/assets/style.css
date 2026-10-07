@@ -664,3 +664,16 @@ footer{padding:84px 40px 34px}
   .svrow .sbtn{width:100%}
 }
 @media (prefers-reduced-motion:reduce){.svrow .simg img{clip-path:none;transform:none}.svrow .stext>*{opacity:1;transform:none}.svic *{stroke-dashoffset:0}}
+
+/* 見出しをグレーの箱の中へ入れて一体感を出す */
+.svsec{padding:40px 0 0}
+.svsec:first-child{padding-top:8px}
+.svrow{margin:0;padding:28px 40px 40px}
+.svrow .svhead{display:flex;flex-direction:row;align-items:center;gap:18px;margin:0 0 24px;padding:0 4px}
+.svrow .svic{width:44px;height:44px;flex:none}
+.svrow .svt{margin:0;font-size:clamp(20px,1.7vw,24px);font-weight:800;letter-spacing:.05em;line-height:1.3}
+.svrow .sve{margin:0 0 0 auto;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.svrow.in .svic *{animation:svdraw 1.4s cubic-bezier(.4,0,.2,1) .15s forwards}
+.svrow .svhead .svt,.svrow .svhead .sve{opacity:0;transform:translateY(10px);transition:opacity .7s ease .15s,transform .8s cubic-bezier(.22,1,.36,1) .15s}
+.svrow.in .svhead .svt,.svrow.in .svhead .sve{opacity:1;transform:none}
+@media (max-width:900px){.svrow{padding:18px 16px 16px}.svrow .sve{display:none}}
