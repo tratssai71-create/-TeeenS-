@@ -593,3 +593,16 @@ footer{padding:84px 40px 34px}
 .wh,.stitle,.cell h3{line-height:1.35}
 .page-hero .eyebrow,.sec-title .en-t{line-height:1.08}
 .sec-title .jp-t{line-height:1.4}
+
+/* 代表の写真：歩いてきて立ち止まる */
+.founder .fphoto{margin:0;position:relative;overflow:hidden;border-radius:6px;background:#efeeec;aspect-ratio:4/5;display:flex;align-items:flex-end;justify-content:center}
+.fphoto .fwalk{display:block;height:92%;transform:translateX(-170%)}
+.fphoto .fwalk img{display:block;height:100%;width:auto;aspect-ratio:auto;border-radius:0;max-width:none;transform-origin:50% 100%}
+.fphoto::after{content:"";position:absolute;left:18%;right:18%;bottom:4%;height:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.16),transparent);opacity:0;transition:opacity .6s 1.5s}
+.fphoto.in::after{opacity:1}
+.fphoto.in .fwalk{animation:fwalk 1.9s cubic-bezier(.22,.7,.3,1) .2s forwards}
+.fphoto.in .fwalk img{animation:fbob .34s ease-in-out .2s 5 alternate,fsettle .5s ease-out 1.95s both}
+@keyframes fwalk{0%{transform:translateX(-170%)}85%{transform:translateX(0)}100%{transform:translateX(0)}}
+@keyframes fbob{from{transform:translateY(0) rotate(-.8deg)}to{transform:translateY(-1.8%) rotate(.8deg)}}
+@keyframes fsettle{0%{transform:scale(1,.985)}60%{transform:scale(1,1.008)}100%{transform:scale(1,1)}}
+@media (prefers-reduced-motion:reduce){.fphoto .fwalk{transform:none;animation:none!important}.fphoto .fwalk img{animation:none!important}}
