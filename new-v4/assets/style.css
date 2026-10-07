@@ -623,3 +623,5 @@ footer{padding:84px 40px 34px}
 .fphoto.in::after{transform:scaleX(1)}
 @keyframes fdeep{0%{transform:translateY(-52%) scale(.22);opacity:0}12%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.fphoto .fwalk{transform:none;opacity:1;animation:none!important}}
+
+.founder .fphoto{background:none;border-radius:0}
