@@ -579,3 +579,5 @@ footer{padding:84px 40px 34px}
   .wcell-main .wmeta{grid-column:1;grid-row:auto;border-left:none;border-top:1px solid var(--line);padding:22px 0 0;margin-top:26px;flex-direction:row;align-items:baseline}
   .wcell-main .wmeta b{font-size:44px}
 }
+
+.lead-h{font-weight:800;line-height:1.5;letter-spacing:.03em}
