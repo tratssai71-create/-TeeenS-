@@ -467,3 +467,47 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 
 .nav-drop{display:flex;align-items:center}
 .nav-drop>a{display:block}
+
+/* ═══════ 下部の問い合わせ帯：入った場所から白い円が広がって反転する ═══════ */
+.cband{position:relative;display:block;isolation:isolate;overflow:hidden;background:var(--ink);color:#fff;text-decoration:none;--x:50%;--y:50%}
+.cband::before{content:'';position:absolute;inset:0;z-index:-1;background:#fff;clip-path:circle(0 at var(--x) var(--y));transition:clip-path 1s cubic-bezier(.19,1,.22,1)}
+.cband:hover::before,.cband:focus-visible::before{clip-path:circle(150% at var(--x) var(--y))}
+.cband-in{max-width:1200px;margin:0 auto;padding:0 40px;min-height:300px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"title arrow" "text arrow";align-items:center;column-gap:40px;row-gap:14px;transition:color .5s cubic-bezier(.19,1,.22,1) .12s}
+.cband:hover .cband-in,.cband:focus-visible .cband-in{color:var(--ink)}
+.cband-title{grid-area:title;align-self:end;font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-weight:600;font-size:clamp(40px,7vw,96px);line-height:1.05;letter-spacing:-.01em}
+.cband-text{grid-area:text;align-self:start;font-size:15px;font-weight:500;letter-spacing:.06em;opacity:.8;max-width:34em;line-height:1.9}
+.cband-arrow{grid-area:arrow;position:relative;width:104px;height:104px;border:1.5px solid currentColor;border-radius:50%;overflow:hidden;transition:transform .7s cubic-bezier(.19,1,.22,1),background .5s,color .5s}
+.cband-arrow .ca1,.cband-arrow .ca2{position:absolute;inset:0;display:grid;place-items:center;transition:transform .7s cubic-bezier(.19,1,.22,1)}
+.cband-arrow svg{width:46%;height:46%}
+.cband-arrow .ca2{transform:translate(-110%,110%)}
+.cband:hover .cband-arrow .ca1{transform:translate(110%,-110%)}
+.cband:hover .cband-arrow .ca2{transform:translate(0,0)}
+.cband:hover .cband-arrow{transform:scale(1.08)}
+@media(max-width:800px){
+  .cband-in{padding:56px 22px;min-height:0;grid-template-columns:1fr auto;grid-template-areas:"title arrow" "text text";row-gap:20px}
+  .cband-arrow{width:64px;height:64px}
+}
+@media(prefers-reduced-motion:reduce){.cband::before,.cband-arrow .ca1,.cband-arrow .ca2{transition:none}}
+.mo .cband-title{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em}
+
+/* ═══════ フッター：住所の欄を追加。リンクは中央から線が広がる ═══════ */
+footer{padding:84px 40px 34px}
+.ft-in2{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:48px 56px;align-items:start}
+.ft-brand .ft-tag{margin-top:16px}
+.ft-lab{font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a}
+.ft-addr{font-size:14px;line-height:1.9;margin-top:6px;color:var(--ink)}
+.ft-links2{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.ft-links2 a,.ft-links3 a{position:relative;display:inline-block;width:fit-content;font-size:14px;padding:6px 0}
+.ft-links2 a span,.ft-links3 a span{position:relative}
+.ft-links2 a::after,.ft-links3 a::after{content:'';position:absolute;left:0;right:0;bottom:3px;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:center;transition:transform .45s cubic-bezier(.19,1,.22,1)}
+.ft-links2 a:hover::after,.ft-links3 a:hover::after,.ft-links2 a:focus-visible::after,.ft-links3 a:focus-visible::after{transform:scaleX(1)}
+.ft-bar{max-width:1200px;margin:56px auto 0;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.ft-links3{display:flex;gap:28px}
+.ft-links3 a{font-size:13px}
+.ft-copy2{font-family:'Poppins','Inter','Noto Sans JP',sans-serif;font-size:11px;letter-spacing:.14em;color:#999}
+@media(max-width:900px){
+  footer{padding:56px 22px 28px}
+  .ft-in2{grid-template-columns:1fr;gap:34px}
+}
+
+@media(max-width:560px){.ft-links2{grid-template-columns:1fr}.ft-links2 a{white-space:nowrap}}

@@ -273,7 +273,7 @@ document.documentElement.classList.add('js-draw');
   var root=document.documentElement; root.classList.add('mo');
 
   /* 1. 見出しの英字：1文字ずつ下からせり上がる */
-  document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t').forEach(function(el){
+  document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t,.cband-title').forEach(function(el){
     var t=el.textContent; el.setAttribute('aria-label',t); el.textContent='';
     var i=0; Array.prototype.forEach.call(t,function(c){
       var s=document.createElement('span'); s.className='ch'; s.setAttribute('aria-hidden','true');
@@ -318,4 +318,18 @@ document.documentElement.classList.add('js-draw');
     });
   },{threshold:.12,rootMargin:'0px 0px -30px 0px'});
   all.forEach(function(k){io.observe(k);});
+})();
+
+
+/* ── 問い合わせ帯：マウスが入った・出た位置から、白い円が広がる／縮む ── */
+(function(){
+  document.querySelectorAll('.cband').forEach(function(b){
+    function pos(e){
+      var r=b.getBoundingClientRect();
+      b.style.setProperty('--x',(e.clientX-r.left)+'px');
+      b.style.setProperty('--y',(e.clientY-r.top)+'px');
+    }
+    b.addEventListener('pointerenter',pos);
+    b.addEventListener('pointerleave',pos);
+  });
 })();
