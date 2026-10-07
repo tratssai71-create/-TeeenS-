@@ -535,3 +535,4 @@ footer{padding:84px 40px 34px}
 .btn-all svg{width:18px;height:18px;transition:transform .25s}
 .btn-all:hover{background:var(--ink);color:#fff}
 .btn-all:hover svg{transform:translateX(4px)}
+.company-grid .sec-title .en-t{font-size:clamp(32px,3.8vw,52px);letter-spacing:.03em;white-space:nowrap}
