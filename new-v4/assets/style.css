@@ -529,3 +529,9 @@ footer{padding:84px 40px 34px}
 }
 
 .company-grid .sec-title::after{display:none}
+
+.svc-all{display:flex;justify-content:center;margin-top:48px}
+.btn-all{display:inline-flex;align-items:center;gap:14px;padding:16px 30px 16px 36px;border:1px solid var(--ink);border-radius:999px;font-size:14px;font-weight:700;letter-spacing:.08em;transition:background .25s,color .25s}
+.btn-all svg{width:18px;height:18px;transition:transform .25s}
+.btn-all:hover{background:var(--ink);color:#fff}
+.btn-all:hover svg{transform:translateX(4px)}
