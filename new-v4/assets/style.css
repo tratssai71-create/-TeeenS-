@@ -561,3 +561,15 @@ footer{padding:84px 40px 34px}
 
 .cell .cphoto{max-width:none;width:calc(100% + 68px);height:auto;margin:-42px -34px 28px;box-sizing:border-box}
 .cell{overflow:hidden}
+
+.wcell-main{background:#222;color:#fff;position:relative}
+.wcell-main:hover{background:#222}
+.wcell-main .wnum{color:#5a5a5a}
+.wcell-main .wtag{color:#fff;opacity:.7}
+.wcell-main .wp{color:#d4d4d4}
+.wcell-main .wmeta{border-top-color:#444}
+.wcell-main .wmeta span{color:#bbb}
+.wcell-main .wmeta b{font-size:34px}
+.wcell-main::after{content:"RECOMMENDED";position:absolute;top:18px;left:44px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.16em;color:#222;background:#fff;padding:4px 10px;border-radius:999px}
+.wcell-main .wtop{margin-top:24px}
+@media (max-width:820px){.wcell-main::after{left:26px}}
