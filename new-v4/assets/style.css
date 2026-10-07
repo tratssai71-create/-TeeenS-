@@ -345,7 +345,7 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 .about-photo img{border:1px solid var(--line);background:#fff}
 
 /* ロゴ画像（黒のロゴをそのまま使用） */
-.logo img{height:30px;width:auto;display:block}
+.logo img{height:38px;width:auto;display:block}
 .ft .logo img{height:30px}
 
 .about-photo img{height:auto;max-height:none}
@@ -442,3 +442,28 @@ footer{background:#fff;border-top:1px solid var(--line);padding:56px 40px 36px}
 /* 写真：カーテンが開くように現れ、少し縮む */
 .mo .about-photo.rv img{clip-path:inset(0 0 100% 0);transform:scale(1.14);transition:clip-path 1.4s cubic-bezier(.77,0,.18,1) .15s,transform 1.8s cubic-bezier(.22,1,.36,1) .15s}
 .mo .about-photo.in img{clip-path:inset(0 0 0 0);transform:none}
+
+/* ═══════ ヘッダー（英語表示・ホバー） ═══════ */
+.nav a{font-weight:500;letter-spacing:.04em}
+.roll{display:inline-grid;overflow:hidden;line-height:1.5;vertical-align:bottom}
+.roll .r1,.roll .r2{grid-area:1/1;text-align:center;white-space:nowrap;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.roll .r2{transform:translateY(105%)}
+.nav a:hover .r1,.nav a:focus-visible .r1{transform:translateY(-105%)}
+.nav a:hover .r2,.nav a:focus-visible .r2{transform:translateY(0)}
+.nav .roll .r2{font-size:.92em}
+/* Contact ボタン：白い面が下から上がって反転し、文字が日本語へ切り替わり、矢印が進む */
+.nav .btn-cta{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:#fff;padding:11.5px 24.5px;border:1.5px solid var(--ink);border-radius:8px;font-weight:700;letter-spacing:.06em;transition:color .45s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1)}
+.nav .btn-cta::before{content:'';position:absolute;left:-10%;right:-10%;top:0;bottom:0;background:#fff;border-radius:50% 50% 0 0 / 80% 80% 0 0;transform:translateY(105%);transition:transform .55s cubic-bezier(.22,1,.36,1),border-radius .55s}
+.nav .btn-cta .roll,.nav .btn-cta .arr{position:relative;z-index:1}
+.nav .btn-cta .arr{display:inline-block;transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.nav .btn-cta:hover{opacity:1;color:var(--ink);transform:translateY(-1px)}
+.nav .btn-cta:hover::before{transform:translateY(0);border-radius:0}
+.nav .btn-cta:hover .arr{transform:translateX(6px)}
+.nav .btn-cta:active{transform:translateY(0) scale(.98)}
+/* ドロップダウン（英語＋日本語の補足） */
+.drop a{display:flex;flex-direction:column;gap:2px;padding:14px 22px}
+.drop a small{font-size:11.5px;color:var(--ink2);font-weight:400;letter-spacing:.04em}
+@media(prefers-reduced-motion:reduce){.nav .btn-cta::before,.roll .r1,.roll .r2{transition:none}}
+
+.nav-drop{display:flex;align-items:center}
+.nav-drop>a{display:block}
