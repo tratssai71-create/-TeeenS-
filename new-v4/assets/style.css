@@ -611,3 +611,15 @@ footer{padding:84px 40px 34px}
 @keyframes fc{to{opacity:1}}
 @keyframes fsettle{0%{transform:translateY(-1.2%)}60%{transform:translateY(.4%)}100%{transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.fphoto .fwalk{transform:none;animation:none!important}.fphoto .fwalk img{animation:none!important;opacity:0}.fphoto .fwalk .fc{opacity:1}}
+
+/* 奥から歩いてくる */
+.founder .fphoto{background:linear-gradient(#f0efed 0,#f0efed 64%,#e7e6e3 64%,#ebeae7 100%)}
+.fphoto .fwalk{transform-origin:50% 100%;transform:translateY(-52%) scale(.22);opacity:0}
+.fphoto.in .fwalk{animation:fdeep 3s cubic-bezier(.5,.08,.45,1) .2s forwards}
+.fphoto.in .fwalk .fa{animation:fa 3s steps(1,end) .2s forwards}
+.fphoto.in .fwalk .fb{animation:fb 3s steps(1,end) .2s forwards}
+.fphoto.in .fwalk .fc{animation:fc .01s linear 3.2s forwards,fsettle .55s ease-out 3.2s both}
+.fphoto::after{transform:scaleX(.3);transition:opacity .6s 2.6s,transform 1.2s 2.2s}
+.fphoto.in::after{transform:scaleX(1)}
+@keyframes fdeep{0%{transform:translateY(-52%) scale(.22);opacity:0}12%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.fphoto .fwalk{transform:none;opacity:1;animation:none!important}}
