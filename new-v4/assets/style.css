@@ -723,3 +723,9 @@ footer{padding:84px 40px 34px}
 
 /* 作り込んだビジュアル画像はカラーのまま表示 */
 .svrow .simg.vis img{filter:none}
+
+/* 「詳しく見る」ホバーを速く */
+.svrow .sbtn{transition:color .2s ease,box-shadow .2s}
+.svrow .sbtn::before{transition:transform .28s cubic-bezier(.65,0,.2,1)}
+.sbtn .slbl>span{transition:transform .28s cubic-bezier(.65,0,.2,1)}
+.sbtn .sarr>span{transition:transform .28s cubic-bezier(.65,0,.2,1)}
