@@ -722,4 +722,4 @@ footer{padding:84px 40px 34px}
 @media (prefers-reduced-motion:reduce){.svrow .simg.dev .lap{opacity:1;transform:none;transition:none}}
 
 /* 作り込んだビジュアル画像はカラーのまま表示 */
-.svrow .simg.art img{filter:none}
+.svrow .simg.vis img{filter:none}
