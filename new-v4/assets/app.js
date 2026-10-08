@@ -273,7 +273,7 @@ document.documentElement.classList.add('js-draw');
   var root=document.documentElement; root.classList.add('mo');
 
   /* 1. 見出しの英字：1文字ずつ下からせり上がる */
-  document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t,.cband-title').forEach(function(el){
+  document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t,.cband-title,.swhy2 .swhy-h').forEach(function(el){
     var t=el.textContent; el.setAttribute('aria-label',t); el.textContent='';
     var i=0; Array.prototype.forEach.call(t,function(c){
       var s=document.createElement('span'); s.className='ch'; s.setAttribute('aria-hidden','true');
@@ -352,4 +352,20 @@ document.documentElement.classList.add('js-draw');
     requestAnimationFrame(tick)
   }
   requestAnimationFrame(tick);
+})();
+
+/* Features：次のカードが重なるにつれて、前のカードが少し奥へ下がる */
+(function(){
+  var cards=[].slice.call(document.querySelectorAll('.sstack .sfs'));if(cards.length<2)return;
+  if(window.matchMedia('(max-width:900px)').matches||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  function upd(){
+    cards.forEach(function(c,i){
+      if(i===cards.length-1)return;
+      var n=cards[i+1].getBoundingClientRect(),r=c.getBoundingClientRect();
+      var p=1-(n.top-r.top)/r.height; p=Math.min(1,Math.max(0,p));
+      c.style.transform='scale('+(1-.05*p)+')';
+      c.style.filter='brightness('+(1-.07*p)+')';
+    });
+  }
+  window.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
 })();
