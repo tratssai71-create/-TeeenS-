@@ -348,7 +348,7 @@ document.documentElement.classList.add('js-draw');
   fr.addEventListener('load',fit);
   fit();calc();
   function tick(){
-    if(isReady()){cur+=(tgt-cur)*0.12;try{fr.contentWindow.scrollTo(0,cur*maxScroll())}catch(e){}}
+    if(isReady()){cur+=(tgt-cur)*0.12;try{fr.contentWindow.scrollTo({top:cur*maxScroll(),left:0,behavior:'instant'})}catch(e){}}
     requestAnimationFrame(tick)
   }
   requestAnimationFrame(tick);
