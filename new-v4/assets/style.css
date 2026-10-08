@@ -980,3 +980,22 @@ footer{padding:84px 40px 34px}
 .sinc-list li:hover .in{color:#4f6bff;-webkit-text-stroke-color:#4f6bff}
 .stl .td{font-size:clamp(32px,3.6vw,56px)}
 .stl h4{font-size:17px}
+
+/* Why：図（探す→見る→連絡する）＋比較表。青い輪の動きは外す */
+.swhy{background:none;padding:100px 0 70px;min-height:0;display:block}
+.sjourney .hot .jn::after{display:none;animation:none}
+.cmp{max-width:980px;margin:80px auto 0;border-top:3px solid var(--ink)}
+.cmp-head,.cmp-row{display:grid;grid-template-columns:130px 1fr 1fr;gap:0;align-items:stretch}
+.cmp-head{border-bottom:1px solid var(--line)}
+.cmp-t{font-size:13px;font-weight:800;letter-spacing:.1em;padding:18px 22px}
+.cmp-head .cmp-b{color:#4f6bff}
+.cmp-row{border-bottom:1px solid var(--line)}
+.cmp-k{font-family:'Inter','Noto Sans JP',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--ink2);padding:26px 0;align-self:center}
+.cmp-a,.cmp-b{display:flex;align-items:center;gap:12px;padding:26px 22px;font-size:15px;line-height:1.7}
+.cmp-a{color:#8c8b88}
+.cmp-a svg{width:18px;height:18px;flex:none;color:#b5b4b0}
+.cmp-b{background:#fff;font-weight:700;position:relative}
+.cmp-row .cmp-b::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#4f6bff}
+.cmp-b svg{width:20px;height:20px;flex:none;color:#4f6bff}
+.cmp-head .cmp-b{background:#fff}
+@media (max-width:820px){.cmp-head{display:none}.cmp-row{grid-template-columns:1fr}.cmp-k{padding:18px 0 4px}.cmp-a,.cmp-b{padding:14px 16px}}
