@@ -1008,3 +1008,6 @@ footer{padding:84px 40px 34px}
 .s-note{font-size:12px;line-height:1.8;color:var(--ink2);margin:-14px 0 22px}
 
 .sfs-img img{filter:none}
+
+.sinc-side .aph-cms{aspect-ratio:16/9}
+.sinc-side .aph-cms img{filter:none}
