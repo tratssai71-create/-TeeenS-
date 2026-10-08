@@ -889,3 +889,7 @@ footer{padding:84px 40px 34px}
 .sw-k{display:block;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--ink2)}
 .sw-d{font-size:14px;line-height:1.8;margin-top:6px;font-weight:500}
 @media (max-width:900px){.swhy{padding:64px 0}.swhy-grid{grid-template-columns:1fr}.sw{grid-template-columns:auto 1fr;padding:20px 22px}}
+
+.swhy-h{font-size:clamp(24px,2.5vw,44px);line-height:1.45}
+.swhy-body p+p{margin-top:14px}
+.sw-d{font-size:13.5px}
