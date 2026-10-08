@@ -1011,3 +1011,5 @@ footer{padding:84px 40px 34px}
 
 .sinc-side .aph-cms{aspect-ratio:16/9}
 .sinc-side .aph-cms img{filter:none}
+
+.sfs:first-child .sfs-img img{object-position:32% 50%}
