@@ -999,3 +999,10 @@ footer{padding:84px 40px 34px}
 .cmp-b svg{width:20px;height:20px;flex:none;color:#4f6bff}
 .cmp-head .cmp-b{background:#fff}
 @media (max-width:820px){.cmp-head{display:none}.cmp-row{grid-template-columns:1fr}.cmp-k{padding:18px 0 4px}.cmp-a,.cmp-b{padding:14px 16px}}
+
+/* 補足（注記） */
+.note-mark{font-size:.7em;color:#4f6bff;margin-left:2px;font-weight:700;vertical-align:super;line-height:0}
+.cmp-note{max-width:980px;margin:18px auto 0;font-size:12.5px;line-height:1.9;color:var(--ink2)}
+.cmp-note b{color:var(--ink)}
+.cmp-note a,.s-note a{color:#4f6bff;border-bottom:1px solid currentColor}
+.s-note{font-size:12px;line-height:1.8;color:var(--ink2);margin:-14px 0 22px}
