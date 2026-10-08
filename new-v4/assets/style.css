@@ -720,3 +720,6 @@ footer{padding:84px 40px 34px}
 .lap .lbase::after{content:"";position:absolute;left:50%;top:0;width:16%;height:55%;background:#9d9da2;border-radius:0 0 8px 8px;transform:translateX(-50%)}
 @media (max-width:900px){.svrow .simg.dev .lap{width:84%}}
 @media (prefers-reduced-motion:reduce){.svrow .simg.dev .lap{opacity:1;transform:none;transition:none}}
+
+/* 作り込んだビジュアル画像はカラーのまま表示 */
+.svrow .simg.art img{filter:none}
