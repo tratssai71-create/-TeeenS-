@@ -735,3 +735,63 @@ footer{padding:84px 40px 34px}
 .svhero-vis{margin:0}
 .svhero-vis img{display:block;width:100%;height:auto;border-radius:6px;box-shadow:0 18px 40px rgba(0,0,0,.08)}
 @media (max-width:900px){.svhero-grid{grid-template-columns:1fr}}
+
+/* ===== ホームページ作成ページ専用のレイアウト ===== */
+/* Why：大きな数字3つ */
+.swhy{padding:96px 0 40px}
+.swhy-en{font-family:'Inter','Poppins',sans-serif;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--ink2);margin-bottom:18px;text-transform:uppercase}
+.swhy-h{font-size:clamp(26px,3.6vw,46px);font-weight:800;line-height:1.38;letter-spacing:.03em;max-width:900px}
+.swhy-body{margin-top:26px;max-width:760px}
+.swhy-body p{font-size:15px;line-height:2.1;color:var(--ink2)}
+.sstats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:56px;border-top:1px solid var(--ink)}
+.sstats>div{padding:30px 28px 8px 0;border-right:1px solid var(--line);padding-left:28px}
+.sstats>div:first-child{padding-left:0}
+.sstats>div:last-child{border-right:none}
+.sstats dt{font-family:'Poppins','Inter',sans-serif;font-weight:500;font-size:clamp(54px,7vw,104px);line-height:1;letter-spacing:-.02em}
+.sstats dt small{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:.22em;letter-spacing:.06em;margin-left:6px}
+.sstats dd{margin-top:14px;font-size:13.5px;line-height:1.8;color:var(--ink2)}
+@media (max-width:820px){.sstats{grid-template-columns:1fr}.sstats>div{padding:22px 0;border-right:none;border-bottom:1px solid var(--line)}}
+/* Features：写真と文章を左右交互に */
+.sfeats{padding:80px 0 40px}
+.sfeat-list{display:flex;flex-direction:column;gap:84px;margin-top:20px}
+.sfeat{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(36px,6vw,96px);align-items:center}
+.sfeat.rev .sfeat-img{order:2}
+.sfeat-img{margin:0;overflow:hidden;border-radius:6px;aspect-ratio:4/3;background:#e8e7e5}
+.sfeat-img img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.04)}
+.sfeat-body{position:relative}
+.sfeat-n{display:block;font-family:'Poppins','Inter',sans-serif;font-weight:200;font-size:clamp(64px,8vw,120px);line-height:.9;color:#d9d8d6}
+.sfeat-tag{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;color:var(--ink2);margin-top:12px}
+.sfeat-body h3{font-size:clamp(21px,2.3vw,30px);font-weight:800;line-height:1.4;letter-spacing:.03em;margin-top:10px}
+.sfeat-p{font-size:14.5px;line-height:2;color:var(--ink2);margin-top:16px}
+.sfeat-body .ticks{margin-top:18px}
+@media (max-width:820px){.sfeat{grid-template-columns:1fr;gap:26px}.sfeat.rev .sfeat-img{order:0}.sfeat-list{gap:56px}}
+/* What's Included：左に見出しと写真（固定）、右に番号リスト */
+.sinc{padding:90px 0 40px}
+.sinc-grid{display:grid;grid-template-columns:minmax(260px,.8fr) 1.4fr;gap:clamp(40px,7vw,110px);align-items:start}
+.sinc-side{position:sticky;top:120px}
+.sinc-side .sec-title{margin-bottom:18px}
+.sinc-lead{font-size:14.5px;color:var(--ink2);line-height:1.9;margin-bottom:28px}
+.sinc-side .aph{aspect-ratio:4/3;margin:0}
+.sinc-list{list-style:none;border-top:1px solid var(--ink)}
+.sinc-list li{display:grid;grid-template-columns:64px 1fr;gap:12px 22px;padding:30px 0;border-bottom:1px solid var(--line)}
+.sinc-list .in{font-family:'Poppins','Inter',sans-serif;font-weight:300;font-size:28px;color:#b9b8b5;line-height:1.2}
+.sinc-list h3{font-size:18px;font-weight:800;letter-spacing:.04em;line-height:1.5}
+.sinc-list p{font-size:13.5px;line-height:2;color:var(--ink2);margin-top:8px}
+@media (max-width:900px){.sinc-grid{grid-template-columns:1fr}.sinc-side{position:static}.sinc-list li{grid-template-columns:44px 1fr}}
+/* Process：横並びのタイムライン */
+.sproc{padding:90px 0 60px}
+.sproc-lead{font-size:14.5px;color:var(--ink2);margin:-8px 0 54px}
+.stl{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);position:relative;counter-reset:s}
+.stl::before{content:"";position:absolute;left:0;right:0;top:6px;height:1px;background:var(--ink)}
+.stl li{position:relative;padding:36px 22px 0 0}
+.stl li::before{content:"";position:absolute;left:0;top:0;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+.stl .tn{display:block;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--ink2)}
+.stl .td{display:block;font-family:'Poppins','Inter',sans-serif;font-size:clamp(26px,2.6vw,38px);font-weight:500;line-height:1.1;margin-top:8px}
+.stl h4{font-size:16px;font-weight:800;letter-spacing:.04em;margin-top:16px;line-height:1.5}
+.stl p{font-size:13px;line-height:1.9;color:var(--ink2);margin-top:8px}
+@media (max-width:900px){
+  .stl{grid-template-columns:1fr;padding-left:26px}
+  .stl::before{left:6px;right:auto;top:0;bottom:0;width:1px;height:auto}
+  .stl li{padding:0 0 38px 24px}
+  .stl li::before{left:-26px;top:3px}
+}
