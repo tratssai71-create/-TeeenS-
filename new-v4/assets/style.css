@@ -795,3 +795,12 @@ footer{padding:84px 40px 34px}
   .stl li{padding:0 0 38px 24px}
   .stl li::before{left:-26px;top:3px}
 }
+
+/* ホームページ作成：冒頭のバランス調整 */
+.svhero-grid{grid-template-columns:.95fr 1.05fr;gap:clamp(36px,5vw,88px);align-items:center}
+.svhero-text .eyebrow{white-space:nowrap;font-size:clamp(34px,4.4vw,64px)}
+.svhero-text h1{font-size:clamp(22px,2.5vw,34px);margin-top:26px;line-height:1.4}
+.svhero-text .lead{margin-top:18px;font-size:14px;line-height:2}
+.svhero-text .btn-line{margin-top:26px}
+.svhero-vis img{aspect-ratio:4/3;object-fit:cover;filter:grayscale(1) contrast(1.04);box-shadow:none;border-radius:6px}
+@media (max-width:900px){.svhero-vis img{aspect-ratio:16/10}}
