@@ -1006,3 +1006,5 @@ footer{padding:84px 40px 34px}
 .cmp-note b{color:var(--ink)}
 .cmp-note a,.s-note a{color:#4f6bff;border-bottom:1px solid currentColor}
 .s-note{font-size:12px;line-height:1.8;color:var(--ink2);margin:-14px 0 22px}
+
+.sfs-img img{filter:none}
