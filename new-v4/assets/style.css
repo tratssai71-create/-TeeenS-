@@ -729,3 +729,9 @@ footer{padding:84px 40px 34px}
 .svrow .sbtn::before{transition:transform .28s cubic-bezier(.65,0,.2,1)}
 .sbtn .slbl>span{transition:transform .28s cubic-bezier(.65,0,.2,1)}
 .sbtn .sarr>span{transition:transform .28s cubic-bezier(.65,0,.2,1)}
+
+/* ホームページ作成ページ：冒頭の2カラム */
+.svhero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(32px,4.5vw,72px);align-items:center}
+.svhero-vis{margin:0}
+.svhero-vis img{display:block;width:100%;height:auto;border-radius:6px;box-shadow:0 18px 40px rgba(0,0,0,.08)}
+@media (max-width:900px){.svhero-grid{grid-template-columns:1fr}}
