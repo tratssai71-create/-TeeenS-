@@ -873,3 +873,19 @@ footer{padding:84px 40px 34px}
 .chero .rv.in .chero-line{transform:scaleX(1)}
 .chero h1{margin-top:34px}
 @media (prefers-reduced-motion:reduce){.chero-line{transform:none}.chero-en .dot{transform:translateY(-.1em) scale(1)}}
+
+/* ===== Why：グレーの帯＋左に見出し、右に数字カード3枚 ===== */
+.swhy{background:#f3f2f0;padding:96px 0}
+.swhy-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(36px,6vw,100px);align-items:center}
+.swhy-h{font-size:clamp(28px,3.3vw,46px);line-height:1.38;max-width:none}
+.swhy-body{margin-top:24px;max-width:none}
+.swhy-body p{font-size:14.5px;line-height:2.1}
+.swlist{display:flex;flex-direction:column;gap:16px}
+.sw{display:grid;grid-template-columns:minmax(150px,.9fr) 1.1fr;align-items:center;gap:20px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:26px 34px;transition:border-color .25s,transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s}
+.sw:hover{border-color:var(--ink);transform:translateX(-6px);box-shadow:6px 10px 0 rgba(0,0,0,.05)}
+.sw .sn{display:flex;align-items:baseline;gap:6px;line-height:1}
+.sw .sn b{font-family:'Poppins','Inter',sans-serif;font-weight:500;font-size:clamp(54px,6vw,88px);letter-spacing:-.02em;line-height:1}
+.sw .sn i{font-style:normal;font-weight:800;font-size:clamp(16px,1.5vw,22px);color:#4f6bff;letter-spacing:.06em}
+.sw-k{display:block;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--ink2)}
+.sw-d{font-size:14px;line-height:1.8;margin-top:6px;font-weight:500}
+@media (max-width:900px){.swhy{padding:64px 0}.swhy-grid{grid-template-columns:1fr}.sw{grid-template-columns:auto 1fr;padding:20px 22px}}

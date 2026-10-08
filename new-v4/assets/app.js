@@ -282,7 +282,7 @@ document.documentElement.classList.add('js-draw');
   });
 
   /* 2. カード・行は、順番にずれて現れる（横並びの中の位置で遅れを付ける） */
-  var groups=[['.sgrid','.scell'],['.wgrid','.wcell'],['.grid3','.cell'],['.plans','.plan'],['.flow','.step'],['.nlist','.nitem'],['.cinfo','.crow'],['.faq','.faq-item'],['.vs','div']];
+  var groups=[['.sgrid','.scell'],['.wgrid','.wcell'],['.grid3','.cell'],['.plans','.plan'],['.flow','.step'],['.nlist','.nitem'],['.cinfo','.crow'],['.faq','.faq-item'],['.vs','div'],['.swlist','.sw']];
   var all=[];
   groups.forEach(function(g){
     document.querySelectorAll(g[0]).forEach(function(box){
@@ -314,7 +314,7 @@ document.documentElement.classList.add('js-draw');
       if(!e.isIntersecting)return;
       var el=e.target; el.classList.add('in'); io.unobserve(el);
       setTimeout(function(){el.classList.add('done');},1400);
-      el.querySelectorAll('.wmeta b').forEach(countUp);
+      el.querySelectorAll('.wmeta b,.sn b').forEach(countUp);
     });
   },{threshold:.12,rootMargin:'0px 0px -30px 0px'});
   all.forEach(function(k){io.observe(k);});
