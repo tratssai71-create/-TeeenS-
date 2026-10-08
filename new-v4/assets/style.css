@@ -1013,3 +1013,5 @@ footer{padding:84px 40px 34px}
 .sinc-side .aph-cms img{filter:none}
 
 .sfs:first-child .sfs-img img{object-position:32% 50%}
+
+.stl .td{font-size:clamp(40px,4.4vw,68px);font-weight:300;letter-spacing:-.02em;margin-top:6px}
