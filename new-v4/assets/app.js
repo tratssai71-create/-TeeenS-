@@ -333,3 +333,22 @@ document.documentElement.classList.add('js-draw');
     b.addEventListener('pointerleave',pos);
   });
 })();
+
+/* ホームページ作成ページ：スクロールに合わせて、パソコン内のサイトを動かす */
+(function(){
+  var sec=document.getElementById('sdev');if(!sec)return;
+  if(window.matchMedia('(max-width:900px)').matches||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var view=sec.querySelector('.sdev-view'),fr=sec.querySelector('.sdev-frame');if(!view||!fr)return;
+  var cur=0,tgt=0,ready=false;
+  function fit(){var s=view.clientWidth/1440;fr.style.transform='scale('+s+')';fr.style.height=(view.clientHeight/s)+'px'}
+  function maxScroll(){try{var d=fr.contentDocument;return Math.max(0,d.documentElement.scrollHeight-fr.clientHeight)}catch(e){return 0}}
+  function calc(){var r=sec.getBoundingClientRect(),total=sec.offsetHeight-window.innerHeight;var p=total>0?Math.min(1,Math.max(0,-r.top/total)):0;tgt=p}
+  window.addEventListener('scroll',calc,{passive:true});window.addEventListener('resize',function(){fit();calc()});
+  fr.addEventListener('load',function(){ready=true;fit()});
+  fit();calc();
+  function tick(){
+    if(ready){cur+=(tgt-cur)*0.12;try{fr.contentWindow.scrollTo(0,cur*maxScroll())}catch(e){}}
+    requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick);
+})();

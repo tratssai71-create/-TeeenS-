@@ -820,3 +820,43 @@ footer{padding:84px 40px 34px}
   .svrow .sbtn .slbl,.svfeat-hero .svrow .sbtn .slbl{min-width:0;flex:1}
   .svrow .sbtn{gap:12px}
 }
+
+/* ===== ホームページ作成：冒頭（スクロール連動のパソコン） ===== */
+.sdev{position:relative;height:300vh}
+.sdev-stick{position:sticky;top:0;height:100vh;display:flex;align-items:center;padding-top:96px;box-sizing:border-box}
+.sdev-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(30px,4vw,72px);align-items:center;width:100%}
+.sdev-text .eyebrow{white-space:nowrap;font-size:clamp(34px,4.4vw,64px)}
+.sdev-text h1{font-size:clamp(22px,2.5vw,34px);font-weight:800;line-height:1.4;letter-spacing:.03em;margin-top:26px}
+.sdev-text .lead{font-size:14px;color:var(--ink2);line-height:2;margin-top:18px}
+.sdev-text .btn-line{margin-top:26px}
+.sdev-lap .lap{width:100%;filter:drop-shadow(0 22px 28px rgba(0,0,0,.2))}
+.sdev-lap .lscr{aspect-ratio:16/10.2;padding:2.2% 2.2% 2.6%}
+.sdev-view{position:relative;width:100%;height:100%;overflow:hidden;background:#fff;border-radius:1px}
+.sdev-frame{position:absolute;left:0;top:0;width:1440px;height:900px;border:0;transform-origin:0 0;pointer-events:none;background:#fff}
+.sdev-static{display:none;width:100%;height:100%;object-fit:cover}
+.sdev-note{text-align:center;font-size:12px;letter-spacing:.12em;color:var(--ink2);margin-top:18px}
+@media (max-width:900px){
+  .sdev{height:auto}
+  .sdev-stick{position:static;height:auto;display:block;padding:120px 0 40px}
+  .sdev-grid{grid-template-columns:1fr}
+  .sdev-lap{margin-top:28px}
+  .sdev-view{display:none}
+  .sdev-static{display:block}
+  .sdev-note{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sdev{height:auto}.sdev-stick{position:static;height:auto;padding:120px 0 40px}}
+/* ===== 制作実績（大きなブラウザ枠） ===== */
+.sworks{padding:40px 0 70px}
+.sbrowser{display:block;position:relative;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:0 24px 50px rgba(0,0,0,.08);margin-top:10px}
+.sb-bar{display:flex;align-items:center;gap:8px;height:42px;padding:0 16px;background:#f1f0ee;border-bottom:1px solid var(--line)}
+.sb-bar i{width:11px;height:11px;border-radius:50%;background:#d3d2cf}
+.sb-url{margin-left:18px;font-family:'Inter',sans-serif;font-size:12px;letter-spacing:.04em;color:var(--ink2);background:#fff;border-radius:999px;padding:5px 16px}
+.sb-shot{position:relative;overflow:hidden;aspect-ratio:16/9}
+.sb-shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 1.4s cubic-bezier(.22,1,.36,1)}
+.sbrowser:hover .sb-shot img{transform:scale(1.035)}
+.sb-cursor{position:absolute;right:28px;bottom:26px;background:var(--ink);color:#fff;font-size:13px;font-weight:700;letter-spacing:.12em;padding:12px 22px;border-radius:999px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.sbrowser:hover .sb-cursor{opacity:1;transform:none}
+.sb-cap{margin-top:20px}
+.sb-meta{font-size:12px;letter-spacing:.12em;color:var(--ink2)}
+.sb-t{font-size:18px;font-weight:800;letter-spacing:.04em;margin-top:4px}
+@media (hover:none){.sb-cursor{opacity:1;transform:none;right:14px;bottom:14px}}
