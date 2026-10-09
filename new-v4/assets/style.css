@@ -1030,5 +1030,5 @@ footer{padding:84px 40px 34px}
 .sfs-body h3{font-size:clamp(19px,1.9vw,27px);margin-top:6px}
 .sfs-p{margin-top:10px;font-size:13px;line-height:1.85}
 .sfs-body .ticks{margin-top:10px}
-.sfs-body .ticks li{padding:6px 0;font-size:13px}
+.sfs-body .ticks li{padding-left:24px;margin-top:5px;font-size:13px;line-height:1.8}
 @media (max-width:900px){.sfs{height:auto;grid-template-columns:1fr}}
