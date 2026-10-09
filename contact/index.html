@@ -1,324 +1,104 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5Z6X7ZC1QK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5Z6X7ZC1QK');
-</script>
-
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>お問い合わせ | 株式会社TeeenS（ティーンズ）</title>
-<meta name="robots" content="index,follow"/>
-<link rel="canonical" href="https://teeen-s.com/contact"/>
-<meta property="og:type" content="website"/>
-<meta property="og:title" content="お問い合わせ | 株式会社TeeenS（ティーンズ）"/>
-<meta property="og:description" content="TeeenSへのお問い合わせ・無料相談はこちらから。ホームページ制作・LP制作・AI開発など、まずはお気軽にご相談ください。"/>
-<meta property="og:url" content="https://teeen-s.com/contact"/>
-<meta property="og:image" content="https://teeen-s.com/hp-mockup-hero.png"/>
-<meta property="og:site_name" content="株式会社TeeenS"/>
-<meta property="og:locale" content="ja_JP"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="お問い合わせ | 株式会社TeeenS（ティーンズ）"/>
-<meta name="twitter:description" content="TeeenSへのお問い合わせ・無料相談はこちらから。ホームページ制作・LP制作・AI開発など、まずはお気軽にご相談ください。"/>
-<meta name="twitter:image" content="https://teeen-s.com/hp-mockup-hero.png"/>
-<meta name="description" content="TeeenSへのお問い合わせ・無料相談はこちらから。ホームページ制作・LP制作・AI開発など、まずはお気軽にご相談ください。"/>
-<link rel="icon" href="/favicon.ico" sizes="any"/>
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"/>
+<meta name="description" content="TeeenSへのお問い合わせ・無料相談はこちらから。"/>
+<link rel="icon" href="../../favicon.ico" sizes="any"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.3);
-  --bd:rgba(9,9,11,.08);--bd2:rgba(9,9,11,.14);
-  --bg2:#f5f5f7;--bg3:#fafafa;
-}
-html{scroll-behavior:smooth}
-body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.7}
-img{display:block;max-width:100%}
-a{text-decoration:none;color:inherit}
-
-/* ── Header ── */
-header{position:fixed;top:0;left:0;right:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px 40px;background:transparent}
-.h-inner{display:flex;align-items:center;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(9,9,11,.07);border-radius:0;padding:8px 8px 8px 20px;box-shadow:0 6px 36px rgba(9,9,11,.1)}
-.h-logo{display:flex;align-items:center;text-decoration:none;margin-right:16px;padding-right:20px;border-right:1px solid var(--bd)}
-.h-logo img{height:36px;display:block}
-.h-nav{display:flex;align-items:center}
-.h-item{position:relative}
-.svc-drop{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);width:220px;background:#fff;border-radius:0;box-shadow:0 8px 40px rgba(9,9,11,.12),0 2px 8px rgba(9,9,11,.06);border:1px solid rgba(9,9,11,.07);overflow:hidden;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s cubic-bezier(.22,1,.36,1);z-index:900;padding:6px 0}
-.svc-drop::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
-.svc-drop.open{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
-.svc-drop-link{display:block;padding:11px 20px;font-size:13.5px;font-weight:500;color:var(--ink);border-bottom:1px solid rgba(9,9,11,.05);transition:background .15s,padding-left .2s}
-.svc-drop-link:last-child{border-bottom:none}
-.svc-drop-link:hover{background:var(--bg2);padding-left:26px}
-.h-item>a{display:block;padding:10px 16px;font-size:15px;font-weight:600;color:var(--ink);font-family:'Noto Sans JP',sans-serif;text-decoration:none;letter-spacing:.01em;transition:color .18s;white-space:nowrap;border-radius:0}
-.h-cta{margin-left:8px;background:var(--ink)!important;color:#fff!important;font-weight:700!important;font-size:14px!important;padding:11px 26px!important;letter-spacing:.04em;border-radius:0!important;transition:background .2s!important;text-decoration:none;display:inline-flex;align-items:center}
-.h-cta:hover{background:#333!important}
-.h-burger{display:none;flex-direction:column;justify-content:center;align-items:center;width:40px;height:40px;background:transparent;border:none;cursor:pointer;gap:5px;padding:8px;margin-left:8px}
-.h-burger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .25s;transform-origin:center}
-.h-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
-.h-burger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
-.h-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
-.mob-nav{position:fixed;inset:0;z-index:700;background:rgba(255,255,255,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;transform:translateY(-100%);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s;pointer-events:none}
-.mob-nav.open{transform:translateY(0);opacity:1;pointer-events:all}
-.mob-link{font-size:clamp(24px,6vw,32px);font-weight:700;color:var(--ink);text-decoration:none;padding:16px 0;border-bottom:1px solid var(--bd);width:72%;text-align:center;letter-spacing:-0.02em;transition:color .18s}
-.mob-link:first-child{border-top:1px solid var(--bd)}
-.mob-cta-btn{margin-top:36px;background:var(--ink);color:#fff;font-size:15px;font-weight:700;padding:16px 52px;text-decoration:none;letter-spacing:.06em;border-radius:4px;transition:background .2s}
-
-/* ── ページ本体 ── */
-.ct-page{padding:140px 24px 100px;max-width:600px;margin:0 auto}
-.ct-eyebrow{font-size:13px;color:var(--ink2);margin-bottom:12px}
-.ct-h1{font-size:clamp(40px,8vw,72px);font-weight:900;letter-spacing:-0.04em;line-height:1;color:var(--ink);margin-bottom:20px;font-family:'Inter',sans-serif}
-.ct-lead{font-size:13.5px;color:var(--ink2);line-height:1.85;margin-bottom:48px}
-
-/* フォーム */
-.ct-form{display:flex;flex-direction:column;gap:20px}
-.ct-field label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
-.ct-badge.req{color:#e53e3e;font-size:16px;font-weight:700;line-height:1}
-.ct-badge.opt{font-size:11px;color:#9ca3af;font-weight:500}
-.ct-field input,.ct-field select,.ct-field textarea{
-  width:100%;padding:13px 16px;
-  border:1px solid #e5e7eb;background:#fff;
-  font-size:14px;font-family:inherit;color:var(--ink);
-  border-radius:6px;
-  transition:border-color .2s,box-shadow .2s;
-  outline:none;appearance:none;
-}
-.ct-field input::placeholder,.ct-field textarea::placeholder{color:#bbb}
-.ct-field input:focus,.ct-field select:focus,.ct-field textarea:focus{
-  border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)
-}
-.ct-field textarea{resize:vertical;min-height:140px}
-.ct-field select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 14px center;
-  padding-right:40px;cursor:pointer;color:#bbb;
-}
-.ct-field select.filled{color:var(--ink)}
-
-/* プライバシー同意 */
-.ct-privacy{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;color:var(--ink2);margin-top:4px;user-select:none}
-.ct-privacy input[type="checkbox"]{width:16px;height:16px;accent-color:#6366f1;cursor:pointer;flex-shrink:0}
-.ct-privacy a{color:#6366f1;text-decoration:underline}
-
-/* 送信ボタン */
-.ct-btn{
-  display:block;width:100%;padding:16px;
-  background:linear-gradient(135deg,#6366f1,#818cf8);
-  color:#fff;font-size:15px;font-weight:700;
-  text-align:center;border:none;cursor:pointer;
-  font-family:inherit;border-radius:6px;
-  transition:opacity .2s,transform .15s;
-  margin-top:4px;letter-spacing:.04em;
-}
-.ct-btn:hover{opacity:.88;transform:translateY(-1px)}
-.ct-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
-/* 完了メッセージ */
-.ct-thanks{display:none;text-align:center;padding:60px 0}
-.ct-thanks h3{font-size:22px;font-weight:900;margin-bottom:12px}
-.ct-thanks p{font-size:14px;color:var(--ink2);line-height:1.8}
-
-/* ── Footer ── */
-.ft{background:#09090b;padding:72px 56px 32px}
-.ft-in{max-width:1180px;margin:0 auto}
-.ft-top{display:flex;justify-content:space-between;align-items:flex-start;gap:60px;margin-bottom:72px}
-.ft-logo img{height:32px;filter:brightness(0) invert(1);margin-bottom:10px}
-.ft-tagline{font-size:12px;color:rgba(255,255,255,.25);margin-top:4px}
-.ft-links{display:flex;gap:56px}
-.ft-col h4{font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;margin-bottom:14px}
-.ft-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
-.ft-col ul li a{font-size:13px;color:rgba(255,255,255,.42);transition:color .2s}
-.ft-col ul li a:hover{color:#fff}
-.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:20px;font-size:12px;color:rgba(255,255,255,.18);text-align:center}
-
-@media(max-width:1024px){
-  .h-item,.h-cta{display:none!important}
-  .h-burger{display:flex}
-  .ct-page{padding:120px 32px 80px}
-}
-@media(max-width:767px){
-  .ct-page{padding:100px 20px 64px}
-  .ft{padding:56px 20px 28px}
-  .ft-top{flex-direction:column;gap:36px}
-  .ft-links{flex-wrap:wrap;gap:32px}
-}
-</style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type":"ListItem","position":1,"name":"ホーム","item":"https://teeen-s.com/"},
-    {"@type":"ListItem","position":2,"name":"お問い合わせ","item":"https://teeen-s.com/contact"}
-  ]
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&amp;text=0123456789.%2C%25%2B%3A&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../assets/style.css?v=20261009175246"/>
 </head>
-<body>
+<body data-sub>
+
+<canvas id="bg"></canvas>
 
 <header>
-<div class="h-inner">
-  <a href="/" class="h-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></a>
-  <nav class="h-nav">
-    <div class="h-item">
-      <a href="/#services">事業内容</a>
-      <div class="svc-drop">
-        <a href="/service-corporate" class="svc-drop-link">ホームページ制作</a>
-        <a href="/service-lp" class="svc-drop-link">ランディングページ（LP）制作</a>
-        <a href="/service-system" class="svc-drop-link">社内Webアプリ・AI開発</a>
-      </div>
+  <a href="../index.html" class="logo"><img src="../assets/logo.png" alt="TeeenS" width="143" height="38"/></a>
+  <nav class="nav" aria-label="メインメニュー">
+    <a href="../about/index.html" title="私たちについて"><span class="roll"><span class="r1">About</span><span class="r2" aria-hidden="true">私たちについて</span></span></a>
+    <div class="nav-drop"><a href="../service/index.html" title="事業内容"><span class="roll"><span class="r1">Service</span><span class="r2" aria-hidden="true">事業内容</span></span></a>
+      <div class="drop"><div class="drop-in">
+        <a href="../service-corporate/index.html">Website<small>ホームページ作成</small></a>
+        <a href="../service-lp/index.html">Landing Page<small>LP作成</small></a>
+        <a href="../service-system/index.html">Web Apps &amp; AI<small>社内アプリ・AI開発</small></a>
+        <a href="../service-studio/index.html">STUDIO Migration<small>STUDIO移行</small></a>
+      </div></div>
     </div>
-    <div class="h-item"><a href="/about">TeeenSとは</a></div>
-    <div class="h-item"><a href="/works">制作実績</a></div>
-    <div class="h-item"><a href="/pricing">料金プラン</a></div>
-    <div class="h-item"><a href="/#culture">会社概要</a></div>
-    <a href="/contact" class="h-cta">無料相談 →</a>
+    <a href="../works/index.html" title="制作実績"><span class="roll"><span class="r1">Works</span><span class="r2" aria-hidden="true">制作実績</span></span></a>
+    <a href="../pricing/index.html" title="料金プラン"><span class="roll"><span class="r1">Pricing</span><span class="r2" aria-hidden="true">料金プラン</span></span></a>
+    <a href="../about/index.html#company" title="会社情報"><span class="roll"><span class="r1">Company</span><span class="r2" aria-hidden="true">会社情報</span></span></a>
+    <a href="../contact/index.html" class="btn-cta" title="お問い合わせ"><span class="roll"><span class="r1">Contact</span><span class="r2" aria-hidden="true">お問い合わせ</span></span><span class="arr" aria-hidden="true">→</span></a>
   </nav>
-  <button class="h-burger" id="h-burger" aria-label="メニューを開く">
-    <span></span><span></span><span></span>
-  </button>
-</div>
+  <button class="burger" id="burger" aria-label="メニュー"><span></span><span></span><span></span></button>
 </header>
-
-<div class="mob-nav" id="mob-nav">
-  <a href="/" class="mob-link">トップページ</a>
-  <a href="/#services" class="mob-link">事業内容</a>
-  <a href="/about" class="mob-link">TeeenSとは</a>
-  <a href="/works" class="mob-link">制作実績</a>
-  <a href="/pricing" class="mob-link">料金プラン</a>
-  <a href="/contact" class="mob-cta-btn">無料相談 →</a>
+<div class="mob" id="mob">
+  <a href="../about/index.html">About</a>
+  <a href="../service-corporate/index.html">Website</a>
+  <a href="../service-lp/index.html">Landing Page</a>
+  <a href="../service-system/index.html">Web Apps &amp; AI</a>
+  <a href="../service-studio/index.html">STUDIO Migration</a>
+  <a href="../works/index.html">Works</a>
+  <a href="../pricing/index.html">Pricing</a>
+  <a href="../contact/index.html" class="btn-cta">Contact →</a>
 </div>
 
-<div class="ct-page">
-  <p class="ct-eyebrow">お問い合わせ</p>
-  <h1 class="ct-h1">CONTACT</h1>
-  <p class="ct-lead">サービスの詳細・料金・納期など、どんなことでも歓迎です。「こういうものを作れる？」という段階でも、お気軽にどうぞ。通常2営業日以内にご返信します。</p>
-
-  <form class="ct-form" id="ct-form" action="https://api.web3forms.com/submit" method="POST">
-    <input type="hidden" name="access_key" value="ebe0b2b8-2ef7-46ec-a4b5-e9a24776f517"/>
-    <input type="hidden" name="subject" value="【TeeenS】お問い合わせが届きました"/>
-    <input type="hidden" name="redirect" value="false"/>
-
-    <div class="ct-field">
-      <label>お名前 <span class="ct-badge req">*</span></label>
-      <input type="text" name="name" placeholder="山田 太郎" required/>
+<div class="contents">
+  <section class="page-hero">
+    <div class="wrap">
+      <div class="rv"><span class="eyebrow">Get in Touch</span><span class="jp">お問い合わせ</span></div>
+      <p class="lead rv d2">サービスの詳細・料金・納期など、どんなことでも歓迎です。「こういうものを作れる？」という段階でも、お気軽にどうぞ。通常2営業日以内にご返信します。</p>
     </div>
-
-    <div class="ct-field">
-      <label>会社名・屋号 <span class="ct-badge opt">任意</span></label>
-      <input type="text" name="company" placeholder="株式会社〇〇"/>
+  </section>
+  <section class="band" style="padding-top:20px"><div class="wrap">
+    <form class="form rv" id="ct-form" action="https://formsubmit.co/ajax/teeens.info@gmail.com" method="POST" data-thanks="../thanks/index.html">
+      <input type="hidden" name="_captcha" value="false"/>
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off"/>
+      <input type="hidden" name="_subject" value="【TeeenS】お問い合わせが届きました"/>
+      <input type="hidden" name="_template" value="box"/>
+      <div class="row"><label>お名前<span class="req">必須</span></label><input type="text" name="お名前" placeholder="山田 太郎" required/></div>
+      <div class="row"><label>会社名・屋号<span class="opt">任意</span></label><input type="text" name="会社名" placeholder="株式会社〇〇"/></div>
+      <div class="row"><label>メールアドレス<span class="req">必須</span></label><input type="email" name="email" placeholder="example@mail.com" required/></div>
+      <div class="row"><label>電話番号<span class="opt">任意</span></label><input type="tel" name="電話番号" placeholder="090-0000-0000"/></div>
+      <div class="row"><label>ご相談内容<span class="req">必須</span></label>
+        <select name="ご希望の内容" required><option value="" disabled selected>選択してください</option><option value="ホームページ制作">ホームページ制作</option><option value="LP制作">LP制作</option><option value="サイトリニューアル">サイトリニューアル</option><option value="社内アプリ・AI開発">社内アプリ・AI開発</option><option value="その他">その他</option></select></div>
+      <div class="row"><label>メッセージ<span class="opt">任意</span></label><textarea name="お問い合わせ内容" placeholder="ご要望・現状の課題など、自由にお書きください。"></textarea></div>
+      <div class="row agree"><input type="checkbox" required id="ag"/><label for="ag" style="font-weight:400;margin:0"><a href="../privacy/index.html" target="_blank">プライバシーポリシー</a>に同意の上、送信してください。</label></div>
+      <button type="submit" class="btn-red" id="ct-submit">送信する</button>
+    </form>
+  </div></section>
+  <footer>
+    <div class="ft-in2">
+      <div class="ft-brand">
+        <a href="../index.html" class="logo"><img src="../assets/logo.png" alt="TeeenS" width="143" height="38"/></a>
+        <p class="ft-tag">10代の熱量で、岡山から<br>Webを変える</p>
+      </div>
+      <div class="ft-info">
+        <p class="ft-lab">Okayama Office</p>
+        <p class="ft-addr">岡山県岡山市中区浜3丁目4-39</p>
+        <p class="ft-lab" style="margin-top:22px">Business</p>
+        <p class="ft-addr">ホームページ作成 / LP作成 / 社内アプリ・AI開発 / STUDIO移行</p>
+      </div>
+      <nav class="ft-links2" aria-label="フッターメニュー">
+        <a href="../about/index.html"><span>私たちについて</span></a>
+        <a href="../service-corporate/index.html"><span>ホームページ制作</span></a>
+        <a href="../service-lp/index.html"><span>LP制作</span></a>
+        <a href="../service-system/index.html"><span>AI・システム開発</span></a>
+        <a href="../service-studio/index.html"><span>STUDIO移行</span></a>
+        <a href="../works/index.html"><span>制作実績</span></a>
+        <a href="../pricing/index.html"><span>料金プラン</span></a>
+      </nav>
     </div>
-
-    <div class="ct-field">
-      <label>メールアドレス <span class="ct-badge req">*</span></label>
-      <input type="email" name="email" placeholder="example@mail.com" required/>
+    <div class="ft-bar">
+      <div class="ft-links3"><a href="../contact/index.html"><span>お問い合わせ</span></a><a href="../privacy/index.html"><span>プライバシーポリシー</span></a></div>
+      <p class="ft-copy2">© 2026 TeeenS Inc.</p>
     </div>
-
-    <div class="ct-field">
-      <label>電話番号 <span class="ct-badge opt">任意</span></label>
-      <input type="tel" name="phone" placeholder="090-0000-0000"/>
-    </div>
-
-    <div class="ct-field">
-      <label>ご相談内容 <span class="ct-badge req">*</span></label>
-      <select name="service" id="service-select" required>
-        <option value="" disabled selected>選択してください</option>
-        <option value="ホームページ制作">ホームページ制作</option>
-        <option value="LP制作">LP制作</option>
-        <option value="サイトリニューアル">サイトリニューアル</option>
-        <option value="社内アプリ・AI開発">社内アプリ・AI開発</option>
-        <option value="その他">その他</option>
-      </select>
-    </div>
-
-    <div class="ct-field">
-      <label>メッセージ <span class="ct-badge opt">任意</span></label>
-      <textarea name="message" placeholder="ご要望・現状の課題など、自由にお書きください。"></textarea>
-    </div>
-
-    <label class="ct-privacy">
-      <input type="checkbox" required/>
-      <span><a href="/privacy" target="_blank">プライバシーポリシー</a>に同意の上、送信してください。</span>
-    </label>
-
-    <button type="submit" class="ct-btn" id="ct-submit">送信する</button>
-
-  </form>
-
-  <div class="ct-thanks" id="ct-thanks">
-    <h2>お問い合わせありがとうございます</h2>
-    <p>通常2営業日以内にご連絡いたします。<br>しばらくお待ちください。</p>
-  </div>
+  </footer>
 </div>
 
-<footer class="ft">
-  <div class="ft-in">
-    <div class="ft-top">
-      <div>
-        <div class="ft-logo"><img src="/logo-side-trans.png" alt="TeeenS"/></div>
-        <p class="ft-tagline">10代の熱量で、岡山からWebを変える</p>
-      </div>
-      <div class="ft-links">
-        <div class="ft-col"><h4>About</h4><ul><li><a href="/#vision">私たちについて</a></li><li><a href="/#culture">会社概要</a></li></ul></div>
-        <div class="ft-col"><h4>サービス</h4><ul><li><a href="/service-corporate">コーポレートサイト制作</a></li><li><a href="/service-lp">LP制作</a></li></ul></div>
-        <div class="ft-col"><h4>実績</h4><ul><li><a href="/works">制作実績</a></li></ul></div>
-        <div class="ft-col"><h4>Contact</h4><ul><li><a href="/contact">無料で相談する</a></li><li><a href="/#faq">よくある質問</a></li></ul></div>
-      </div>
-    </div>
-    <div class="ft-bottom">© 2026 株式会社TeeenS. All rights reserved.</div>
-  </div>
-</footer>
-
-<script>
-(function(){
-  const btn=document.getElementById('h-burger'),nav=document.getElementById('mob-nav');
-  if(!btn||!nav)return;
-  const close=()=>{nav.classList.remove('open');btn.classList.remove('open');document.body.style.overflow=''};
-  btn.addEventListener('click',()=>{const o=nav.classList.toggle('open');btn.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';});
-  nav.querySelectorAll('.mob-link,.mob-cta-btn').forEach(a=>a.addEventListener('click',close));
-
-  document.querySelectorAll('.h-item').forEach(item=>{
-    const drop=item.querySelector('.svc-drop');
-    if(!drop)return;
-    let t;
-    item.addEventListener('mouseenter',()=>{clearTimeout(t);drop.classList.add('open')});
-    item.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
-    drop.addEventListener('mouseenter',()=>clearTimeout(t));
-    drop.addEventListener('mouseleave',()=>{t=setTimeout(()=>drop.classList.remove('open'),160)});
-  });
-
-  const sel=document.getElementById('service-select');
-  if(sel)sel.addEventListener('change',()=>sel.classList.add('filled'));
-
-  const form=document.getElementById('ct-form');
-  const thanks=document.getElementById('ct-thanks');
-  const submitBtn=document.getElementById('ct-submit');
-  if(form&&thanks){
-    form.addEventListener('submit',async(e)=>{
-      e.preventDefault();
-      const action=form.getAttribute('action');
-      submitBtn.disabled=true;
-      submitBtn.textContent='送信中...';
-      const res=await fetch(action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
-      if(res.ok){
-        window.location.href='/thanks.html';
-      }else{
-        submitBtn.disabled=false;
-        submitBtn.textContent='送信する';
-        alert('送信に失敗しました。お手数ですが、直接メールでご連絡ください。');
-      }
-    });
-  }
-})();
-</script>
+<script src="../assets/app.js?v=20261009175246"></script>
 </body>
 </html>
