@@ -4,8 +4,80 @@
     {
       "name": "TeeenS",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "3030"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "3030"
+      ],
       "port": 3030
+    },
+    {
+      "name": "bright-air-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "3031",
+        "--directory",
+        "/private/tmp/claude-501/-Users-otokoushigaeru-Desktop-----TeeenS------/0f7007d6-2b73-4a45-bcc5-b4f1aa94975e/scratchpad"
+      ],
+      "port": 3031
+    },
+    {
+      "name": "origin-medaka",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4173",
+        "--directory",
+        "/Users/otokoushigaeru/Desktop/origin-medaka"
+      ],
+      "port": 4173
+    },
+    {
+      "name": "bright-air",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4321",
+        "--directory",
+        "/Users/otokoushigaeru/Desktop/Bright Air デザイン案"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "tsuri-scratch",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "3901",
+        "--directory",
+        "/private/tmp/claude-501/-Users-otokoushigaeru-Desktop-----TeeenS------/e67ec800-5084-41b0-8e19-168a386ea22c/scratchpad"
+      ],
+      "port": 3901
+    },
+    {
+      "name": "tsuri-press",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "PORT=3900",
+        "node",
+        "/Users/otokoushigaeru/Desktop/フィッシングポータルサイト/server.js"
+      ],
+      "port": 3900
+    },
+    {
+      "name": "indeed-job-gen",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "start",
+        "--prefix",
+        "/Users/otokoushigaeru/Desktop/株式会社TeeenSホームページ/tools/indeed-job-gen"
+      ],
+      "port": 3210
     }
   ]
 }

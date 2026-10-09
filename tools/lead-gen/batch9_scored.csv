@@ -1,0 +1,4 @@
+name,url,industry,contact_form_url,notes,score,findings
+asahi-green,https://asahi-green.com/,,,,25,スマホ対応(viewportタグ)なし
+okadazouen,https://28.okadazouen.com/about/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mskg,https://mskg.co.jp/,,,,0,"最終更新(サーバー応答): Mon, 07 Sep 2026 17:18:47 GMT"

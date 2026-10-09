@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indeed求人ジェネレーター</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --border: #e2e5ea;
+    --text: #1c1f24;
+    --sub: #5b6270;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --danger: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .layout { display: flex; min-height: 100vh; }
+  nav {
+    width: 200px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    flex-shrink: 0;
+  }
+  nav h1 { font-size: 15px; padding: 0 20px 16px; margin: 0; color: var(--text); }
+  nav .item {
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--sub);
+    cursor: default;
+  }
+  nav .item.active { color: var(--accent); font-weight: 700; border-left: 3px solid var(--accent); background: #eef4ff; }
+  main { flex: 1; padding: 32px 40px; max-width: 1000px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  .desc { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .panel h3 { margin: 0 0 14px; font-size: 14px; color: var(--text); }
+  label { display: block; font-size: 12px; color: var(--sub); margin: 12px 0 4px; }
+  label:first-of-type { margin-top: 0; }
+  input, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  textarea { resize: vertical; }
+  #hearingForm textarea { min-height: 60px; }
+  .dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    color: var(--sub);
+    font-size: 13px;
+    margin-bottom: 16px;
+    transition: border-color 0.15s, background 0.15s;
+    cursor: pointer;
+  }
+  .dropzone.dragover { border-color: var(--accent); background: #eef4ff; }
+  .dropzone small { display: block; margin-top: 4px; color: #9aa1ad; }
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 18px;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { background: #b7c3d6; cursor: not-allowed; }
+  .result-title {
+    font-size: 16px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  .result-body {
+    width: 100%;
+    min-height: 420px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .empty-state { color: var(--sub); font-size: 13px; text-align: center; padding: 60px 0; }
+  .error-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: var(--danger);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .copy-btn {
+    background: #fff;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-top: 10px;
+    margin-right: 8px;
+  }
+  .copy-btn:hover { background: #eef4ff; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav>
+    <h1>Indeed求人ツール</h1>
+    <div class="item active">ヒアリング入力</div>
+    <div class="item">求人一覧(準備中)</div>
+    <div class="item">レポート(準備中)</div>
+  </nav>
+  <main>
+    <h2>ヒアリング入力 → 求人文生成</h2>
+    <p class="desc">項目を入力(またはファイルをドラッグ&ドロップ)して「生成」を押すと、Indeed向けの求人文をAIが作成します。</p>
+
+    <div class="grid">
+      <div class="panel">
+        <h3>ヒアリング内容</h3>
+        <div class="dropzone" id="dropzone">
+          ここにファイルをドラッグ&ドロップ<br>(テキストファイルの中身を自動で読み込みます)
+          <small>クリックしてファイル選択も可能</small>
+          <input type="file" id="fileInput" accept=".txt,.md,.csv" style="display:none">
+        </div>
+        <form id="hearingForm">
+          <label>職種</label>
+          <input type="text" name="job_type" placeholder="例: Web制作ディレクター">
+          <label>雇用形態</label>
+          <input type="text" name="employment_type" placeholder="例: 正社員 / 契約社員 / アルバイト">
+          <label>給与</label>
+          <input type="text" name="salary" placeholder="例: 月給25万円〜35万円(経験による)">
+          <label>勤務地</label>
+          <input type="text" name="location" placeholder="例: 東京都渋谷区(リモート可)">
+          <label>勤務時間</label>
+          <input type="text" name="working_hours" placeholder="例: 9:00〜18:00(フレックス制)">
+          <label>仕事内容</label>
+          <textarea name="job_description" placeholder="担当業務の詳細"></textarea>
+          <label>求める人物像・応募資格</label>
+          <textarea name="requirements" placeholder="必須スキル、歓迎スキル、人物像など"></textarea>
+          <label>待遇・福利厚生</label>
+          <textarea name="benefits" placeholder="社会保険、昇給、休日休暇など"></textarea>
+          <label>アピールポイント・その他自由記述</label>
+          <textarea name="free_text" placeholder="社風、働き方の魅力など自由に"></textarea>
+        </form>
+        <button id="generateBtn">生成する</button>
+        <div id="errorBox"></div>
+      </div>
+
+      <div class="panel">
+        <h3>生成結果</h3>
+        <div id="resultArea">
+          <div class="empty-state">左のフォームを入力して「生成する」を押してください</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const form = document.getElementById('hearingForm');
+const generateBtn = document.getElementById('generateBtn');
+const resultArea = document.getElementById('resultArea');
+const errorBox = document.getElementById('errorBox');
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+
+function buildHearingText() {
+  const data = new FormData(form);
+  const labels = {
+    job_type: '職種',
+    employment_type: '雇用形態',
+    salary: '給与',
+    location: '勤務地',
+    working_hours: '勤務時間',
+    job_description: '仕事内容',
+    requirements: '求める人物像・応募資格',
+    benefits: '待遇・福利厚生',
+    free_text: 'アピールポイント・その他',
+  };
+  let lines = [];
+  for (const [key, label] of Object.entries(labels)) {
+    const val = (data.get(key) || '').trim();
+    if (val) lines.push(`${label}: ${val}`);
+  }
+  return lines.join('\n');
+}
+
+async function handleGenerate() {
+  const hearing = buildHearingText();
+  errorBox.innerHTML = '';
+  if (!hearing.trim()) {
+    errorBox.innerHTML = '<div class="error-box">少なくとも1項目は入力してください。</div>';
+    return;
+  }
+  generateBtn.disabled = true;
+  generateBtn.textContent = '生成中...';
+  resultArea.innerHTML = '<div class="empty-state">生成中です、少々お待ちください...</div>';
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ hearing }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || '生成に失敗しました');
+    }
+    renderResult(data.title || '', data.body || '');
+  } catch (err) {
+    resultArea.innerHTML = '<div class="empty-state">生成に失敗しました</div>';
+    errorBox.innerHTML = `<div class="error-box">${escapeHtml(err.message)}</div>`;
+  } finally {
+    generateBtn.disabled = false;
+    generateBtn.textContent = '生成する';
+  }
+}
+
+function renderResult(title, body) {
+  resultArea.innerHTML = `
+    <input type="text" class="result-title" id="resTitle" value="${escapeAttr(title)}">
+    <textarea class="result-body" id="resBody">${escapeHtml(body)}</textarea>
+    <div>
+      <button class="copy-btn" id="copyTitleBtn">タイトルをコピー</button>
+      <button class="copy-btn" id="copyBodyBtn">本文をコピー</button>
+    </div>
+  `;
+  document.getElementById('copyTitleBtn').onclick = () => copyText(document.getElementById('resTitle').value);
+  document.getElementById('copyBodyBtn').onclick = () => copyText(document.getElementById('resBody').value);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+}
+function escapeAttr(str) {
+  return escapeHtml(str).replace(/"/g, '&quot;');
+}
+
+generateBtn.addEventListener('click', handleGenerate);
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) readFile(file);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) readFile(fileInput.files[0]);
+});
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    form.free_text.value = (form.free_text.value ? form.free_text.value + '\n\n' : '') + `[アップロードファイル: ${file.name}]\n` + reader.result;
+    dropzone.innerHTML = `読み込み済み: ${escapeHtml(file.name)}<small>クリックして別のファイルを選択</small>`;
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+name,url,industry,contact_form_url,notes,score,findings
+narakikenzai,http://www.narakikenzai.co.jp/,,,,50,SSL(https)未対応; スマホ対応(viewportタグ)なし
+kennosho,http://kennosho.com/pages/about.html,,,,35,"SSL(https)未対応; meta descriptionが未設定(SEO弱い); 最終更新(サーバー応答): Mon, 07 Sep 2026 16:45:13 GMT"

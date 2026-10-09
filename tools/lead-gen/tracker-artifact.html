@@ -1,0 +1,1999 @@
+<style>
+  :root{
+    --ink:#09090b;--ink2:rgba(9,9,11,.6);--ink3:rgba(9,9,11,.35);
+    --bd:rgba(9,9,11,.12);--bg:#fff;--bg2:#f5f5f7;
+    --accent:#111;--ok:#16a34a;--warn:#d97706;--danger:#dc2626;--muted:#71717a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:-apple-system,'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;background:var(--bg2);color:var(--ink);font-size:15px;}
+
+  .app{display:flex;height:100vh;width:100vw;overflow:hidden}
+
+  /* ══ サイドバー ══ */
+  .sidebar{width:260px;flex:0 0 260px;background:var(--ink);color:#fff;display:flex;flex-direction:column;padding:22px 16px}
+  .brand{padding:6px 10px 26px}
+  .brand .name{font-size:16px;font-weight:900;letter-spacing:-.01em}
+  .brand .sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;font-size:14.5px;font-weight:700;color:rgba(255,255,255,.75);cursor:pointer;transition:background .15s}
+  .nav-item:hover{background:rgba(255,255,255,.06)}
+  .nav-item.active{background:#fff;color:var(--ink)}
+  .nav-icon{width:18px;text-align:center}
+  .sidebar-footer{margin-top:auto;padding:14px 10px 4px;font-size:11px;color:rgba(255,255,255,.3);line-height:1.6}
+
+  /* ══ メインエリア ══ */
+  .content{flex:1;overflow-y:auto}
+  .view{display:none;padding:36px 44px 60px;max-width:1400px;margin:0 auto}
+  .view.active{display:block}
+
+  .view-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:26px}
+  .view-header h1{font-size:24px;margin:0;font-weight:900;letter-spacing:-.02em}
+  .view-header p{margin:6px 0 0;font-size:13.5px;color:var(--ink2)}
+  .header-actions{display:flex;gap:10px}
+
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+  .stat{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:16px 20px;min-width:110px}
+  .stat .n{font-size:26px;font-weight:900;letter-spacing:-.02em}
+  .stat .l{font-size:12px;color:var(--ink3);margin-top:3px}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  input,select,textarea{font-family:inherit;font-size:14px;border:1px solid var(--bd);border-radius:9px;padding:10px 12px;background:#fff;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:2px solid #111;outline-offset:-1px}
+  .search{flex:1;min-width:220px}
+  button{font-family:inherit;font-size:13.5px;font-weight:700;border:none;border-radius:9px;padding:11px 18px;cursor:pointer;background:var(--ink);color:#fff}
+  button.secondary{background:#fff;color:var(--ink);border:1px solid var(--bd)}
+  button.ghost{background:transparent;color:var(--ink2);border:1px solid transparent}
+  button:hover{opacity:.85}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+  thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);padding:12px 14px;background:var(--bg2);border-bottom:1px solid var(--bd)}
+  tbody td{padding:12px 14px;font-size:13.5px;border-bottom:1px solid var(--bd);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fafafa}
+  .company{font-weight:700}
+  .company a{color:var(--ink2);font-size:11px;text-decoration:none;display:block}
+  .msg-preview{max-width:280px;color:var(--ink2);font-size:12.5px;white-space:pre-wrap;cursor:pointer}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+  .b-未着手{background:#f0f0f0;color:#555}
+  .b-送信済み{background:#e0f2fe;color:#0369a1}
+  .b-返信あり{background:#fef3c7;color:#92400e}
+  .b-商談化{background:#ede9fe;color:#6d28d9}
+  .b-成約{background:#dcfce7;color:#15803d}
+  .b-見送り{background:#fee2e2;color:#b91c1c}
+  .actions{display:flex;gap:6px}
+  .actions button{padding:7px 12px;font-size:12px}
+  .empty{text-align:center;padding:70px 20px;color:var(--ink3);font-size:14px}
+
+  /* ══ テンプレート ══ */
+  .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .tpl-card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:20px;display:flex;flex-direction:column}
+  .tpl-card .cat{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;background:#111;color:#fff;margin-bottom:10px;width:fit-content}
+  .tpl-card h3{margin:0 0 12px;font-size:15px;font-weight:800}
+  .tpl-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:12.5px;line-height:1.7}
+  .tpl-meta .row-item{display:flex;gap:6px;align-items:flex-start}
+  .tpl-meta .tag{flex:0 0 auto;font-weight:700;white-space:nowrap}
+  .tpl-meta .best .tag{color:#0369a1}
+  .tpl-meta .good .tag{color:#15803d}
+  .tpl-meta .bad .tag{color:#b91c1c}
+  .tpl-meta .val{color:var(--ink2)}
+  .tpl-card .body{font-size:13px;color:var(--ink2);line-height:1.85;white-space:pre-wrap;flex:1;max-height:220px;overflow-y:auto;background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:14px}
+  .tpl-card .row{display:flex;gap:8px;flex-wrap:wrap}
+  .tpl-card .row button{flex:1;min-width:70px;padding:9px 10px;font-size:12px}
+  .kw-list{list-style:none;font-size:13px;color:var(--ink2);line-height:1.6;flex:1;max-height:220px;overflow-y:auto;background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .kw-list li{padding:2px 0}
+  .copied-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:300}
+  .copied-toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+  /* ══ モーダル ══ */
+  .modal-bg{position:fixed;inset:0;background:rgba(9,9,11,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+  .modal-bg.open{display:flex}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;padding:30px}
+  .modal.wide{max-width:720px}
+  .modal h2{margin:0 0 20px;font-size:19px;font-weight:900}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%}
+  .field textarea{min-height:120px;resize:vertical;font-size:13.5px;line-height:1.75}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+
+  @media (max-width:900px){
+    .sidebar{width:76px;flex:0 0 76px;padding:16px 8px}
+    .brand{padding:4px 6px 20px;text-align:center}
+    .brand .sub{display:none}
+    .nav-item span.label{display:none}
+    .nav-item{justify-content:center}
+    .sidebar-footer{display:none}
+  }
+  @media (max-width:640px){.row2{grid-template-columns:1fr}table{display:block;overflow-x:auto}.view{padding:24px 16px 40px}}
+</style>
+
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="name">株式会社TeeenS</div>
+      <div class="sub">営業用アプリ</div>
+    </div>
+    <div class="nav-item" data-view="queue">
+      <span class="nav-icon">⏳</span><span class="label">待機</span>
+    </div>
+    <div class="nav-item active" data-view="leads">
+      <span class="nav-icon">📋</span><span class="label">企業リスト</span>
+    </div>
+    <div class="nav-item" data-view="templates">
+      <span class="nav-icon">✉️</span><span class="label">テンプレート</span>
+    </div>
+    <div class="nav-item" data-view="keywords">
+      <span class="nav-icon">🔍</span><span class="label">検索ワード</span>
+    </div>
+    <div class="sidebar-footer">データはこのブラウザ内にのみ保存されます</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ 待機 ══ -->
+    <div class="view" id="view-queue">
+      <div class="view-header">
+        <div>
+          <h1>待機</h1>
+          <p>送るか検討中の企業をメモしておく場所です。準備ができたら企業リストへ登録できます</p>
+        </div>
+        <div class="header-actions">
+          <button class="secondary" id="clearQueueBtn" style="background:var(--danger);color:#fff;border-color:var(--danger)">全て削除</button>
+          <button class="secondary" id="importQueueBtn">一括インポート</button>
+          <button id="addQueueBtn">＋ 企業をメモ</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search" id="queueSearchInput" placeholder="企業名・メモで検索...">
+      </div>
+
+      <table id="queueTable">
+        <thead>
+          <tr>
+            <th>企業名</th>
+            <th>URL</th>
+            <th>メモ</th>
+            <th>送るメッセージ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="queueTbody"></tbody>
+      </table>
+      <div class="empty" id="queueEmptyState" style="display:none">まだ待機中の企業がありません。「＋ 企業をメモ」から追加してください。</div>
+    </div>
+
+    <!-- ══ 企業リスト ══ -->
+    <div class="view active" id="view-leads">
+      <div class="view-header">
+        <div>
+          <h1>企業リスト</h1>
+          <p>連絡した企業の状況・送った文面を記録します</p>
+        </div>
+        <div class="header-actions">
+          <button class="secondary" id="exportBtn">CSVエクスポート</button>
+          <button id="addBtn">＋ 企業を追加</button>
+        </div>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="toolbar">
+        <input class="search" id="searchInput" placeholder="企業名・業種で検索...">
+        <select id="statusFilter">
+          <option value="">すべてのステータス</option>
+          <option>未着手</option>
+          <option>送信済み</option>
+          <option>返信あり</option>
+          <option>商談化</option>
+          <option>成約</option>
+          <option>見送り</option>
+        </select>
+      </div>
+
+      <table id="table">
+        <thead>
+          <tr>
+            <th>企業</th>
+            <th>業種</th>
+            <th>ステータス</th>
+            <th>連絡日</th>
+            <th>送った文面</th>
+            <th>次のアクション</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="emptyState" style="display:none">まだ企業が登録されていません。「＋ 企業を追加」から始めてください。</div>
+    </div>
+
+    <!-- ══ テンプレート ══ -->
+    <div class="view" id="view-templates">
+      <div class="view-header">
+        <div>
+          <h1>文面テンプレート</h1>
+          <p>よく使う営業文面を保存しておき、コピーして使ったり企業リストの登録時に呼び出せます</p>
+        </div>
+        <div class="header-actions">
+          <button id="addTplBtn">＋ テンプレートを追加</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search" id="tplSearchInput" placeholder="テンプレート名・向いている場面で検索...">
+        <select id="tplCategoryFilter">
+          <option value="">すべてのカテゴリ</option>
+          <option>初回アプローチ</option>
+          <option>フォローアップ</option>
+          <option>特殊ケース</option>
+          <option>その他</option>
+        </select>
+      </div>
+
+      <div class="tpl-grid" id="tplGrid"></div>
+      <div class="empty" id="tplEmptyState" style="display:none">まだテンプレートがありません。</div>
+    </div>
+
+    <!-- ══ 検索ワード ══ -->
+    <div class="view" id="view-keywords">
+      <div class="view-header">
+        <div>
+          <h1>検索ワード</h1>
+          <p>岡山・香川の主要都市×業種の検索キーワード集です。Googleマップ検索や find_companies.py にそのまま使えます</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search" id="kwSearchInput" placeholder="業種名で検索...（例: 美容室）">
+      </div>
+
+      <div class="tpl-grid" id="kwGrid"></div>
+      <div class="empty" id="kwEmptyState" style="display:none">該当する業種が見つかりませんでした。</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 企業モーダル ══ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h2 id="modalTitle">企業を追加</h2>
+    <input type="hidden" id="editId">
+    <div class="field">
+      <label>企業名 *</label>
+      <input id="f-name" placeholder="例: サンプル建設株式会社">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>サイトURL</label>
+        <input id="f-url" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label>業種</label>
+        <input id="f-industry" placeholder="例: 建設業">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>ステータス</label>
+        <select id="f-status">
+          <option>未着手</option>
+          <option>送信済み</option>
+          <option>返信あり</option>
+          <option>商談化</option>
+          <option>成約</option>
+          <option>見送り</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>連絡日</label>
+        <input type="date" id="f-date">
+      </div>
+    </div>
+    <div class="field">
+      <label>チャネル</label>
+      <select id="f-channel">
+        <option value="">選択してください</option>
+        <option>問い合わせフォーム</option>
+        <option>メール</option>
+        <option>電話</option>
+        <option>Googleビジネスメッセージ</option>
+        <option>SNS DM</option>
+        <option>対面・紹介</option>
+        <option>その他</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>テンプレートから挿入</label>
+      <select id="f-tplSelect">
+        <option value="">選択してください（企業名を自動で差し込みます）</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>送った文面</label>
+      <textarea id="f-message" placeholder="実際に送信した文面をそのまま貼り付けておくと、後で振り返りやすいです"></textarea>
+    </div>
+    <div class="field">
+      <label>先方の反応・メモ</label>
+      <textarea id="f-notes" placeholder="返信内容、電話でのやり取り、次回フォロー予定日など" style="min-height:70px"></textarea>
+    </div>
+    <div class="field">
+      <label>次のアクション</label>
+      <input id="f-next" placeholder="例: 8/15にリマインドメール">
+    </div>
+    <div class="modal-footer">
+      <button class="secondary" id="cancelBtn">キャンセル</button>
+      <button id="deleteBtn" style="background:var(--danger);display:none">削除</button>
+      <button id="saveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ テンプレートモーダル ══ -->
+<div class="modal-bg" id="tplModalBg">
+  <div class="modal wide">
+    <h2 id="tplModalTitle">テンプレートを追加</h2>
+    <input type="hidden" id="tplEditId">
+    <div class="field">
+      <label>テンプレート名 *</label>
+      <input id="tpl-title" placeholder="例: 初回アプローチ（サイトが古い企業向け）">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>カテゴリ</label>
+        <select id="tpl-category">
+          <option>初回アプローチ</option>
+          <option>フォローアップ</option>
+          <option>特殊ケース</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>向いている場面</label>
+        <input id="tpl-bestfor" placeholder="例: サイト診断で明確な弱点が見つかった企業向け">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>強み</label>
+        <textarea id="tpl-strengths" style="min-height:70px" placeholder="このテンプレートが得意なこと"></textarea>
+      </div>
+      <div class="field">
+        <label>弱み</label>
+        <textarea id="tpl-weaknesses" style="min-height:70px" placeholder="このテンプレートが不向きなケース・注意点"></textarea>
+      </div>
+    </div>
+    <div class="field">
+      <label>本文</label>
+      <textarea id="tpl-body" style="min-height:280px" placeholder="[企業名] と書いた部分は、企業リストから呼び出したときに自動で会社名に置き換わります"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary" id="tplCancelBtn">キャンセル</button>
+      <button id="tplDeleteBtn" style="background:var(--danger);display:none">削除</button>
+      <button id="tplSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 待機モーダル ══ -->
+<div class="modal-bg" id="queueModalBg">
+  <div class="modal">
+    <h2 id="queueModalTitle">企業をメモ</h2>
+    <input type="hidden" id="queueEditId">
+    <div class="field">
+      <label>企業名 *</label>
+      <input id="q-name" placeholder="例: サンプル建設株式会社">
+    </div>
+    <div class="field">
+      <label>サイトURL</label>
+      <input id="q-url" placeholder="https://...">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>メモ</label>
+        <textarea id="q-memo" style="min-height:160px" placeholder="気づいた点、送るか迷っている理由、優先度など自由にメモしてください"></textarea>
+      </div>
+      <div class="field">
+        <label>送るメッセージ</label>
+        <select id="q-tplSelect" style="margin-bottom:8px">
+          <option value="">テンプレートから挿入（企業名を自動で差し込みます）</option>
+        </select>
+        <textarea id="q-message" style="min-height:126px" placeholder="実際に送る予定の文面をここで下書きしておけます"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary" id="queueCancelBtn">キャンセル</button>
+      <button id="queueDeleteBtn" style="background:var(--danger);display:none">削除</button>
+      <button class="secondary" id="queuePromoteBtn" style="display:none">企業リストへ登録</button>
+      <button id="queueSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 一括インポートモーダル ══ -->
+<div class="modal-bg" id="importModalBg">
+  <div class="modal wide">
+    <h2>待機へ一括インポート</h2>
+    <div class="field">
+      <label>1行に1社、以下の形式で貼り付けてください</label>
+      <p style="font-size:12px;color:var(--ink2);margin:-4px 0 10px">企業名 [タブまたは｜] URL [タブまたは｜] メモ　（メモは省略可。送るメッセージは複数行になるため、ここでは追加できません。企業ごとの編集画面から入力してください）</p>
+      <textarea id="import-text" style="min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px" placeholder="株式会社サンプル　https://example.com　コピーライトが古い
+株式会社テスト　https://test.co.jp　スマホ非対応"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="secondary" id="importCancelBtn">キャンセル</button>
+      <button id="importRunBtn">インポート実行</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 確認モーダル(アプリ内蔵。ブラウザ標準のconfirm()はArtifact等のサンドボックス環境でブロックされるため使わない) ══ -->
+<div class="modal-bg" id="confirmModalBg">
+  <div class="modal" style="max-width:400px">
+    <p id="confirmMessage" style="font-size:14px;line-height:1.75;margin:0 0 22px;color:var(--ink)"></p>
+    <div class="modal-footer">
+      <button class="secondary" id="confirmCancelBtn">キャンセル</button>
+      <button id="confirmOkBtn">実行する</button>
+    </div>
+  </div>
+</div>
+
+<div class="copied-toast" id="copiedToast">コピーしました</div>
+
+<script>
+const STORAGE_KEY = 'teeens_lead_tracker_v1';
+const TPL_KEY = 'teeens_lead_templates_v1';
+const QUEUE_KEY = 'teeens_lead_queue_v1';
+
+function load(key, fallback){
+  try{ return JSON.parse(localStorage.getItem(key)) || fallback; }catch(e){ return fallback; }
+}
+function saveKey(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+const DEFAULT_TEMPLATES = [
+  {
+    id: 'tpl_default_1',
+    title: '初回アプローチ（サイトの古さ・改善点を指摘）',
+    category: '初回アプローチ',
+    bestFor: 'scan_sites.pyで診断済み、明確な弱点が1つ見つかった企業向け',
+    strengths: '具体的な指摘があるので「ちゃんと見てくれている」という説得力が出る',
+    weaknesses: '気づきを1つ考える手間がかかる。診断していない企業には使いにくい',
+    body: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずはZoomなどオンラインで、気軽に気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+  {
+    id: 'tpl_default_2',
+    title: '初回アプローチ（自社サイトが無い企業向け）',
+    category: '初回アプローチ',
+    bestFor: 'Googleマップ上にサイトリンクが無い、または見つからない企業',
+    strengths: '「機会損失」が明確で刺さりやすい。サイトの粗探しをしなくて済む',
+    weaknesses: 'サイトを既に持っている企業には使えない',
+    body: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずはZoomなどオンラインで気軽にお話しさせていただければと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+  {
+    id: 'tpl_default_3',
+    title: 'フォローアップ（未返信のリマインド）',
+    category: 'フォローアップ',
+    bestFor: '初回送信から1〜2週間、反応が無い企業への2通目',
+    strengths: '短く軽いので相手に負担をかけない、しつこい印象になりにくい',
+    weaknesses: '内容が薄いので、初回から時間が空きすぎると何の話か忘れられている可能性がある',
+    body: `[企業名] ご担当者様
+
+お世話になっております。株式会社TeeenSの新田です。
+先日、貴社ホームページについてご連絡させていただいたのですが、ご確認いただけておりましたら幸いです。
+
+お忙しい時期かと思いますので、お時間のある時にで構いません。もしご興味がなければその旨だけでもご一報いただけると助かります。
+
+引き続きどうぞよろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+  {
+    id: 'tpl_default_4',
+    title: '初回アプローチ（改訂版・チェックリスト＋リンク明示）',
+    category: '初回アプローチ',
+    bestFor: '担当者名が特定できた企業、またはまとまった数を効率よく送りたい時',
+    strengths: 'チェックリスト形式で相手に自分事化させやすい。リンクをラベル付きで並べているので興味を持った後の導線が良い',
+    weaknesses: '個別の気づきが無い分、tpl_default_1より若干テンプレ感が出やすい。担当者名が分からないと[ご担当者名/ご担当者]のままになる',
+    body: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+  {
+    id: 'tpl_default_5',
+    title: 'サブスクプラン（簡潔版）',
+    category: '初回アプローチ',
+    bestFor: '他社に依頼して公開後放置されていそうな企業、修正のたびに追加費用がかかることに不満がありそうな企業。手早く数を送りたい時',
+    strengths: '価格の安さではなく「作って終わりにしない」という関係性の違いで訴求できるので、値段だけの比較になりにくい。短いので読んでもらいやすい',
+    weaknesses: '初期費用重視で長期的な関係を望まない企業には響きにくい。買い切り希望が明確な企業には別テンプレートの方が合う。詳しい説明が省かれているので、じっくり検討したい相手には物足りない場合も',
+    body: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインで気軽にお話しできればと思います。ご返信やお電話でも構いません。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+  {
+    id: 'tpl_default_6',
+    title: 'サブスクプラン（詳細版）',
+    category: '初回アプローチ',
+    bestFor: '他社に依頼して公開後放置されていそうな企業、修正のたびに追加費用がかかることに不満がありそうな企業。買い切りとの相見積もりになりそうな時、じっくり検討してもらいたい相手向け',
+    strengths: 'サブスクの仕組み（都度課金なし・改善提案あり）を具体的に説明できるので、疑問を先回りして解消できる。読んでもらえれば説得力が高い',
+    weaknesses: '長いので、忙しい相手だと最後まで読まれない可能性がある。まず短く興味を引きたい場合は簡潔版の方が良い',
+    body: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`
+  },
+];
+
+// デフォルト本文を改訂した際、未編集ユーザーにだけ新しい本文を反映するための対応表
+// 1つのidに複数の改訂がある場合は配列で古い順に並べ、migrationで順番に適用する
+const BODY_REVISIONS = {
+  tpl_default_3: [{
+    from: `[企業名] ご担当者様
+
+お世話になっております。株式会社TeeenSの新田です。
+先日、貴社ホームページについてご連絡させていただいたのですが、ご確認いただけておりましたら幸いです。
+
+お忙しい時期かと思いますので、お時間のある時にで構いません。もしご興味がなければその旨だけでもご一報いただけると助かります。
+
+引き続きどうぞよろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+お世話になっております。株式会社TeeenSの新田です。
+先日、貴社ホームページについてご連絡させていただいたのですが、ご確認いただけておりましたら幸いです。
+
+お忙しい時期かと思いますので、お時間のある時にで構いません。もしご興味がなければその旨だけでもご一報いただけると助かります。
+
+引き続きどうぞよろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+  tpl_default_1: [{
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずは無料で簡単に拝見して気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずは無料で簡単に拝見して気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。対面が難しい場合は、Zoomなどオンラインでのご相談も可能です。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずは無料で簡単に拝見して気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。対面が難しい場合は、Zoomなどオンラインでのご相談も可能です。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずはZoomなどオンラインで、気軽に気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずはZoomなどオンラインで、気軽に気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、[具体的な気づき：例「スマートフォンで見ると文字が読みにくくなっている」]という点が、本来届くはずのお客様を逃してしまっているのではと感じ、ご連絡いたしました。
+
+今すぐどうこうというお話ではなく、まずはZoomなどオンラインで、気軽に気づいた点をお伝えするところからでもお力になれればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+  tpl_default_2: [{
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずは軽くお話だけでもお伺いできればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずは軽くお話だけでもお伺いできればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。対面が難しい場合は、Zoomなどオンラインでのご相談も可能です。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずは軽くお話だけでもお伺いできればと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。対面が難しい場合は、Zoomなどオンラインでのご相談も可能です。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずはZoomなどオンラインで気軽にお話しさせていただければと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずはZoomなどオンラインで気軽にお話しさせていただければと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] ご担当者様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+Googleマップ等で貴社を拝見したのですが、自社のホームページが見当たらず、検索から来店・問い合わせにつながる機会を逃してしまっている可能性があると感じ、ご連絡いたしました。
+
+初期費用0円で始められるプランもございますので、まずはZoomなどオンラインで気軽にお話しさせていただければと思います。ご興味があれば、お気軽にご返信いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+  tpl_default_4: [{
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。Zoomなどオンラインでのご相談も可能ですので、ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。Zoomなどオンラインでのご相談も可能ですので、ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見し、下記のようなお悩みは無いでしょうか。
+
+・スマートフォンで見た時にレイアウトが崩れている
+・何年も更新が止まっていて情報が古いまま
+・検索してもなかなか上位に出てこない
+
+もし1つでも当てはまるようでしたら、無料で拝見して改善点をお伝えするところから、お力になれるかもしれません。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+制作実績：https://teeen-s.com/works
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+  tpl_default_5: [{
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、ご返信かお電話でご連絡いただけますと幸いです。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、ご返信かお電話でご連絡いただけますと幸いです。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、ご返信・お電話・Zoomなどオンラインでのご相談、ご都合の良い方法でご連絡いただけますと幸いです。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、ご返信・お電話・Zoomなどオンラインでのご相談、ご都合の良い方法でご連絡いただけますと幸いです。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインで気軽にお話しできればと思います。ご返信やお電話でも構いません。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインで気軽にお話しできればと思います。ご返信やお電話でも構いません。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしている、株式会社TeeenS（ティーンズ）代表の新田です。岡山の中小企業様のWeb集客をお手伝いしています。
+
+「制作会社に頼んだけど公開後は放置」「修正のたびに追加費用がかかる」——そんなお悩みはありませんか。
+
+TeeenSは買い切りではなく月額プランで、公開後も一緒にサイトを育てていくスタイルです。軽微な修正は都度課金せず、改善提案もこちらからします。
+
+▼詳細
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインで気軽にお話しできればと思います。ご返信やお電話でも構いません。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+  tpl_default_6: [{
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。17歳で創業し、岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。Zoomなどオンラインでのご相談も可能ですので、ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、このメールにご返信いただくか、お電話でも構いません。Zoomなどオンラインでのご相談も可能ですので、ご都合の良い方法でご連絡いただけますと幸いです。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }, {
+    from: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+    to: `[企業名] [ご担当者名/ご担当者]様
+
+突然のご連絡失礼いたします。
+岡山市でホームページ制作をしております、株式会社TeeenS（ティーンズ）代表の新田と申します。岡山の中小企業様のWeb集客をお手伝いしています。
+
+貴社のホームページを拝見して、もし下記のようなお悩みがあれば、少しお話しさせてください。
+
+・制作会社に頼んだけど、公開後は放置状態になっている
+・ちょっとした修正をお願いするたびに追加費用がかかる
+・そもそも自分では更新できず、直したい所があっても放置してしまっている
+
+TeeenSは「作って終わり」にしないことを一番の強みにしています。
+
+・買い切りではなく月額プランでお受けすることで、公開後も一緒にサイトを育てていく形にしています
+・文言修正やページ内容の変更など、軽微な更新は都度課金せず月額の中で対応します
+・改善点に気づいたら、こちらからもご提案します
+
+一度作って終わりのホームページではなく、「一緒に成長させていくホームページ」というのがTeeenSの考え方です。初期費用0円で始められるプランもございますので、ご興味があれば詳しい話だけでも聞いていただけると嬉しいです。
+
+▼株式会社TeeenSについて
+HP：https://teeen-s.com
+料金プラン：https://teeen-s.com/pricing
+
+ご興味があれば、まずはZoomなどオンラインでお話しできればと思います。もちろん、このメールへのご返信やお電話でも構いません。
+
+お忙しいところ恐れ入りますが、何卒よろしくお願いいたします。
+
+株式会社TeeenS
+teeens.info@gmail.com
+代表取締役 新田 拓夢
+https://teeen-s.com`,
+  }],
+};
+
+// デフォルトのタイトルを改訂した際、未編集ユーザーにだけ新しいタイトルを反映するための対応表
+const TITLE_REVISIONS = {
+  tpl_default_5: { from: '初回アプローチ（月額プラン・伴走訴求）', to: 'サブスクプラン（簡潔版）' },
+};
+
+let items = load(STORAGE_KEY, []);
+let queueItems = load(QUEUE_KEY, []);
+let templates = load(TPL_KEY, null);
+if(templates === null){
+  templates = DEFAULT_TEMPLATES;
+  saveKey(TPL_KEY, templates);
+} else {
+  // 既存ユーザーにも新しく追加されたデフォルトテンプレートを反映する
+  const existingIds = new Set(templates.map(t => t.id));
+  const missing = DEFAULT_TEMPLATES.filter(t => !existingIds.has(t.id));
+  if(missing.length){
+    templates = templates.concat(missing);
+  }
+  // 既存テンプレートに強み/弱み/カテゴリ等のメタ情報が無ければ補完する(手直しした本文はそのまま維持)
+  let metaFilled = false;
+  templates = templates.map(t => {
+    if(t.category !== undefined) return t;
+    const def = DEFAULT_TEMPLATES.find(d => d.id === t.id);
+    if(def){
+      metaFilled = true;
+      return {...t, category: def.category, bestFor: def.bestFor, strengths: def.strengths, weaknesses: def.weaknesses};
+    }
+    return {...t, category: 'その他', bestFor: '', strengths: '', weaknesses: ''};
+  });
+  // 未編集のデフォルト本文を改訂した場合、旧バージョンのままなら新しい本文に差し替える(ユーザーが編集済みなら維持)
+  // 1つのidに複数改訂がある場合は古い順に適用していく
+  let bodyUpdated = false;
+  templates = templates.map(t => {
+    const revs = BODY_REVISIONS[t.id];
+    if(!revs) return t;
+    let body = t.body;
+    for(const rev of revs){
+      if(body === rev.from){
+        body = rev.to;
+        bodyUpdated = true;
+      }
+    }
+    return body === t.body ? t : {...t, body};
+  });
+  // 同様に、未編集のデフォルトタイトルを改訂した場合も反映する
+  let titleUpdated = false;
+  templates = templates.map(t => {
+    const rev = TITLE_REVISIONS[t.id];
+    if(rev && t.title === rev.from){
+      titleUpdated = true;
+      return {...t, title: rev.to};
+    }
+    return t;
+  });
+  if(missing.length || metaFilled || bodyUpdated || titleUpdated){
+    saveKey(TPL_KEY, templates);
+  }
+}
+
+function uid(){ return 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ══ ナビゲーション ══ */
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('view-' + el.dataset.view).classList.add('active');
+  });
+});
+
+/* ══ 企業リスト ══ */
+const tbody = document.getElementById('tbody');
+const emptyState = document.getElementById('emptyState');
+const statsEl = document.getElementById('stats');
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const modalBg = document.getElementById('modalBg');
+
+function renderStats(){
+  const counts = {};
+  items.forEach(it => counts[it.status] = (counts[it.status]||0) + 1);
+  const order = ['未着手','送信済み','返信あり','商談化','成約','見送り'];
+  statsEl.innerHTML = `<div class="stat"><div class="n">${items.length}</div><div class="l">合計</div></div>` +
+    order.map(s => `<div class="stat"><div class="n">${counts[s]||0}</div><div class="l">${s}</div></div>`).join('');
+}
+
+function renderLeads(){
+  renderStats();
+  const q = searchInput.value.trim().toLowerCase();
+  const statusQ = statusFilter.value;
+  const filtered = items.filter(it => {
+    const matchQ = !q || (it.name||'').toLowerCase().includes(q) || (it.industry||'').toLowerCase().includes(q);
+    const matchS = !statusQ || it.status === statusQ;
+    return matchQ && matchS;
+  }).sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+
+  emptyState.style.display = items.length === 0 ? 'block' : 'none';
+  document.getElementById('table').style.display = items.length === 0 ? 'none' : 'table';
+
+  tbody.innerHTML = filtered.map(it => `
+    <tr>
+      <td>
+        <div class="company">${escapeHtml(it.name)}</div>
+        ${it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener">${escapeHtml(it.url)}</a>` : ''}
+      </td>
+      <td>${escapeHtml(it.industry)}</td>
+      <td><span class="badge b-${it.status}">${it.status}</span></td>
+      <td>${escapeHtml(it.date)}</td>
+      <td class="msg-preview" title="クリックして編集">${escapeHtml((it.message||'').slice(0,60))}${(it.message||'').length>60?'…':''}</td>
+      <td>${escapeHtml(it.next)}</td>
+      <td class="actions">
+        <button class="secondary" onclick="openEdit('${it.id}')">編集</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function fillTplSelect(selectId, placeholder){
+  const sel = document.getElementById(selectId);
+  sel.innerHTML = `<option value="">${placeholder}</option>` +
+    templates.map(t => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('');
+}
+
+function wireTplSelect(selectId, nameFieldId, messageFieldId){
+  document.getElementById(selectId).addEventListener('change', (e) => {
+    const t = templates.find(x => x.id === e.target.value);
+    if(!t) return;
+    const name = document.getElementById(nameFieldId).value.trim();
+    const body = name ? t.body.split('[企業名]').join(name) : t.body;
+    document.getElementById(messageFieldId).value = body;
+    e.target.value = '';
+  });
+}
+
+wireTplSelect('f-tplSelect', 'f-name', 'f-message');
+wireTplSelect('q-tplSelect', 'q-name', 'q-message');
+
+function openAdd(){
+  fillTplSelect('f-tplSelect', '選択してください（企業名を自動で差し込みます）');
+  document.getElementById('modalTitle').textContent = '企業を追加';
+  document.getElementById('editId').value = '';
+  ['name','url','industry','date','message','notes','next'].forEach(k => document.getElementById('f-'+k).value = '');
+  document.getElementById('f-status').value = '未着手';
+  document.getElementById('f-channel').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+  modalBg.classList.add('open');
+  document.getElementById('f-name').focus();
+}
+
+function openEdit(id){
+  fillTplSelect('f-tplSelect', '選択してください（企業名を自動で差し込みます）');
+  const it = items.find(x => x.id === id);
+  if(!it) return;
+  document.getElementById('modalTitle').textContent = '企業を編集';
+  document.getElementById('editId').value = id;
+  document.getElementById('f-name').value = it.name || '';
+  document.getElementById('f-url').value = it.url || '';
+  document.getElementById('f-industry').value = it.industry || '';
+  document.getElementById('f-status').value = it.status || '未着手';
+  document.getElementById('f-date').value = it.date || '';
+  document.getElementById('f-channel').value = it.channel || '';
+  document.getElementById('f-message').value = it.message || '';
+  document.getElementById('f-notes').value = it.notes || '';
+  document.getElementById('f-next').value = it.next || '';
+  document.getElementById('deleteBtn').style.display = 'inline-block';
+  modalBg.classList.add('open');
+}
+
+function closeModal(){ modalBg.classList.remove('open'); }
+
+function saveForm(){
+  const name = document.getElementById('f-name').value.trim();
+  if(!name){ showToast('企業名を入力してください'); return; }
+  const id = document.getElementById('editId').value;
+  const data = {
+    id: id || uid(),
+    name,
+    url: document.getElementById('f-url').value.trim(),
+    industry: document.getElementById('f-industry').value.trim(),
+    status: document.getElementById('f-status').value,
+    date: document.getElementById('f-date').value,
+    channel: document.getElementById('f-channel').value,
+    message: document.getElementById('f-message').value,
+    notes: document.getElementById('f-notes').value,
+    next: document.getElementById('f-next').value.trim(),
+    updatedAt: Date.now(),
+  };
+  if(id){
+    items = items.map(it => it.id === id ? {...it, ...data} : it);
+  } else {
+    items.push(data);
+  }
+  saveKey(STORAGE_KEY, items);
+  closeModal();
+  renderLeads();
+}
+
+function deleteCurrent(){
+  const id = document.getElementById('editId').value;
+  if(!id) return;
+  showConfirm('この企業のデータを削除しますか？', () => {
+    items = items.filter(it => it.id !== id);
+    saveKey(STORAGE_KEY, items);
+    closeModal();
+    renderLeads();
+  }, '削除する');
+}
+
+function exportCsv(){
+  const headers = ['企業名','URL','業種','ステータス','連絡日','チャネル','送った文面','メモ','次のアクション'];
+  const rows = items.map(it => [it.name,it.url,it.industry,it.status,it.date,it.channel,it.message,it.notes,it.next]);
+  const csv = [headers, ...rows].map(r =>
+    r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')
+  ).join('\r\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `teeens_leads_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ══ 待機 ══ */
+const queueTbody = document.getElementById('queueTbody');
+const queueTable = document.getElementById('queueTable');
+const queueEmptyState = document.getElementById('queueEmptyState');
+const queueSearchInput = document.getElementById('queueSearchInput');
+const queueModalBg = document.getElementById('queueModalBg');
+
+function renderQueue(){
+  const q = queueSearchInput.value.trim().toLowerCase();
+  const filtered = queueItems.filter(it => {
+    return !q || (it.name||'').toLowerCase().includes(q) || (it.memo||'').toLowerCase().includes(q);
+  }).sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+
+  queueEmptyState.style.display = queueItems.length === 0 ? 'block' : 'none';
+  queueTable.style.display = queueItems.length === 0 ? 'none' : 'table';
+
+  queueTbody.innerHTML = filtered.map(it => `
+    <tr>
+      <td>
+        <div class="company">${escapeHtml(it.name)}</div>
+      </td>
+      <td>${it.url ? `<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener">${escapeHtml(it.url)}</a>` : ''}</td>
+      <td class="msg-preview" title="クリックして編集">${escapeHtml((it.memo||'').slice(0,80))}${(it.memo||'').length>80?'…':''}</td>
+      <td class="msg-preview" title="クリックして編集">${escapeHtml((it.message||'').slice(0,80))}${(it.message||'').length>80?'…':''}</td>
+      <td class="actions">
+        <button onclick="promoteQueueItem('${it.id}')">企業リストへ</button>
+        <button class="secondary" onclick="openEditQueue('${it.id}')">編集</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddQueue(){
+  fillTplSelect('q-tplSelect', 'テンプレートから挿入（企業名を自動で差し込みます）');
+  document.getElementById('queueModalTitle').textContent = '企業をメモ';
+  document.getElementById('queueEditId').value = '';
+  document.getElementById('q-name').value = '';
+  document.getElementById('q-url').value = '';
+  document.getElementById('q-memo').value = '';
+  document.getElementById('q-message').value = '';
+  document.getElementById('queueDeleteBtn').style.display = 'none';
+  document.getElementById('queuePromoteBtn').style.display = 'none';
+  queueModalBg.classList.add('open');
+  document.getElementById('q-name').focus();
+}
+
+function openEditQueue(id){
+  fillTplSelect('q-tplSelect', 'テンプレートから挿入（企業名を自動で差し込みます）');
+  const it = queueItems.find(x => x.id === id);
+  if(!it) return;
+  document.getElementById('queueModalTitle').textContent = '企業メモを編集';
+  document.getElementById('queueEditId').value = id;
+  document.getElementById('q-name').value = it.name || '';
+  document.getElementById('q-url').value = it.url || '';
+  document.getElementById('q-memo').value = it.memo || '';
+  document.getElementById('q-message').value = it.message || '';
+  document.getElementById('queueDeleteBtn').style.display = 'inline-block';
+  document.getElementById('queuePromoteBtn').style.display = 'inline-block';
+  queueModalBg.classList.add('open');
+}
+
+function closeQueueModal(){ queueModalBg.classList.remove('open'); }
+
+function saveQueueForm(){
+  const name = document.getElementById('q-name').value.trim();
+  if(!name){ showToast('企業名を入力してください'); return; }
+  const id = document.getElementById('queueEditId').value;
+  const data = {
+    id: id || uid(),
+    name,
+    url: document.getElementById('q-url').value.trim(),
+    memo: document.getElementById('q-memo').value,
+    message: document.getElementById('q-message').value,
+    updatedAt: Date.now(),
+  };
+  if(id){
+    queueItems = queueItems.map(it => it.id === id ? {...it, ...data} : it);
+  } else {
+    queueItems.push(data);
+  }
+  saveKey(QUEUE_KEY, queueItems);
+  closeQueueModal();
+  renderQueue();
+}
+
+function deleteQueueCurrent(){
+  const id = document.getElementById('queueEditId').value;
+  if(!id) return;
+  showConfirm('この企業メモを削除しますか？', () => {
+    queueItems = queueItems.filter(it => it.id !== id);
+    saveKey(QUEUE_KEY, queueItems);
+    closeQueueModal();
+    renderQueue();
+  }, '削除する');
+}
+
+function clearAllQueue(){
+  if(queueItems.length === 0) return;
+  showConfirm(`待機中の${queueItems.length}件をすべて削除しますか？この操作は元に戻せません。`, () => {
+    queueItems = [];
+    saveKey(QUEUE_KEY, queueItems);
+    renderQueue();
+    showToast('待機中のデータを全て削除しました');
+  }, '全て削除する');
+}
+
+function promoteQueueItem(id){
+  const q = queueItems.find(x => x.id === id);
+  if(!q) return;
+  showConfirm(`「${q.name}」を企業リストに登録しますか？（待機からは削除されます）`, () => {
+    const newLead = {
+      id: uid(), name: q.name, url: q.url || '', industry: '', status: '未着手',
+      date: '', channel: '', message: q.message || '', notes: q.memo || '', next: '', updatedAt: Date.now(),
+    };
+    items.push(newLead);
+    saveKey(STORAGE_KEY, items);
+    queueItems = queueItems.filter(x => x.id !== id);
+    saveKey(QUEUE_KEY, queueItems);
+    closeQueueModal();
+    renderQueue();
+    renderLeads();
+    document.querySelector('.nav-item[data-view="leads"]').click();
+    openEdit(newLead.id);
+  }, '登録する');
+}
+
+const importModalBg = document.getElementById('importModalBg');
+
+function openImportModal(){
+  document.getElementById('import-text').value = '';
+  importModalBg.classList.add('open');
+  document.getElementById('import-text').focus();
+}
+
+function closeImportModal(){ importModalBg.classList.remove('open'); }
+
+function runImport(){
+  const raw = document.getElementById('import-text').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  if(lines.length === 0){ showToast('貼り付ける内容がありません'); return; }
+
+  const parsed = lines.map(line => {
+    const parts = line.split(/\t|｜/).map(p => p.trim());
+    return { name: parts[0] || '', url: parts[1] || '', memo: parts[2] || '' };
+  }).filter(p => p.name);
+
+  if(parsed.length === 0){ showToast('企業名を読み取れませんでした。形式をご確認ください'); return; }
+
+  const added = parsed.map((c, i) => ({
+    id: uid() + '_' + i,
+    name: c.name,
+    url: c.url,
+    memo: c.memo,
+    updatedAt: Date.now() + i,
+  }));
+  queueItems = queueItems.concat(added);
+  saveKey(QUEUE_KEY, queueItems);
+  closeImportModal();
+  renderQueue();
+  showToast(`${added.length}件インポートしました`);
+}
+
+/* ══ テンプレート ══ */
+const tplGrid = document.getElementById('tplGrid');
+const tplEmptyState = document.getElementById('tplEmptyState');
+const tplModalBg = document.getElementById('tplModalBg');
+const copiedToast = document.getElementById('copiedToast');
+const tplSearchInput = document.getElementById('tplSearchInput');
+const tplCategoryFilter = document.getElementById('tplCategoryFilter');
+
+function showToast(msg){
+  copiedToast.textContent = msg;
+  copiedToast.classList.add('show');
+  setTimeout(() => copiedToast.classList.remove('show'), 1600);
+}
+
+// アプリ内蔵の確認モーダル。window.confirm()はArtifactのサンドボックスiframe内で
+// ブロックされ、ボタンを押しても何も起きなくなることがあるため使わない
+const confirmModalBg = document.getElementById('confirmModalBg');
+const confirmMessageEl = document.getElementById('confirmMessage');
+const confirmOkBtn = document.getElementById('confirmOkBtn');
+let confirmCallback = null;
+
+function showConfirm(message, onConfirm, okLabel){
+  confirmMessageEl.textContent = message;
+  confirmOkBtn.textContent = okLabel || '実行する';
+  confirmCallback = onConfirm;
+  confirmModalBg.classList.add('open');
+}
+function closeConfirm(){
+  confirmModalBg.classList.remove('open');
+  confirmCallback = null;
+}
+confirmOkBtn.addEventListener('click', () => {
+  const cb = confirmCallback;
+  closeConfirm();
+  if(cb) cb();
+});
+document.getElementById('confirmCancelBtn').addEventListener('click', closeConfirm);
+confirmModalBg.addEventListener('click', e => { if(e.target === confirmModalBg) closeConfirm(); });
+
+function renderTemplates(){
+  tplEmptyState.style.display = templates.length === 0 ? 'block' : 'none';
+
+  const q = tplSearchInput.value.trim().toLowerCase();
+  const catQ = tplCategoryFilter.value;
+  const filtered = templates.filter(t => {
+    const matchQ = !q ||
+      (t.title||'').toLowerCase().includes(q) ||
+      (t.bestFor||'').toLowerCase().includes(q) ||
+      (t.strengths||'').toLowerCase().includes(q);
+    const matchC = !catQ || t.category === catQ;
+    return matchQ && matchC;
+  });
+
+  tplGrid.innerHTML = filtered.map(t => `
+    <div class="tpl-card">
+      ${t.category ? `<span class="cat">${escapeHtml(t.category)}</span>` : ''}
+      <h3>${escapeHtml(t.title)}</h3>
+      <div class="tpl-meta">
+        ${t.bestFor ? `<div class="row-item best"><span class="tag">向いている場面:</span><span class="val">${escapeHtml(t.bestFor)}</span></div>` : ''}
+        ${t.strengths ? `<div class="row-item good"><span class="tag">強み:</span><span class="val">${escapeHtml(t.strengths)}</span></div>` : ''}
+        ${t.weaknesses ? `<div class="row-item bad"><span class="tag">弱み:</span><span class="val">${escapeHtml(t.weaknesses)}</span></div>` : ''}
+      </div>
+      <div class="body">${escapeHtml(t.body)}</div>
+      <div class="row">
+        <button onclick="copyTemplate('${t.id}')">コピー</button>
+        <button class="secondary" onclick="openEditTpl('${t.id}')">編集</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyViaTextarea(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  let ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function copyTemplate(id){
+  const t = templates.find(x => x.id === id);
+  if(!t) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t.body).then(() => {
+      showToast('コピーしました');
+    }).catch(() => {
+      showToast(copyViaTextarea(t.body) ? 'コピーしました' : 'コピーに失敗しました（手動で選択してください）');
+    });
+  } else {
+    showToast(copyViaTextarea(t.body) ? 'コピーしました' : 'コピーに失敗しました（手動で選択してください）');
+  }
+}
+
+function openAddTpl(){
+  document.getElementById('tplModalTitle').textContent = 'テンプレートを追加';
+  document.getElementById('tplEditId').value = '';
+  document.getElementById('tpl-title').value = '';
+  document.getElementById('tpl-category').value = '初回アプローチ';
+  document.getElementById('tpl-bestfor').value = '';
+  document.getElementById('tpl-strengths').value = '';
+  document.getElementById('tpl-weaknesses').value = '';
+  document.getElementById('tpl-body').value = '';
+  document.getElementById('tplDeleteBtn').style.display = 'none';
+  tplModalBg.classList.add('open');
+  document.getElementById('tpl-title').focus();
+}
+
+function openEditTpl(id){
+  const t = templates.find(x => x.id === id);
+  if(!t) return;
+  document.getElementById('tplModalTitle').textContent = 'テンプレートを編集';
+  document.getElementById('tplEditId').value = id;
+  document.getElementById('tpl-title').value = t.title;
+  document.getElementById('tpl-category').value = t.category || '初回アプローチ';
+  document.getElementById('tpl-bestfor').value = t.bestFor || '';
+  document.getElementById('tpl-strengths').value = t.strengths || '';
+  document.getElementById('tpl-weaknesses').value = t.weaknesses || '';
+  document.getElementById('tpl-body').value = t.body;
+  document.getElementById('tplDeleteBtn').style.display = 'inline-block';
+  tplModalBg.classList.add('open');
+}
+
+function closeTplModal(){ tplModalBg.classList.remove('open'); }
+
+function saveTpl(){
+  const title = document.getElementById('tpl-title').value.trim();
+  const category = document.getElementById('tpl-category').value;
+  const bestFor = document.getElementById('tpl-bestfor').value.trim();
+  const strengths = document.getElementById('tpl-strengths').value.trim();
+  const weaknesses = document.getElementById('tpl-weaknesses').value.trim();
+  const body = document.getElementById('tpl-body').value;
+  if(!title){ showToast('テンプレート名を入力してください'); return; }
+  const id = document.getElementById('tplEditId').value;
+  if(id){
+    templates = templates.map(t => t.id === id ? {...t, title, category, bestFor, strengths, weaknesses, body} : t);
+  } else {
+    templates.push({id: uid(), title, category, bestFor, strengths, weaknesses, body});
+  }
+  saveKey(TPL_KEY, templates);
+  closeTplModal();
+  renderTemplates();
+}
+
+function deleteTpl(){
+  const id = document.getElementById('tplEditId').value;
+  if(!id) return;
+  showConfirm('このテンプレートを削除しますか？', () => {
+    templates = templates.filter(t => t.id !== id);
+    saveKey(TPL_KEY, templates);
+    closeTplModal();
+    renderTemplates();
+  }, '削除する');
+}
+
+/* ══ 検索ワード ══ */
+const CITIES = [
+  '岡山市','倉敷市','津山市','玉野市','笠岡市','総社市','赤磐市',
+  '高松市','丸亀市','坂出市','善通寺市','観音寺市','さぬき市',
+  '岡山県','香川県',
+];
+
+const INDUSTRIES = [
+  '工務店・建設業','リフォーム会社','塗装業・外壁塗装','建築設計事務所','電気工事店','水道工事店','造園業','解体業',
+  '美容室','理容室','エステサロン','ネイルサロン',
+  '飲食店','居酒屋','カフェ','パン屋・ベーカリー','ケーキ屋・洋菓子店','弁当・惣菜店','花屋',
+  '歯科医院','内科クリニック','整体院・整骨院','動物病院','産婦人科・小児科医院',
+  '税理士事務所','社会保険労務士事務所','行政書士事務所','弁護士事務所','司法書士事務所','会計事務所',
+  '不動産会社','学習塾','保育園・幼稚園','学童保育','幼児教室','英会話教室・語学教室','プログラミング教室','音楽教室',
+  'デイサービス・介護施設',
+  '運送会社','製造業・工場','自動車整備工場','中古車販売店',
+  'ペットサロン・トリミング','葬儀社','クリーニング店',
+  '印刷会社','保険代理店','農業法人',
+  'スポーツジム・フィットネス','ヨガスタジオ','ダンススタジオ',
+  '写真スタジオ','ブライダル・結婚式場','結婚相談所',
+  '旅行代理店','旅館・ホテル','ゴルフ場',
+  '眼鏡店','家具店','便利屋',
+];
+
+const KEYWORD_GROUPS = INDUSTRIES.map(industry => ({
+  industry,
+  keywords: CITIES.map(city => `${city} ${industry}`),
+}));
+
+const kwGrid = document.getElementById('kwGrid');
+const kwEmptyState = document.getElementById('kwEmptyState');
+const kwSearchInput = document.getElementById('kwSearchInput');
+
+function renderKeywords(){
+  const q = kwSearchInput.value.trim().toLowerCase();
+  const filtered = KEYWORD_GROUPS.filter(g => !q || g.industry.toLowerCase().includes(q));
+  kwEmptyState.style.display = filtered.length === 0 ? 'block' : 'none';
+
+  kwGrid.innerHTML = filtered.map(g => `
+    <div class="tpl-card">
+      <h3>${escapeHtml(g.industry)}</h3>
+      <ul class="kw-list">
+        ${g.keywords.map(k => `<li>${escapeHtml(k)}</li>`).join('')}
+      </ul>
+      <div class="row">
+        <button onclick="copyKeywordGroup('${escapeHtml(g.industry)}')">全てコピー</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyKeywordGroup(industry){
+  const g = KEYWORD_GROUPS.find(x => x.industry === industry);
+  if(!g) return;
+  const text = g.keywords.join('\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('コピーしました');
+    }).catch(() => {
+      showToast(copyViaTextarea(text) ? 'コピーしました' : 'コピーに失敗しました（手動で選択してください）');
+    });
+  } else {
+    showToast(copyViaTextarea(text) ? 'コピーしました' : 'コピーに失敗しました（手動で選択してください）');
+  }
+}
+
+document.getElementById('addBtn').addEventListener('click', openAdd);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+document.getElementById('saveBtn').addEventListener('click', saveForm);
+document.getElementById('deleteBtn').addEventListener('click', deleteCurrent);
+document.getElementById('exportBtn').addEventListener('click', exportCsv);
+document.getElementById('searchInput').addEventListener('input', renderLeads);
+document.getElementById('statusFilter').addEventListener('change', renderLeads);
+modalBg.addEventListener('click', e => { if(e.target === modalBg) closeModal(); });
+
+document.getElementById('addTplBtn').addEventListener('click', openAddTpl);
+document.getElementById('tplCancelBtn').addEventListener('click', closeTplModal);
+document.getElementById('tplSaveBtn').addEventListener('click', saveTpl);
+document.getElementById('tplDeleteBtn').addEventListener('click', deleteTpl);
+tplModalBg.addEventListener('click', e => { if(e.target === tplModalBg) closeTplModal(); });
+tplSearchInput.addEventListener('input', renderTemplates);
+tplCategoryFilter.addEventListener('change', renderTemplates);
+kwSearchInput.addEventListener('input', renderKeywords);
+
+document.getElementById('addQueueBtn').addEventListener('click', openAddQueue);
+document.getElementById('queueCancelBtn').addEventListener('click', closeQueueModal);
+document.getElementById('queueSaveBtn').addEventListener('click', saveQueueForm);
+document.getElementById('queueDeleteBtn').addEventListener('click', deleteQueueCurrent);
+document.getElementById('queuePromoteBtn').addEventListener('click', () => {
+  const id = document.getElementById('queueEditId').value;
+  if(id) promoteQueueItem(id);
+});
+queueModalBg.addEventListener('click', e => { if(e.target === queueModalBg) closeQueueModal(); });
+queueSearchInput.addEventListener('input', renderQueue);
+
+document.getElementById('importQueueBtn').addEventListener('click', openImportModal);
+document.getElementById('clearQueueBtn').addEventListener('click', clearAllQueue);
+document.getElementById('importCancelBtn').addEventListener('click', closeImportModal);
+document.getElementById('importRunBtn').addEventListener('click', runImport);
+importModalBg.addEventListener('click', e => { if(e.target === importModalBg) closeImportModal(); });
+
+window.openEdit = openEdit;
+window.openEditTpl = openEditTpl;
+window.copyTemplate = copyTemplate;
+window.copyKeywordGroup = copyKeywordGroup;
+window.openEditQueue = openEditQueue;
+window.promoteQueueItem = promoteQueueItem;
+
+renderLeads();
+renderTemplates();
+renderKeywords();
+renderQueue();
+</script>

@@ -1,0 +1,5 @@
+name,url,industry,contact_form_url,notes,score,findings
+kennosho,http://kennosho.com/pages/about.html,,,,35,"SSL(https)未対応; meta descriptionが未設定(SEO弱い); 最終更新(サーバー応答): Mon, 07 Sep 2026 16:45:13 GMT"
+uehara-clean,https://rideribuki.wixsite.com/uehara-clean,,,,15,コピーライト表記が2023年で止まっている
+hikarisilk,https://hikarisilk.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+fprint,https://fprint.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

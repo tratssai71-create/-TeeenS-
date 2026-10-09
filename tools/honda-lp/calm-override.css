@@ -1,0 +1,133 @@
+/* ══════════════════════════════════════════════════
+   安心感モード
+   採用サイトに必要なのは「効果」ではなく「余白と写真と読みやすさ」。
+   発光・方眼・斜めの切り口・暗い面・粒子を全部やめ、
+   白と余白で見せる方向に作り替える。赤は差し色としてだけ使う。
+   ══════════════════════════════════════════════════ */
+:root{
+  --ink:#1f1d1b; --ink2:#5d5853; --ink3:#918b84;
+  --line:#e9e5e0; --bg:#ffffff; --bg2:#f8f6f3;
+}
+
+/* ── 演出レイヤーを全部止める ───────────────────── */
+.grain,.vig,.glow,.fv-sweep,.fv-stripe,.fv-band,.fv-grid,.fv-ticks,
+.fv-ghost,.br,.fv-side,.fv-foot,.pl,.bg-stage,.sec-rail,.side{display:none!important}
+
+/* ── 地：白 ──────────────────────────────────── */
+body{background:#eeebe6;background-image:none;line-height:1.95}
+.phone{background:#fff;background-image:none}
+
+/* ── ヒーロー：暗転をやめ、写真を枠に収める ───────── */
+.fv{background:#fff;color:var(--ink);min-height:auto;
+  display:block;padding:0 0 34px;overflow:visible}
+.fv-video{position:relative;inset:auto;height:290px;margin:0 16px;
+  border-radius:18px;overflow:hidden;
+  background:linear-gradient(160deg,#e6e3de,#d3cfc9)}
+.fv-mov{opacity:1!important;filter:none}
+.fv .fv-scrim{display:none}
+.fv-note{position:static;margin:10px 16px 0;max-width:none;
+  border-color:var(--line);color:var(--ink3);background:var(--bg2)}
+.fv-vtag,.fv-mute{background:rgba(255,255,255,.9);border-color:var(--line)}
+.fv-vtag span{color:var(--ink2)} .fv-mute svg{stroke:var(--ink)}
+
+.fv-in{padding:26px 22px 0;margin:0}
+.fv-eyebrow{color:var(--ink2)}
+.fv-eyebrow::before{background:var(--red)}
+.fv h1{color:var(--ink);text-shadow:none;font-size:33px;line-height:1.45;
+  letter-spacing:.005em;font-weight:800}
+.fv h1 em{font-family:inherit;color:var(--red);letter-spacing:.01em}
+.fv p{color:var(--ink2);text-shadow:none;font-size:14px}
+.fv-act{border-top:1px solid var(--line);margin-top:24px;padding-top:20px}
+.fv-live{color:var(--ink2)} .fv-live b{color:var(--ink)}
+.lk{border-radius:12px;height:50px}
+.lk-sub{border:1px solid var(--line);color:var(--ink);background:#fff}
+
+/* ヘッダーは白地に合わせる */
+.hdr{position:relative;top:auto;padding:16px}
+.hdr-logo{border-color:var(--line)}
+.hdr-logo .pt{color:var(--ink3)} .hdr-logo .pn{color:var(--ink)}
+.sns svg{fill:var(--ink)} .burger i{background:var(--ink)}
+
+/* ── セクション：白と、わずかに温かいグレーの2層だけ ── */
+section.s{background:#fff;padding:60px 24px 56px}
+section.s::before{display:none}
+section.s::after{display:none}
+.s-rule{display:none}
+.know,.shops,.flow{background:var(--bg2)}
+.lab{color:var(--red);letter-spacing:.2em}
+.lab::before{background:var(--red)}
+h2.t{font-size:23px;font-weight:800;line-height:1.7;letter-spacing:.005em;color:var(--ink)}
+h2.t em{font-family:inherit;color:var(--red)}
+.body{color:var(--ink2);font-size:14px;line-height:2.05}
+
+/* ── 面はすべて白いカードに。角丸と、ごく淡い影 ────── */
+.rc,.job-card,.map,.bn-i,.cp-i,.tr-i,.shoplist,.rq,.more,.tab,.pref div{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 1px 2px rgba(31,29,27,.03)}
+.rc{transform:none!important}
+.rc::after{display:none}
+.rc .n{color:var(--red);-webkit-text-stroke:0;opacity:.14;font-size:46px}
+.rc h3 mark{background:linear-gradient(transparent 64%,rgba(230,0,18,.14) 64%)}
+.ph-box{border-radius:12px;border-color:var(--line);
+  background:repeating-linear-gradient(45deg,#f4f1ee 0 10px,#efebe7 10px 20px)}
+.vid{border-radius:12px}
+
+/* ── 数字：黒の面をやめ、白地に赤の数字 ──────────── */
+section.s.nums{background:var(--bg2);color:var(--ink);clip-path:none;margin:0;overflow:visible}
+.nums .mesh,.nums::before,.nums::after{display:none!important}
+.nums h2.t{color:var(--ink)} .nums .body{color:var(--ink2)}
+.ngrid{background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;gap:1px}
+.ncell{background:#fff;color:var(--ink)}
+.ncell.wide{background:#fff}
+.ncell .k{color:var(--ink2)}
+.ncell .v{color:var(--ink);font-family:'Noto Sans JP',sans-serif;font-size:34px;font-weight:800}
+.ncell.wide .v{color:var(--red);font-size:40px;text-shadow:none}
+/* HTML側に直接書かれた白文字（黒背景用の名残）を打ち消す */
+.ncell .v[style]{color:var(--ink)!important;font-size:34px!important}
+.ncell .v span{font-size:13px;color:var(--ink2)}
+.ncell .sub{color:var(--ink3)}
+.fy{border-color:var(--line);color:var(--ink3)}
+.ncell.wide .rb{background:var(--red);box-shadow:none}
+
+/* ── 最終CTA：黒をやめ、白地に赤のボタン ──────────── */
+.last{background:var(--bg2);color:var(--ink);clip-path:none;padding:64px 24px 56px}
+.last::before,.last .mesh,.last .glow{display:none!important}
+.last h2{color:var(--ink);font-size:24px;font-weight:800;line-height:1.7}
+.last h2 em{font-family:inherit;color:var(--red)}
+.last p{color:var(--ink2)}
+.last .ph-box.dark{background:repeating-linear-gradient(45deg,#f4f1ee 0 10px,#efebe7 10px 20px);
+  border-color:var(--line)}
+.last .ph-box.dark .pt{color:var(--ink3)} .last .ph-box.dark .pd{color:var(--ink2)}
+.qr{border-color:var(--line);background:#fff;border-radius:14px}
+.qr .tx{color:var(--ink2)} .qr .tx b{color:var(--ink)!important}
+.qr .box{border:1px solid var(--line)}
+
+/* ── 途中のLINE導線も明るく ───────────────────── */
+.line-cut{background:#f2f8f4;color:var(--ink)}
+.line-cut .k{color:#0b9c4e} .line-cut .k::before{background:#0b9c4e}
+.line-cut h3{color:var(--ink);font-weight:800;line-height:1.7}
+.line-cut p{color:var(--ink2)}
+
+/* ── ボタン：角を丸く、影は控えめに ───────────────── */
+.btn{border-radius:12px}
+.btn-ghost{border-color:var(--line);color:var(--ink);background:#fff}
+.btn-ghost .ic{background:var(--bg2)}
+.fixed{background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
+
+/* ── その他の暗い名残 ───────────────────────── */
+.drawer{background:rgba(255,255,255,.98)}
+.drawer a.mi{color:var(--ink);border-bottom-color:var(--line)}
+.steps::before,.day::before{background:var(--line)}
+.st::before{background:#fff;border-color:var(--line)}
+.qa .mk::before,.qa .mk::after{background:var(--ink)}
+.more{border-color:var(--line)}
+
+/* ── PC：暗い背景をやめ、明るい面に本体を置く ───────── */
+@media (min-width:1024px){
+  body{background:#eeebe6!important;background-image:none!important;padding:44px 0 52px}
+  body.has-bg{background:#eeebe6!important}
+  .phone{border-radius:20px;
+    box-shadow:0 1px 3px rgba(31,29,27,.06),0 14px 34px -14px rgba(31,29,27,.18)!important;
+    outline:1px solid rgba(31,29,27,.06)!important}
+  .fixed{border-radius:14px;box-shadow:0 10px 26px -12px rgba(31,29,27,.25)}
+}

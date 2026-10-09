@@ -1,0 +1,149 @@
+<!doctype html><html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:transparent;overflow:hidden}
+body{font-family:'Noto Sans JP',sans-serif;-webkit-font-smoothing:antialiased}
+
+.row{display:flex;gap:12px;overflow-x:auto;padding:6px 30px 20px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+
+.mv{flex:0 0 274px;scroll-snap-align:start;
+  background:#fff;border:1px solid #e7e1dd;border-radius:16px;overflow:hidden;
+  box-shadow:0 14px 28px -18px rgba(20,20,20,.28);display:flex;flex-direction:column}
+
+.th{position:relative;aspect-ratio:9/16;overflow:hidden;background:#ddd7d3}
+.th video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:58px;height:58px;border:0;border-radius:50%;cursor:pointer;
+  background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;transition:transform .18s ease}
+.play::after{content:'';border-left:18px solid #CA0E15;
+  border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.play:hover{transform:translate(-50%,-50%) scale(1.07)}
+
+.time{position:absolute;right:11px;bottom:11px;background:rgba(20,14,12,.72);color:#fff;
+  font-size:12px;font-weight:700;letter-spacing:.02em;padding:3px 9px;border-radius:999px}
+
+.th.on .play,.th.on .time{display:none}
+
+.tx{padding:14px 14px 16px;flex:1}
+.tx h3{font-size:15px;font-weight:700;line-height:1.5;color:#231815}
+.tx p{font-size:12.5px;font-weight:500;line-height:1.6;color:#5c5450;margin-top:6px}
+
+@media (max-width:360px){ .row{padding-left:22px;padding-right:22px} }
+</style></head><body>
+
+<div class="row" id="row"></div>
+
+<script>
+/* ██████████████████████████████████████████████████████████
+   ██                                                      ██
+   ██   ここだけ触ります。下の ███ より下は触らないこと。   ██
+   ██                                                      ██
+   ██   差し替え方                                          ██
+   ██   1. STUDIOに Video を1つ置いて動画をアップ            ██
+   ██   2. 右パネルの「URL」欄を全部コピー                   ██
+   ██   3. 下の  mp4: 'ここ'  の ' ' の中だけを上書き        ██
+   ██   4. 画像も同じ手順で  img: 'ここ'  に貼る             ██
+   ██                                                      ██
+   ██   ' （シングルクォート）は消さないでください。         ██
+   ██                                                      ██
+   ██████████████████████████████████████████████████████████ */
+
+var DATA = [
+/* ══════════════════════════════════════════════════════════
+   ①  1本目　／　募集訴求　／　0:59
+   ══════════════════════════════════════════════════════════ */
+  {
+    /* ---- 動画のURL ------------------------------------- */
+    mp4 : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v1-boshu.mp4',
+
+    /* ---- ポスター画像のURL（再生前に出る絵） ------------ */
+    img : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v1-boshu-poster.jpg',
+
+    /* ---- 以下は文言。URLではありません ------------------ */
+    time  : '0:59',
+    title : '給与も休みも、<br>まとめて。',
+    desc  : '飛び込み営業のこと、お金のこと。'
+  },
+
+/* ══════════════════════════════════════════════════════════
+   ②  2本目　／　1日ブイログ　／　1:01
+   ══════════════════════════════════════════════════════════ */
+  {
+    /* ---- 動画のURL ------------------------------------- */
+    mp4 : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v2-vlog.mp4',
+
+    /* ---- ポスター画像のURL（再生前に出る絵） ------------ */
+    img : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v2-vlog-poster.jpg',
+
+    /* ---- 以下は文言。URLではありません ------------------ */
+    time  : '1:01',
+    title : '営業の1日を、<br>そのまま。',
+    desc  : '出社から退勤まで、まるごと追いかけました。'
+  },
+
+/* ══════════════════════════════════════════════════════════
+   ③  3本目　／　入社理由　／　1:01
+   ══════════════════════════════════════════════════════════ */
+  {
+    /* ---- 動画のURL ------------------------------------- */
+    mp4 : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v3-riyu.mp4',
+
+    /* ---- ポスター画像のURL（再生前に出る絵） ------------ */
+    img : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v3-riyu-poster.jpg',
+
+    /* ---- 以下は文言。URLではありません ------------------ */
+    time  : '1:01',
+    title : '選んだ理由を、<br>聞きました。',
+    desc  : 'なぜここだったのか。社員それぞれの言葉で。'
+  },
+
+/* ══════════════════════════════════════════════════════════
+   ④  4本目　／　裏側　／　1:17
+   ══════════════════════════════════════════════════════════ */
+  {
+    /* ---- 動画のURL ------------------------------------- */
+    mp4 : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v4-urakawa.mp4',
+
+    /* ---- ポスター画像のURL（再生前に出る絵） ------------ */
+    img : 'https://tratssai71-create.github.io/teeens-form/honda-lp/v4-urakawa-poster.jpg',
+
+    /* ---- 以下は文言。URLではありません ------------------ */
+    time  : '1:17',
+    title : '面接では、<br>聞けないことを。',
+    desc  : '社内の雰囲気、同期との関係、ノルマのこと。'
+  }
+
+];
+
+/* ███████████████████████████████████████████████████████████
+   ██   ここから下は触らないでください                      ██
+   ███████████████████████████████████████████████████████████ */
+
+document.getElementById('row').innerHTML = DATA.map(function(v){
+  return '<div class="mv"><div class="th">'
+    + '<video preload="none" playsinline controls poster="'+v.img+'">'
+    + '<source src="'+v.mp4+'" type="video/mp4"></video>'
+    + '<button class="play" type="button" aria-label="再生"></button>'
+    + '<span class="time">'+v.time+'</span></div>'
+    + '<div class="tx"><h3>'+v.title+'</h3><p>'+v.desc+'</p></div></div>';
+}).join('');
+
+document.querySelectorAll('.play').forEach(function(b){
+  b.addEventListener('click', function(){
+    var th = b.closest('.th'), v = th.querySelector('video');
+    document.querySelectorAll('.th').forEach(function(o){
+      if(o!==th){ o.querySelector('video').pause(); o.classList.remove('on'); }
+    });
+    th.classList.add('on');
+    var p = v.play(); if(p && p.catch) p.catch(function(){});
+  });
+});
+</script></body></html>

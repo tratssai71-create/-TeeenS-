@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>新卒採用 デザイン案 | ホンダモビリティ中四国</title>
+<meta name="robots" content="noindex,nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E60012;
+  --ink:#141414;
+  --ink2:#5a5a5e;
+  --ink3:#9a9aa0;
+  --line:#e6e6e8;
+  --bg:#ffffff;
+  --bg2:#f6f6f7;
+  --black:#101014;
+  --num:'Barlow Condensed','Noto Sans JP',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;color:var(--ink);background:#e9e9ec;-webkit-font-smoothing:antialiased;line-height:1.8;
+  background-image:radial-gradient(rgba(0,0,0,.06) 1px,transparent 1px);background-size:14px 14px}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* 作業用ラベル */
+.draft{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--black);color:#fff;
+  font-size:10.5px;letter-spacing:.14em;padding:7px 16px;text-align:center}
+.draft b{color:#ffb3b8;font-weight:700}
+
+/* スマホ枠 ＝ ページ全体の地。
+   方眼をここに敷くことで、セクションをまたいで一本の図面として繋がる。 */
+.phone{max-width:412px;margin:0 auto;min-height:100vh;
+  box-shadow:0 0 60px rgba(0,0,0,.13);position:relative;overflow:hidden;padding-top:30px;
+  background-image:
+    linear-gradient(rgba(22,24,34,.075) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(22,24,34,.075) 1px,transparent 1px),
+    linear-gradient(rgba(22,24,34,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(22,24,34,.032) 1px,transparent 1px),
+    radial-gradient(64% 22% at 100% 34%,rgba(230,0,18,.05),transparent 62%),
+    linear-gradient(180deg,#fbfbfc 0%,#f2f3f6 58%,#eceef2 100%);
+  background-size:92px 92px,92px 92px,23px 23px,23px 23px,100% 100%,100% 100%;
+  background-position:14px 0,14px 0,14px 0,14px 0,0 0,0 0}
+
+/* ══ 背景の質感（共通パーツ） ══════════════════════
+   grain  … 粒子テクスチャ（STUDIO：ノイズPNGを繰り返し背景に／描画モード オーバーレイ）
+   glow   … 色の滲み（STUDIO：円形ボックス＋ぼかし／ゆっくり動かす）
+   vig    … 周辺光量落ち（STUDIO：円形グラデーションのボックス）        */
+.grain{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px}
+.glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(30px)}
+.vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(118% 88% at 50% 36%,transparent 34%,rgba(0,0,0,.66) 100%)}
+@keyframes drift-a{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-34px,26px) scale(1.14)}}
+@keyframes drift-b{0%{transform:translate(0,0) scale(1.08)}100%{transform:translate(30px,-22px) scale(.94)}}
+@keyframes sweep{0%{transform:translateX(-62%) rotate(12deg);opacity:0}
+  18%{opacity:.5}50%{opacity:.34}82%{opacity:0}100%{transform:translateX(142%) rotate(12deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.glow,.fv-sweep,.fv-vtag .dot,.fv-live i{animation:none!important}}
+
+/* ══ FV ═══════════════════════════════════════════════
+   構成：[映像/下地] → [面（フェイセット）] → [計測グリッド]
+        → [枠・注記] → [ビネット/グレイン] → [スクリム] → [文字]
+   映像が入っても、上に重なる設計レイヤーがそのまま生きる作り。 */
+.fv{position:relative;background:#08080c;color:#fff;overflow:hidden;
+  min-height:706px;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:30px}
+/* 動画レイヤー（STUDIO：背景動画ボックス／ループ・自動再生・ミュート） */
+.fv-video{position:absolute;inset:0;overflow:hidden;
+  background:
+   radial-gradient(76% 52% at 78% 6%, #4a0f16 0%, transparent 60%),
+   radial-gradient(64% 46% at 8% 88%, #16232f 0%, transparent 64%),
+   linear-gradient(162deg,#1c1c22 0%,#2c2c34 46%,#111116 100%)}
+.fv-g1{width:440px;height:440px;right:-150px;top:-120px;
+  background:radial-gradient(circle,rgba(230,0,18,.42),rgba(230,0,18,.1) 44%,transparent 68%);
+  animation:drift-a 26s ease-in-out infinite alternate}
+.fv-g2{width:380px;height:380px;left:-140px;bottom:120px;
+  background:radial-gradient(circle,rgba(70,120,190,.24),rgba(70,120,190,.06) 46%,transparent 70%);
+  animation:drift-b 34s ease-in-out infinite alternate}
+
+/* ① 面（フェイセット）＝ 車体パネルに光が当たったような角のある面構成 */
+.pl{position:absolute;pointer-events:none;left:-60%;width:220%}
+.pl-1{height:360px;top:-150px;transform:rotate(-17deg);
+  background:linear-gradient(176deg,rgba(255,255,255,.075),rgba(255,255,255,.012));
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.pl-2{height:300px;top:236px;transform:rotate(-17deg);
+  background:linear-gradient(176deg,rgba(0,0,0,.34),rgba(0,0,0,.05));
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.pl-3{height:420px;bottom:-230px;transform:rotate(9deg);
+  background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);
+  border-top:1px solid rgba(255,255,255,.1)}
+/* ② 赤の面：細いストライプではなく、構造として効く帯 */
+.fv-band{position:absolute;pointer-events:none;left:-30%;width:180%;height:82px;top:178px;
+  transform:rotate(-17deg);
+  background:linear-gradient(90deg,transparent,rgba(230,0,18,.5) 22%,rgba(230,0,18,.34) 64%,rgba(230,0,18,0));
+  box-shadow:0 0 52px rgba(230,0,18,.2)}
+.fv-band::after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.72) 28%,rgba(255,255,255,.34) 66%,transparent)}
+
+/* ③ 計測グリッド＋目盛り（精密さ＝信頼感の記号） */
+.fv-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.062) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.062) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center top;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 88%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 88%)}
+.fv-ticks{position:absolute;left:0;right:0;top:66px;height:9px;pointer-events:none;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.34) 1px,transparent 1px);
+  background-size:23px 9px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent)}
+
+/* ④ コーナーマーカー（版面を示す技術図面の記号） */
+.br{position:absolute;width:20px;height:20px;pointer-events:none;
+  border:1px solid rgba(255,255,255,.42);z-index:2}
+.br-tl{top:66px;left:12px;border-right:0;border-bottom:0}
+.br-tr{top:66px;right:12px;border-left:0;border-bottom:0}
+.br-bl{bottom:22px;left:12px;border-right:0;border-top:0}
+.br-br{bottom:22px;right:12px;border-left:0;border-top:0}
+
+/* ⑤ 縁の注記 */
+.fv-side{position:absolute;right:15px;top:214px;z-index:2;pointer-events:none;
+  writing-mode:vertical-rl;font-size:8.5px;font-weight:700;letter-spacing:.34em;
+  color:rgba(255,255,255,.44)}
+.fv-foot{position:absolute;left:14px;bottom:30px;z-index:2;pointer-events:none;
+  font-family:var(--num);font-size:10px;font-weight:600;letter-spacing:.2em;
+  color:rgba(255,255,255,.34)}
+
+/* ゆっくり通り過ぎる光 */
+.fv-sweep{position:absolute;top:-16%;left:0;width:56%;height:132%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.07) 42%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.05) 58%,transparent);
+  filter:blur(8px);animation:sweep 13s ease-in-out infinite;animation-delay:2s}
+.fv-note{position:absolute;left:16px;top:114px;z-index:2;
+  font-size:9.5px;letter-spacing:.04em;color:rgba(255,255,255,.5);line-height:1.7;
+  border:1px dashed rgba(255,255,255,.3);padding:6px 11px;max-width:70%;
+  background:rgba(8,8,12,.4)}
+/* 文字を読ませるためのスクリム（映像の明るさに左右されないための保険） */
+.fv-scrim{position:absolute;inset:0;pointer-events:none;background:
+  linear-gradient(180deg,rgba(10,10,14,.6) 0%,rgba(10,10,14,.12) 24%,rgba(10,10,14,.46) 52%,
+  rgba(8,8,12,.9) 78%,#08080c 100%)}
+.fv-ghost{position:absolute;left:-8px;top:262px;font-family:var(--num);font-weight:700;font-size:128px;
+  line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;
+  white-space:nowrap;pointer-events:none;z-index:1}
+.fv-vtag{position:absolute;left:16px;top:82px;z-index:3;display:flex;align-items:center;gap:6px;
+  background:rgba(16,16,20,.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);
+  border-radius:2px 8px 8px 8px;padding:5px 9px 5px 7px}
+.fv-vtag .dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse-dot 1.8s ease-out infinite}
+.fv-vtag span{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.85)}
+.fv-mute{position:absolute;right:16px;top:82px;z-index:3;width:30px;height:30px;border-radius:2px 8px 8px 8px;
+  background:rgba(16,16,20,.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center}
+.fv-mute svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
+
+.fv-in{padding:0 22px 26px;position:relative;z-index:3}
+.fv-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:10px;font-weight:700;
+  letter-spacing:.24em;color:rgba(255,255,255,.72);margin-bottom:20px}
+.fv-eyebrow::before{content:'';width:22px;height:2px;background:var(--red);flex:none}
+.fv h1{font-size:38px;font-weight:900;line-height:1.24;letter-spacing:-.02em;margin-bottom:16px;
+  text-shadow:0 2px 26px rgba(0,0,0,.65)}
+.fv h1 em{font-style:normal;font-family:var(--num);color:#fff;letter-spacing:0}
+.fv p{font-size:13.5px;color:rgba(255,255,255,.75);text-shadow:0 1px 12px rgba(0,0,0,.7)}
+
+/* ── ヒーローのアクション（控えめに） ── */
+.fv-act{margin-top:26px;padding-top:18px;border-top:1px solid rgba(255,255,255,.16)}
+.fv-live{display:flex;align-items:center;gap:8px;font-size:11.5px;color:rgba(255,255,255,.66);
+  letter-spacing:.02em;margin-bottom:14px}
+.fv-live i{width:6px;height:6px;border-radius:50%;background:var(--red);flex:none;
+  animation:pulse-dot 2s ease-out infinite}
+.fv-live b{color:#fff;font-weight:700}
+.fv-live b em{font-style:normal;font-family:var(--num);font-size:15px;letter-spacing:0;margin:0 1px}
+.fv-links{display:flex;gap:9px;align-items:stretch}
+.lk{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;
+  font-size:13.5px;font-weight:700;border-radius:3px 12px 12px 12px;transition:.18s ease;letter-spacing:.01em}
+.lk svg{flex:none}
+.lk-line{background:#06C755;color:#fff}
+.lk-line svg{width:19px;height:19px;fill:#fff}
+.lk-sub{border:1px solid rgba(255,255,255,.32);color:#fff;background:rgba(255,255,255,.03)}
+.lk-sub svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.lk:hover{filter:brightness(1.07)}
+.lk:active{transform:scale(.985)}
+@keyframes pulse-dot{0%{box-shadow:0 0 0 0 rgba(230,0,18,.7)}70%{box-shadow:0 0 0 7px rgba(230,0,18,0)}100%{box-shadow:0 0 0 0 rgba(230,0,18,0)}}
+
+.btns{display:flex;flex-direction:column;gap:10px}
+.btn{position:relative;display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-radius:4px 16px 16px 16px;font-size:15px;font-weight:700;text-align:center;transition:.18s ease;line-height:1.4;
+  isolation:isolate;overflow:hidden}
+.btn::before{content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);z-index:1}
+.btn .ic{flex:none;width:34px;height:34px;border-radius:2px 9px 9px 9px;display:flex;align-items:center;justify-content:center}
+.btn .ic svg{width:17px;height:17px}
+.btn .lbl{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.btn-line{background:#06C755;color:#fff}
+.btn-line .ic{background:rgba(255,255,255,.18)}
+.btn .li{flex:none;width:21px;height:21px;fill:#fff}
+.btn small{font-size:10px;font-weight:500;opacity:.85;letter-spacing:.03em;line-height:1.3}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{border:1px solid rgba(255,255,255,.22);color:#fff;background:rgba(255,255,255,.045)}
+.btn-ghost .lbl{flex:1}
+.btn-ghost .ic{background:rgba(255,255,255,.08);margin-left:auto}
+.btn-ghost .ic svg{width:13px;height:13px}
+.btn:active{transform:scale(.98)}
+.btn:hover{filter:brightness(1.08)}
+
+/* ── 共通：セクションの下地システム ──
+   地の方眼は .phone が持つ。セクションは「透かす／曇らせる」で層を作る。 */
+body{counter-reset:sec}
+section.s{padding:62px 30px 58px;position:relative;isolation:isolate;counter-increment:sec;
+  background:transparent}
+section.s>*:not(.grain):not(.glow){position:relative;z-index:1}
+/* 一段沈めた面（白すぎる面を曇らせ、方眼は透かしたまま残す） */
+section.s.know,section.s.shops,section.s.flow{background:linear-gradient(180deg,rgba(223,226,235,.62),rgba(209,213,226,.56))}
+/* 左の綴じ罫（ページ全体を貫く一本。セクションが連続して1本に見える） */
+section.s::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:1px;z-index:0;
+  pointer-events:none;background:rgba(22,24,34,.18)}
+/* セクション番号（通し番号。版面の索引として機能させる） */
+section.s::after{content:counter(sec,decimal-leading-zero);position:absolute;top:20px;right:16px;z-index:0;
+  font-family:var(--num);font-size:92px;font-weight:700;line-height:.8;letter-spacing:-.02em;
+  color:transparent;-webkit-text-stroke:1px rgba(22,24,34,.16);pointer-events:none}
+/* セクション上端の見切り線＋赤いインデックス */
+.s-rule{position:absolute;left:0;right:0;top:0;height:1px;z-index:1;
+  background:linear-gradient(90deg,transparent 0 14px,var(--red) 14px 60px,rgba(22,24,34,.16) 60px)}
+/* 綴じ罫の上に打つ節点マーカー */
+.s-rule::after{content:'';position:absolute;left:11px;top:-3px;width:7px;height:7px;
+  background:var(--red);border-radius:50%;box-shadow:0 0 0 3px rgba(242,243,246,.9)}
+.lab{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.22em;
+  color:var(--red);margin-bottom:12px}
+.lab::before{content:'';width:18px;height:2px;background:var(--red)}
+h2.t{font-size:25px;font-weight:900;line-height:1.42;letter-spacing:-.005em;margin-bottom:14px}
+h2.t em{font-style:normal;font-family:var(--num);color:var(--red)}
+.body{font-size:13.5px;color:var(--ink2)}
+
+/* 会社を知る */
+
+.map{background:#fff;border:1px solid var(--line);padding:22px;margin-top:20px}
+.map-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ink3);margin-bottom:14px}
+.pref{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pref div{border:1px solid var(--line);padding:11px 0;text-align:center;font-size:13px;font-weight:700}
+.pref div small{display:block;font-size:9.5px;color:var(--ink3);font-weight:500;letter-spacing:.06em;margin-top:2px}
+
+/* 選ばれる理由 */
+.reason{display:flex;flex-direction:column;gap:18px;margin-top:26px}
+.rc{border:1px solid var(--line);padding:22px 20px;position:relative;background:#fff;
+  box-shadow:0 14px 28px -18px rgba(20,20,20,.28)}
+.rc:nth-child(2){transform:rotate(.5deg)}
+.rc:nth-child(3){transform:rotate(-.5deg)}
+.rc::after{content:'';position:absolute;top:0;right:0;width:0;height:0;
+  border-style:solid;border-width:0 22px 22px 0;border-color:transparent var(--bg2) transparent transparent}
+.rc .n{font-family:var(--num);font-size:56px;font-weight:700;color:transparent;
+  -webkit-text-stroke:1.4px rgba(230,0,18,.4);position:absolute;top:10px;right:14px;line-height:1}
+.rc h3{font-size:16.5px;font-weight:700;line-height:1.5;margin-bottom:8px;max-width:80%}
+.rc h3 mark{background:linear-gradient(transparent 62%,rgba(230,0,18,.18) 62%);padding:0 1px}
+.rc p{font-size:13px;color:var(--ink2)}
+
+/* 数字 */
+section.s.nums{color:#fff;position:relative;overflow:hidden;
+  background:
+   radial-gradient(78% 50% at 88% 0%, #3a0a10 0%, transparent 60%),
+   radial-gradient(64% 44% at 4% 100%, #16222c 0%, transparent 64%),
+   var(--black)}
+/* 暗い面は左の綴じ罫を白で継ぐ（線が途切れないように） */
+.nums::before{background:rgba(255,255,255,.22)}
+.nums .s-rule::after{box-shadow:0 0 0 3px #101014}
+/* 面に敷く方眼（白） */
+.nums .mesh{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:92px 92px,92px 92px,23px 23px,23px 23px;background-position:14px 0}
+section.s.nums::after{-webkit-text-stroke:1px rgba(255,255,255,.22)}
+.nums .s-rule{background:linear-gradient(90deg,var(--red) 0 46px,rgba(255,255,255,.14) 46px)}
+.nums .glow{width:360px;height:360px;right:-130px;top:-90px;
+  background:radial-gradient(circle,rgba(230,0,18,.3),transparent 66%);
+  animation:drift-a 30s ease-in-out infinite alternate}
+.nums h2.t{color:#fff}
+.nums .body{color:rgba(255,255,255,.6)}
+.ngrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.14);margin-top:24px;position:relative;z-index:1}
+.ncell{background:var(--black);padding:20px 14px;text-align:center;position:relative}
+.ncell.wide{grid-column:1 / -1;background:linear-gradient(180deg,#1a1a20,#101014);overflow:hidden}
+.ncell.wide .rb{position:absolute;top:11px;right:-30px;background:var(--red);color:#fff;font-size:9px;
+  font-weight:700;letter-spacing:.1em;padding:3px 32px;transform:rotate(35deg);box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.ncell .k{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.04em;margin-bottom:6px}
+.ncell .v{font-family:var(--num);font-size:44px;font-weight:700;line-height:1;letter-spacing:.01em}
+.ncell.wide .v{font-size:62px;color:var(--red);text-shadow:0 0 34px rgba(230,0,18,.45)}
+.ncell .v span{font-family:'Noto Sans JP';font-size:14px;font-weight:700;margin-left:3px}
+.ncell .sub{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:7px}
+.fy{display:inline-block;font-size:9px;letter-spacing:.08em;border:1px solid rgba(255,255,255,.3);
+  padding:1px 6px;margin-top:9px;color:rgba(255,255,255,.62)}
+
+
+/* 暗い面は斜めに切って入る／抜ける（縦に流れるリズムを作る） */
+section.s.nums{clip-path:polygon(0 0,100% 26px,100% 100%,0 calc(100% - 26px))}
+.last{clip-path:polygon(0 26px,100% 0,100% 100%,0 100%)}
+section.s.nums{margin-top:-1px;margin-bottom:-1px}
+
+/* 職種 */
+.jobs{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.job-card{border:1px solid var(--line);background:#fff}
+.job-b{padding:20px;display:flex;gap:16px;align-items:flex-start}
+.job .ic{width:44px;height:44px;background:var(--red);flex:none;display:flex;align-items:center;justify-content:center}
+.job .ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.7}
+.job h3{font-size:16px;font-weight:700;margin-bottom:5px}
+.job p{font-size:12.5px;color:var(--ink2)}
+.more{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--ink);
+  padding:15px 18px;font-size:13.5px;font-weight:700;margin-top:12px}
+
+/* 店舗タブ */
+
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-top:22px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.shoplist{background:#fff;border:1px solid var(--line);margin-top:12px}
+.shop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.shop:last-child{border-bottom:0}
+.shop .nm{font-size:13.5px;font-weight:700}
+.shop .ad{font-size:11px;color:var(--ink3);margin-top:1px}
+.shop svg{width:15px;height:15px;stroke:var(--ink3);fill:none;stroke-width:2;flex:none}
+
+/* インタビュー */
+.iv{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.vid{position:relative;aspect-ratio:16/10;background:linear-gradient(140deg,#33333a,#55555e);overflow:hidden}
+.vid .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;letter-spacing:.1em;color:rgba(255,255,255,.4)}
+.vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;
+  border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center}
+.vid .play::after{content:'';border-left:15px solid var(--black);border-top:9px solid transparent;
+  border-bottom:9px solid transparent;margin-left:4px}
+.vid .cap{position:absolute;left:0;right:0;bottom:0;padding:26px 16px 13px;color:#fff;font-size:13.5px;font-weight:700;
+  background:linear-gradient(transparent,rgba(0,0,0,.82))}
+.vid .badge{position:absolute;top:11px;left:11px;background:rgba(0,0,0,.6);color:#fff;font-size:9.5px;
+  letter-spacing:.08em;padding:3px 8px}
+
+/* FAQ */
+.faq{margin-top:22px;border-top:1px solid var(--line)}
+.qa{border-bottom:1px solid var(--line)}
+.qa button{width:100%;display:flex;align-items:center;gap:13px;padding:17px 2px;text-align:left;font-size:13.5px;font-weight:700;line-height:1.6}
+.qa .q{color:var(--red);font-family:var(--num);font-size:20px;font-weight:700;flex:none;line-height:1}
+.qa .mk{margin-left:auto;width:13px;height:13px;position:relative;flex:none}
+.qa .mk::before,.qa .mk::after{content:'';position:absolute;background:var(--ink);transition:.2s}
+.qa .mk::before{left:0;top:6px;width:13px;height:1.5px}
+.qa .mk::after{left:6px;top:0;width:1.5px;height:13px}
+.qa[open] .mk::after{transform:rotate(90deg);opacity:0}
+.qa .a{padding:0 2px 18px 33px;font-size:13px;color:var(--ink2);display:none}
+.qa[open] .a{display:block}
+
+/* 流れ */
+
+.steps{margin-top:24px;position:relative;padding-left:30px}
+.steps::before{content:'';position:absolute;left:9px;top:8px;bottom:26px;width:1px;background:var(--line)}
+.st{position:relative;padding-bottom:22px}
+.st:last-child{padding-bottom:0}
+.st::before{content:'';position:absolute;left:-30px;top:5px;width:19px;height:19px;border-radius:50%;
+  background:#fff;border:2px solid var(--line)}
+.st.on::before{background:var(--red);border-color:var(--red)}
+.st h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.st p{font-size:12.5px;color:var(--ink2)}
+
+/* 最終CTA */
+.last{color:#fff;text-align:center;padding:60px 22px 46px;position:relative;overflow:hidden;
+  background:
+   radial-gradient(82% 52% at 50% 108%, #4a0d14 0%, transparent 62%),
+   radial-gradient(60% 40% at 6% 0%, #16222c 0%, transparent 66%),
+   var(--black)}
+.last::before{content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(-35deg,rgba(230,0,18,.07) 0 2px,transparent 2px 34px);pointer-events:none}
+.last .glow{width:420px;height:420px;left:50%;margin-left:-210px;bottom:-190px;
+  background:radial-gradient(circle,rgba(230,0,18,.34),transparent 66%);
+  animation:drift-b 28s ease-in-out infinite alternate}
+.last>*:not(.grain):not(.glow){position:relative;z-index:1}
+.last h2{font-size:26px;font-weight:900;line-height:1.5;margin-bottom:14px}
+.last h2 em{font-style:normal;font-family:var(--num);color:var(--red)}
+.last p{font-size:13px;color:rgba(255,255,255,.66);margin-bottom:26px}
+.last .btns{text-align:left}
+.qr{margin-top:22px;border:1px solid rgba(255,255,255,.2);padding:16px;display:flex;align-items:center;gap:14px;text-align:left}
+.qr .box{width:66px;height:66px;background:#fff;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#999;letter-spacing:.04em}
+.qr .tx{font-size:11.5px;color:rgba(255,255,255,.62);line-height:1.65}
+
+
+
+
+/* ヘッダー */
+.hdr{position:absolute;top:30px;left:0;right:0;z-index:20;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;padding:14px 16px}
+.hdr-logo{border:1px dashed rgba(255,255,255,.45);padding:8px 13px;display:flex;flex-direction:column;
+  align-items:center;line-height:1.3}
+.hdr-logo .pt{font-size:8.5px;letter-spacing:.14em;color:rgba(255,255,255,.55);font-weight:700}
+.hdr-logo .pn{font-size:11px;font-weight:700;color:#fff;letter-spacing:.02em}
+.hdr-r{display:flex;align-items:center;gap:4px}
+.sns{width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+.sns svg{width:18px;height:18px;fill:#fff}
+.burger{width:36px;height:34px;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  align-items:flex-end;margin-left:2px}
+.burger i{display:block;height:1.7px;background:#fff;transition:.25s}
+.burger i:nth-child(1){width:20px}
+.burger i:nth-child(2){width:14px}
+.burger i:nth-child(3){width:20px}
+.burger.on i:nth-child(1){transform:translateY(6.7px) rotate(45deg);width:20px}
+.burger.on i:nth-child(2){opacity:0}
+.burger.on i:nth-child(3){transform:translateY(-6.7px) rotate(-45deg);width:20px}
+
+/* ドロワー */
+.drawer{position:absolute;top:30px;left:0;right:0;bottom:0;z-index:19;background:rgba(16,16,20,.97);
+  backdrop-filter:blur(6px);padding:82px 26px 40px;opacity:0;pointer-events:none;transition:.25s}
+.drawer.on{opacity:1;pointer-events:auto}
+.drawer a.mi{display:block;color:#fff;font-size:19px;font-weight:700;padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.12)}
+.drawer a.mi small{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--red);font-weight:700;margin-bottom:3px}
+.drawer .d-cta{margin-top:26px;display:flex;flex-direction:column;gap:9px}
+
+/* フッター */
+.ft{background:#08080b;color:rgba(255,255,255,.5);padding:44px 22px 100px}
+.ft-logo{border:1px dashed rgba(255,255,255,.28);padding:11px 16px;display:inline-flex;flex-direction:column;
+  align-items:center;line-height:1.3;margin-bottom:22px}
+.ft-logo .pt{font-size:8.5px;letter-spacing:.14em;color:rgba(255,255,255,.4);font-weight:700}
+.ft-logo .pn{font-size:12px;font-weight:700;color:rgba(255,255,255,.85)}
+.ft-nav{display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;margin-bottom:26px}
+.ft-nav a{font-size:12.5px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:7px}
+.ft-nav a::before{content:'';width:4px;height:1px;background:var(--red);flex:none}
+.ft-sns{display:flex;gap:8px;margin-bottom:24px}
+.ft-sns a{width:38px;height:38px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.ft-sns svg{width:17px;height:17px;fill:rgba(255,255,255,.8)}
+.ft-info{font-size:11.5px;line-height:1.85;color:rgba(255,255,255,.45);border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
+.ft-info b{color:rgba(255,255,255,.75);font-weight:700;font-size:12.5px}
+.ft-cr{font-size:10.5px;color:rgba(255,255,255,.3);margin-top:18px;letter-spacing:.02em}
+
+/* 画像枠 */
+.ph-box{position:relative;background:repeating-linear-gradient(45deg,#f0f0f2 0 10px,#eaeaee 10px 20px);
+  border:1px dashed #c6c6cc;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;text-align:center;padding:14px}
+.ph-box .pt{font-size:9.5px;letter-spacing:.14em;color:#a9a9b2;font-weight:700}
+.ph-box .pd{font-size:11.5px;color:#86868f;line-height:1.55;max-width:24ch}
+.ph-box.dark{background:repeating-linear-gradient(45deg,#1c1c22 0 10px,#22222a 10px 20px);border-color:#3a3a45}
+.ph-box.dark .pt{color:#6d6d7a}
+.ph-box.dark .pd{color:#8b8b97}
+.r-16x9{aspect-ratio:16/9}
+.r-4x3{aspect-ratio:4/3}
+.r-1x1{aspect-ratio:1/1}
+.r-3x2{aspect-ratio:3/2}
+.cap-n{font-size:10.5px;color:var(--ink3);margin-top:7px;letter-spacing:.02em}
+
+/* 固定CTA */
+.fixed{position:fixed;left:0;right:0;bottom:0;z-index:900;max-width:412px;margin:0 auto;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.fixed .btn{flex:1;padding:11px 6px;font-size:13.5px}
+.fixed .btn small{font-size:9.5px}
+
+/* ══ 背景パターン：bg-09 ブループリント ══ */
+
+:root{--ink:#eaf2fb;--ink2:rgba(214,232,252,.68);--ink3:rgba(214,232,252,.44);
+  --line:rgba(150,200,250,.22);--bg:#0d2039;--bg2:#102845;--black:#07162a}
+body{background:#050e1c;background-image:none}
+.phone{background-color:#0d2039;background-image:
+  linear-gradient(rgba(150,205,255,.13) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(150,205,255,.13) 1px,transparent 1px),
+  linear-gradient(rgba(150,205,255,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(150,205,255,.05) 1px,transparent 1px),
+  radial-gradient(70% 26% at 100% 28%,rgba(80,160,255,.14),transparent 64%),
+  linear-gradient(180deg,#123054 0%,#0a1b31 100%);
+  background-size:92px 92px,92px 92px,23px 23px,23px 23px,100% 100%,100% 100%;
+  background-position:14px 0,14px 0,14px 0,14px 0,0 0,0 0}
+section.s.know,section.s.shops,section.s.flow{background:rgba(6,20,40,.3)}
+section.s.nums{background:radial-gradient(78% 50% at 88% 0%,#3a1018 0%,transparent 58%),#071528}
+.last{background:radial-gradient(82% 52% at 50% 108%,#4a0d14 0%,transparent 60%),#071528}
+h2.t{color:var(--ink)}
+.lab,h2.t em{color:#ff5a68}
+.nums .mesh{background-image:
+  linear-gradient(rgba(150,205,255,.1) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(150,205,255,.1) 1px,transparent 1px);
+  background-size:92px 92px;background-position:14px 0}
+
+.map,.rc,.job-card,.tab,.shoplist{background:rgba(255,255,255,.045);border-color:var(--line)}
+.st::before{background:var(--bg);border-color:var(--line)}
+.qr .box{background:rgba(255,255,255,.9);color:#555}
+.more{border-color:rgba(255,255,255,.4)}
+.faq,.qa{border-color:var(--line)}
+.qa .mk::before,.qa .mk::after{background:var(--ink)}
+.pref div{border-color:var(--line)}
+.ph-box{background:repeating-linear-gradient(45deg,rgba(255,255,255,.04) 0 10px,rgba(255,255,255,.07) 10px 20px);
+  border-color:rgba(150,205,255,.26)}
+.ph-box .pt{color:rgba(255,255,255,.4)}.ph-box .pd{color:rgba(255,255,255,.55)}
+.steps::before{background:var(--line)}
+.rc::after{border-color:transparent rgba(255,255,255,.07) transparent transparent}
+.rc h3 mark{background:linear-gradient(transparent 62%,rgba(230,0,18,.34) 62%);color:#fff}
+.fixed{background:rgba(12,13,18,.94);border-color:var(--line)}
+section.s::after{-webkit-text-stroke-color:rgba(150,205,255,.2)}
+section.s::before{background:rgba(150,205,255,.26)}
+.s-rule{background:linear-gradient(90deg,transparent 0 14px,var(--red) 14px 60px,rgba(150,205,255,.2) 60px)}
+.s-rule::after{box-shadow:0 0 0 3px var(--bg)}
+
+</style>
+</head>
+<body>
+
+<div class="draft">DESIGN DRAFT ／ デザイン案 <b>bg-09 ブループリント</b> ／ 株式会社TeeenS</div>
+
+<div class="phone">
+
+    <header class="hdr">
+      <div class="hdr-logo">
+        <span class="pt">LOGO</span>
+        <span class="pn">ロゴ予定</span>
+      </div>
+      <div class="hdr-r">
+        <a class="sns" href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.07-1.1.05-1.7.24-2.1.4-.5.2-.9.44-1.3.84-.4.4-.64.8-.84 1.3-.16.4-.35 1-.4 2.1C2.6 9.9 2.6 10.3 2.6 12s0 2.1.06 3.3c.05 1.1.24 1.7.4 2.1.2.5.44.9.84 1.3.4.4.8.64 1.3.84.4.16 1 .35 2.1.4 1.2.06 1.6.06 4.7.06s3.5 0 4.7-.06c1.1-.05 1.7-.24 2.1-.4.5-.2.9-.44 1.3-.84.4-.4.64-.8.84-1.3.16-.4.35-1 .4-2.1.06-1.2.06-1.6.06-3.3s0-2.1-.06-3.3c-.05-1.1-.24-1.7-.4-2.1-.2-.5-.44-.9-.84-1.3-.4-.4-.8-.64-1.3-.84-.4-.16-1-.35-2.1-.4C15.5 4 15.1 4 12 4zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 1.8a3.1 3.1 0 100 6.2 3.1 3.1 0 000-6.2zm5.1-.6a1.15 1.15 0 11-2.3 0 1.15 1.15 0 012.3 0z"/></svg></a>
+        <a class="sns" href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M22.5 7.2a2.8 2.8 0 00-1.95-1.97C18.8 4.75 12 4.75 12 4.75s-6.8 0-8.55.48A2.8 2.8 0 001.5 7.2C1 8.95 1 12 1 12s0 3.05.5 4.8a2.8 2.8 0 001.95 1.97c1.75.48 8.55.48 8.55.48s6.8 0 8.55-.48a2.8 2.8 0 001.95-1.97c.5-1.75.5-4.8.5-4.8s0-3.05-.5-4.8zM9.8 15.3V8.7l5.7 3.3-5.7 3.3z"/></svg></a>
+        <a class="sns" href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0115.54 3h-3.1v12.4a2.6 2.6 0 01-2.6 2.5 2.6 2.6 0 112.6-2.6V12a5.7 5.7 0 105.7 5.7V9.5a7.3 7.3 0 004.3 1.4V7.8a4.3 4.3 0 01-3.3-1.98z"/></svg></a>
+        <button class="burger" id="burger" aria-label="メニュー"><i></i><i></i><i></i></button>
+      </div>
+    </header>
+
+    <nav class="drawer" id="drawer">
+      <a class="mi" href="#"><small>ABOUT</small>会社を知る</a>
+      <a class="mi" href="#"><small>WHY US</small>選ばれる理由</a>
+      <a class="mi" href="#"><small>NUMBERS</small>数字で見る</a>
+      <a class="mi" href="#"><small>POSITIONS</small>募集職種</a>
+      <a class="mi" href="#"><small>SHOPS</small>店舗一覧</a>
+      <a class="mi" href="#"><small>INTERVIEW</small>社員インタビュー</a>
+      <a class="mi" href="#"><small>FAQ</small>よくある質問</a>
+      <div class="d-cta">
+        <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">LINEで相談する<small>友だち追加はこちら</small></span></a>
+        <a class="btn btn-red" href="#">エントリー</a>
+      </div>
+    </nav>
+
+  <!-- FV -->
+  <div class="fv">
+    <div class="fv-video">
+      <div class="glow fv-g1"></div>
+      <div class="glow fv-g2"></div>
+      <div class="fv-sweep"></div>
+    </div>
+
+    <!-- 面の構成 -->
+    <div class="pl pl-1"></div>
+    <div class="pl pl-2"></div>
+    <div class="pl pl-3"></div>
+    <div class="fv-band"></div>
+
+    <!-- 計測グリッド・目盛り -->
+    <div class="fv-grid"></div>
+    <div class="fv-ticks"></div>
+
+    <div class="vig"></div>
+    <div class="grain"></div>
+    <div class="fv-scrim"></div>
+
+    <!-- 版面のコーナーマーカー -->
+    <span class="br br-tl"></span><span class="br br-tr"></span>
+    <span class="br br-bl"></span><span class="br br-br"></span>
+    <span class="fv-side">6 PREFECTURES ／ 108 SHOPS</span>
+    <span class="fv-foot">RECRUIT 2027</span>
+    <span class="fv-note">動画予定 ／ 背景全面ループ動画（音声なし・5〜10秒）<br>店舗前を歩くスタッフ、納車の瞬間、整備の手元など</span>
+    <div class="fv-vtag"><span class="dot"></span><span>VIDEO</span></div>
+    <div class="fv-mute"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M17 8.5a4.5 4.5 0 010 7"/></svg></div>
+
+    <div class="fv-in">
+      <span class="fv-eyebrow">2027年度 新卒採用</span>
+      <h1>中四国で、<br><em>Honda</em>と働く。</h1>
+      <p>岡山・広島・山口・香川・愛媛・高知。<br>6県のカーライフを、私たちが支えています。</p>
+
+      <div class="fv-act">
+        <span class="fv-live"><i></i>オンライン個別面談を受付中　<b>残り<em>5</em>名</b></span>
+        <div class="fv-links">
+          <a class="lk lk-line" href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            LINEで相談する
+          </a>
+          <a class="lk lk-sub" href="#">エントリー
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 会社を知る -->
+  <section class="s know">
+    <div class="s-rule"></div>
+    <div class="lab">ABOUT US</div>
+    <h2 class="t">6県で、<em>108店舗</em>。<br>地域のカーライフを支える。</h2>
+    <p class="body">ホンダモビリティ中四国は、中四国エリアでHondaの正規ディーラーを展開しています。クルマの販売から点検・整備、保険まで。地域のお客様の毎日に、いちばん近いところで関わる仕事です。</p>
+    <div class="ph-box r-16x9" style="margin-top:20px">
+      <span class="pt">画像予定</span>
+      <span class="pd">店舗外観、またはショールーム内の様子</span>
+    </div>
+    <p class="cap-n">※ 明るく開放的な店内が伝わるカットを想定</p>
+
+    <div class="map">
+      <div class="map-h">展開エリア</div>
+      <div class="pref">
+        <div>岡山<small>OKAYAMA</small></div>
+        <div>広島<small>HIROSHIMA</small></div>
+        <div>山口<small>YAMAGUCHI</small></div>
+        <div>香川<small>KAGAWA</small></div>
+        <div>愛媛<small>EHIME</small></div>
+        <div>高知<small>KOCHI</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 選ばれる理由 -->
+  <section class="s">
+    <div class="s-rule"></div>
+    <div class="lab">WHY US</div>
+    <h2 class="t">「営業」のイメージ、<br>変わるかもしれません。</h2>
+    <p class="body">売り込みが苦手。知識がない。そんな不安を持っている方にこそ、読んでほしい3つのことがあります。</p>
+
+    <div class="reason">
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">来店したお客様を迎えるスタッフ</span>
+        </div>
+        <span class="n">01</span>
+        <h3><mark>飛び込み営業は、ありません。</mark></h3>
+        <p>基本は来店型。「Hondaの車が気になって」と足を運んでくださったお客様をお迎えするところから始まります。知らない家のインターホンを押す仕事ではありません。</p>
+      </div>
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">カウンターで商談している様子</span>
+        </div>
+        <span class="n">02</span>
+        <h3><mark>売り込むのではなく、聞く。</mark></h3>
+        <p>お子さんが生まれる。通勤距離が変わる。お客様の生活を伺って、合う一台をご提案する。話を聞くのが好きな人ほど、向いている仕事です。</p>
+      </div>
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">先輩が新人に教えている研修シーン</span>
+        </div>
+        <span class="n">03</span>
+        <h3><mark>クルマの知識は、入社後で。</mark></h3>
+        <p>ほとんどの先輩が、知識ゼロからのスタートでした。研修と、隣にいる先輩のサポートがあります。「好き」より「知りたい」があれば十分です。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数字 -->
+  <section class="s nums">
+    <div class="s-rule"></div>
+    <div class="mesh"></div>
+    <div class="glow"></div>
+    <div class="grain"></div>
+    <div class="lab">BY THE NUMBERS</div>
+    <h2 class="t">数字で見る、<br>私たちの働き方。</h2>
+    <p class="body">給与だけでなく、休みも、続けやすさも。事実だけをお見せします。</p>
+
+    <div class="ngrid">
+      <div class="ncell wide">
+        <span class="rb">MOST</span>
+        <div class="k">四大卒・新卒初任給（総支給額）</div>
+        <div class="v">267,700<span>円</span></div>
+        <div class="sub">＋ インセンティブあり</div>
+        <span class="fy">2026年度実績</span>
+      </div>
+      <div class="ncell">
+        <div class="k">賞与</div>
+        <div class="v">6.25<span>ヶ月</span></div>
+        <span class="fy">2026年度実績</span>
+      </div>
+      <div class="ncell">
+        <div class="k">年間休日</div>
+        <div class="v">120<span>日</span></div>
+        <div class="sub">9連休の取得実績あり</div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均有給取得</div>
+        <div class="v">12.5<span>日</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均残業時間</div>
+        <div class="v">16.8<span>時間</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">離職率</div>
+        <div class="v">3.95<span>%</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均勤続年数</div>
+        <div class="v">13.3<span>年</span></div>
+      </div>
+      <div class="ncell wide">
+        <div class="k">平均年齢</div>
+        <div class="v" style="font-size:44px;color:#fff">39.8<span>歳</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 職種 -->
+  <section class="s">
+    <div class="s-rule"></div>
+    <div class="lab">POSITIONS</div>
+    <h2 class="t">募集している職種</h2>
+    <div class="jobs">
+      <div class="job-card">
+        <div class="ph-box r-16x9">
+          <span class="pt">画像予定</span>
+          <span class="pd">営業スタッフの接客カット</span>
+        </div>
+        <div class="job-b">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3v13h2a3 3 0 006 0h4a3 3 0 006 0h2v-5l-3-4z"/></svg></div>
+          <div><h3>営業職</h3><p>ご来店いただいたお客様への提案、納車後のフォロー、保険や点検のご案内まで。</p></div>
+        </div>
+      </div>
+      <div class="job-card">
+        <div class="ph-box r-16x9">
+          <span class="pt">画像予定</span>
+          <span class="pd">整備士の作業カット（ピット内）</span>
+        </div>
+        <div class="job-b">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 01-5 5L4 17v3h3l5.7-5.7a4 4 0 015-5l-2 2 2.3 2.3 2-2a4 4 0 01-5.3-5.3z"/></svg></div>
+          <div><h3>サービス職（整備）</h3><p>点検・整備・車検。国家資格の取得支援があります。手を動かすのが好きな方へ。</p></div>
+        </div>
+      </div>
+    </div>
+    <a class="more" href="#">募集要項を見る<span>→</span></a>
+  </section>
+
+  <!-- 店舗 -->
+  <section class="s shops">
+    <div class="s-rule"></div>
+    <div class="lab">SHOPS</div>
+    <h2 class="t">働く場所を、選べる。</h2>
+    <p class="body">気になる県を選んでください。ご希望のエリアを選考時にお伝えいただけます。</p>
+
+    <div class="ph-box r-16x9" style="margin-top:20px">
+      <span class="pt">画像予定</span>
+      <span class="pd">店舗の外観（代表的な1店舗）</span>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-p="岡山">岡山</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="広島">広島</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="山口">山口</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="香川">香川</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="愛媛">愛媛</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="高知">高知</button>
+    </div>
+    <div class="shoplist" id="shoplist"></div>
+  </section>
+
+  <!-- インタビュー -->
+  <section class="s">
+    <div class="s-rule"></div>
+    <div class="lab">INTERVIEW</div>
+    <h2 class="t">若手社員に、<br>裏側を聞いてみた。</h2>
+    <p class="body">気になるけど面接では聞きにくいこと。先に答えておきます。</p>
+    <div class="iv">
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">Instagram</span>
+        <div class="cap">営業ってノルマ、ありますか？</div>
+      </div>
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">TikTok</span>
+        <div class="cap">社内の雰囲気ってどんな感じ？</div>
+      </div>
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">Instagram</span>
+        <div class="cap">クルマの知識、必要でしたか？</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="s">
+    <div class="s-rule"></div>
+    <div class="lab">FAQ</div>
+    <h2 class="t">よくある質問</h2>
+    <div class="faq">
+      <details class="qa" open>
+        <summary><button type="button"><span class="q">Q</span>クルマの知識がなくても応募できますか？<span class="mk"></span></button></summary>
+        <div class="a">はい。多くの先輩が知識ゼロで入社しています。入社後の研修と、先輩社員のサポートがあります。</div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>営業職に個人ノルマはありますか？<span class="mk"></span></button></summary>
+        <div class="a">（回答は先方に確認のうえ掲載）</div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>配属先や勤務地はどう決まりますか？<span class="mk"></span></button></summary>
+        <div class="a">（回答は先方に確認のうえ掲載）</div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>オンライン個別面談は選考に影響しますか？<span class="mk"></span></button></summary>
+        <div class="a">（回答は先方に確認のうえ掲載）</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 選考の流れ -->
+  <section class="s flow">
+    <div class="s-rule"></div>
+    <div class="lab">FLOW</div>
+    <h2 class="t">選考の流れ</h2>
+    <div class="steps">
+      <div class="st on"><h3>エントリー</h3><p>LINE、または応募フォームから。</p></div>
+      <div class="st on"><h3>会社説明・個別面談</h3><p>オンラインで実施。ここは選考ではありません。</p></div>
+      <div class="st"><h3>面接・適性検査</h3><p></p></div>
+      <div class="st"><h3>最終面接</h3><p></p></div>
+      <div class="st"><h3>内定</h3><p></p></div>
+    </div>
+  </section>
+
+  <!-- 最終CTA -->
+  <div class="last">
+    <div class="glow"></div>
+    <div class="grain"></div>
+    <div class="ph-box dark r-16x9" style="margin-bottom:28px">
+      <span class="pt">画像予定</span>
+      <span class="pd">若手社員の笑顔のカット（横長）</span>
+    </div>
+    <h2>まだ迷っていて、<br><em>大丈夫です。</em></h2>
+    <p>選考前の情報収集だけでも構いません。仕事内容や働き方について、まずは気軽に聞いてみませんか。</p>
+    <div class="btns">
+      <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">まずはLINEで気軽に相談<small>友だち追加はこちら</small></span></a>
+      <a class="btn btn-red" href="#">新卒採用にエントリー</a>
+    </div>
+    <div class="qr">
+      <div class="box">QRコード</div>
+      <div class="tx">パソコンでご覧の方は、<br>スマートフォンで読み取ってください。</div>
+    </div>
+  </div>
+
+  <footer class="ft">
+    <div class="ft-logo">
+      <span class="pt">LOGO</span>
+      <span class="pn">ロゴ予定</span>
+    </div>
+
+    <div class="ft-nav">
+      <a href="#">会社を知る</a>
+      <a href="#">選ばれる理由</a>
+      <a href="#">数字で見る</a>
+      <a href="#">募集職種</a>
+      <a href="#">店舗一覧</a>
+      <a href="#">社員インタビュー</a>
+      <a href="#">よくある質問</a>
+      <a href="#">選考の流れ</a>
+    </div>
+
+    <div class="ft-sns">
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.07-1.1.05-1.7.24-2.1.4-.5.2-.9.44-1.3.84-.4.4-.64.8-.84 1.3-.16.4-.35 1-.4 2.1C2.6 9.9 2.6 10.3 2.6 12s0 2.1.06 3.3c.05 1.1.24 1.7.4 2.1.2.5.44.9.84 1.3.4.4.8.64 1.3.84.4.16 1 .35 2.1.4 1.2.06 1.6.06 4.7.06s3.5 0 4.7-.06c1.1-.05 1.7-.24 2.1-.4.5-.2.9-.44 1.3-.84.4-.4.64-.8.84-1.3.16-.4.35-1 .4-2.1.06-1.2.06-1.6.06-3.3s0-2.1-.06-3.3c-.05-1.1-.24-1.7-.4-2.1-.2-.5-.44-.9-.84-1.3-.4-.4-.8-.64-1.3-.84-.4-.16-1-.35-2.1-.4C15.5 4 15.1 4 12 4zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 1.8a3.1 3.1 0 100 6.2 3.1 3.1 0 000-6.2zm5.1-.6a1.15 1.15 0 11-2.3 0 1.15 1.15 0 012.3 0z"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M22.5 7.2a2.8 2.8 0 00-1.95-1.97C18.8 4.75 12 4.75 12 4.75s-6.8 0-8.55.48A2.8 2.8 0 001.5 7.2C1 8.95 1 12 1 12s0 3.05.5 4.8a2.8 2.8 0 001.95 1.97c1.75.48 8.55.48 8.55.48s6.8 0 8.55-.48a2.8 2.8 0 001.95-1.97c.5-1.75.5-4.8.5-4.8s0-3.05-.5-4.8zM9.8 15.3V8.7l5.7 3.3-5.7 3.3z"/></svg></a>
+      <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0115.54 3h-3.1v12.4a2.6 2.6 0 01-2.6 2.5 2.6 2.6 0 112.6-2.6V12a5.7 5.7 0 105.7 5.7V9.5a7.3 7.3 0 004.3 1.4V7.8a4.3 4.3 0 01-3.3-1.98z"/></svg></a>
+    </div>
+
+    <div class="ft-info">
+      <b>株式会社ホンダモビリティ中四国</b><br>
+      岡山・広島・山口・香川・愛媛・高知<br>
+      <a href="#" style="color:rgba(255,255,255,.6);text-decoration:underline">コーポレートサイト</a>　
+      <a href="#" style="color:rgba(255,255,255,.6);text-decoration:underline">プライバシーポリシー</a>
+    </div>
+
+    <div class="ft-cr">© Honda Mobility Chushikoku. All rights reserved.</div>
+  </footer>
+
+  <!-- 固定CTA -->
+  <div class="fixed">
+    <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">LINEで相談<small>友だち追加</small></span></a>
+    <a class="btn btn-red" href="#">エントリー</a>
+  </div>
+
+</div>
+
+<script>
+var SHOPS = {
+  "岡山":[["岡山中央店","岡山市北区〇〇"],["倉敷店","倉敷市〇〇"],["津山店","津山市〇〇"]],
+  "広島":[["広島西店","広島市西区〇〇"],["福山店","福山市〇〇"],["東広島店","東広島市〇〇"]],
+  "山口":[["山口店","山口市〇〇"],["下関店","下関市〇〇"]],
+  "香川":[["高松店","高松市〇〇"],["丸亀店","丸亀市〇〇"]],
+  "愛媛":[["松山店","松山市〇〇"],["今治店","今治市〇〇"]],
+  "高知":[["高知店","高知市〇〇"],["南国店","南国市〇〇"]]
+};
+function render(p){
+  document.getElementById('shoplist').innerHTML = SHOPS[p].map(function(s){
+    return '<a class="shop" href="#"><span><span class="nm">'+s[0]+'</span><span class="ad">'+s[1]+'</span></span>'+
+      '<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></a>';
+  }).join('');
+}
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected','false'); });
+    t.setAttribute('aria-selected','true');
+    render(t.dataset.p);
+  });
+});
+render('岡山');
+var bg=document.getElementById('burger'), dw=document.getElementById('drawer');
+bg.addEventListener('click',function(){ bg.classList.toggle('on'); dw.classList.toggle('on'); });
+dw.querySelectorAll('a').forEach(function(a){ a.addEventListener('click',function(){ bg.classList.remove('on'); dw.classList.remove('on'); }); });
+document.querySelectorAll('.qa summary').forEach(function(s){
+  s.addEventListener('click', function(e){ e.preventDefault(); var d=s.parentElement; d.open=!d.open; });
+});
+</script>
+</body>
+</html>

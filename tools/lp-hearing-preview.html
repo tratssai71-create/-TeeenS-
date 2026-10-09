@@ -1,0 +1,486 @@
+<meta charset="utf-8">
+<title>TeeenS LPヒアリングシート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ink:#0b0c10; --ink2:rgba(11,12,16,.62); --ink3:rgba(11,12,16,.40);
+  --bg:#ffffff; --bg2:#f3f4f7; --bg3:#fafbfc;
+  --bd:rgba(11,12,16,.11); --bd2:rgba(11,12,16,.22);
+  --ac:#24406e; --ac-ink:#24406e; --ac-soft:rgba(36,64,110,.07); --ac-on:#ffffff;
+  --warn:#8a5a12; --warn-bg:rgba(138,90,18,.07); --warn-bd:rgba(138,90,18,.24);
+  --ok:#1c6b4a;
+  --sh:0 1px 2px rgba(11,12,16,.04);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ink:#eceff4; --ink2:rgba(236,239,244,.62); --ink3:rgba(236,239,244,.40);
+    --bg:#0d0f13; --bg2:#161a21; --bg3:#12151a;
+    --bd:rgba(236,239,244,.13); --bd2:rgba(236,239,244,.26);
+    --ac:#8fb2e6; --ac-ink:#9dbcec; --ac-soft:rgba(143,178,230,.12); --ac-on:#0d0f13;
+    --warn:#dcab68; --warn-bg:rgba(220,171,104,.09); --warn-bd:rgba(220,171,104,.26);
+    --ok:#6ecfa3;
+    --sh:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#eceff4; --ink2:rgba(236,239,244,.62); --ink3:rgba(236,239,244,.40);
+  --bg:#0d0f13; --bg2:#161a21; --bg3:#12151a;
+  --bd:rgba(236,239,244,.13); --bd2:rgba(236,239,244,.26);
+  --ac:#8fb2e6; --ac-ink:#9dbcec; --ac-soft:rgba(143,178,230,.12); --ac-on:#0d0f13;
+  --warn:#dcab68; --warn-bg:rgba(220,171,104,.09); --warn-bd:rgba(220,171,104,.26);
+  --ok:#6ecfa3;
+  --sh:0 1px 2px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Inter','Noto Sans JP',system-ui,-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  line-height:1.75; -webkit-font-smoothing:antialiased; font-size:15px;
+}
+h1,h2,h3{text-wrap:balance; line-height:1.35; margin:0}
+p{margin:0}
+input,textarea,select,button{font:inherit; color:inherit}
+
+/* ---- top bar ---- */
+.bar{position:sticky; top:0; z-index:50; background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid var(--bd)}
+.bar-in{max-width:820px; margin:0 auto; padding:11px 24px; display:flex; align-items:center; gap:16px}
+.bar-name{font-weight:700; font-size:13.5px; letter-spacing:.01em; white-space:nowrap}
+.bar-name small{display:block; font-weight:500; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink3)}
+.prog{flex:1; display:flex; align-items:center; gap:10px; min-width:0}
+.prog-track{flex:1; height:3px; background:var(--bd); position:relative; overflow:hidden; min-width:40px}
+.prog-fill{position:absolute; inset:0 auto 0 0; width:0; background:var(--ac); transition:width .35s cubic-bezier(.22,1,.36,1)}
+.prog-num{font-size:11.5px; color:var(--ink2); font-variant-numeric:tabular-nums; white-space:nowrap}
+.save{font-size:11px; color:var(--ink3); white-space:nowrap; transition:color .2s}
+.save.on{color:var(--ok)}
+
+/* ---- head ---- */
+.head{max-width:820px; margin:0 auto; padding:52px 24px 8px}
+.eyebrow{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink3); font-weight:600}
+.head h1{font-size:clamp(27px,4.6vw,38px); font-weight:700; letter-spacing:-.02em; margin:14px 0 16px}
+.head p{color:var(--ink2); max-width:62ch; font-size:14.5px}
+.meta{display:flex; flex-wrap:wrap; gap:8px; margin-top:22px}
+.meta span{font-size:11.5px; color:var(--ink2); border:1px solid var(--bd); padding:4px 10px; background:var(--bg3)}
+
+/* ---- sections ---- */
+main{max-width:820px; margin:0 auto; padding:20px 24px 120px; display:flex; flex-direction:column; gap:14px}
+section{border:1px solid var(--bd); background:var(--bg3)}
+.s-head{display:flex; gap:16px; padding:22px 24px 0; align-items:baseline}
+.s-n{font-size:11px; font-weight:600; color:var(--ac-ink); letter-spacing:.1em; font-variant-numeric:tabular-nums; padding-top:4px}
+.s-t h2{font-size:18px; font-weight:700; letter-spacing:-.01em}
+.s-t p{font-size:13px; color:var(--ink2); margin-top:6px; max-width:60ch}
+.s-body{padding:20px 24px 26px 24px; display:flex; flex-direction:column; gap:20px}
+@media(min-width:700px){ .s-body{padding-left:60px} }
+.note{border-left:2px solid var(--warn-bd); background:var(--warn-bg); padding:11px 14px; font-size:12.5px; color:var(--warn)}
+
+/* ---- fields ---- */
+.f{display:flex; flex-direction:column; gap:7px}
+.f>label,.f-l{font-size:13.5px; font-weight:600; display:flex; gap:8px; align-items:baseline; flex-wrap:wrap}
+.req{font-size:9.5px; font-weight:700; letter-spacing:.08em; color:var(--ac-on); background:var(--ac); padding:1px 5px}
+.opt{font-size:10px; letter-spacing:.08em; color:var(--ink3); border:1px solid var(--bd); padding:0 5px}
+.hint{font-size:12.5px; color:var(--ink2); line-height:1.6}
+input[type=text],input[type=date],textarea{
+  width:100%; background:var(--bg); border:1px solid var(--bd2); padding:10px 12px; font-size:14px;
+  border-radius:0; transition:border-color .15s, box-shadow .15s;
+}
+textarea{resize:vertical; min-height:88px; line-height:1.7}
+input[type=text]:focus,input[type=date]:focus,textarea:focus{
+  outline:none; border-color:var(--ac); box-shadow:0 0 0 3px var(--ac-soft);
+}
+input::placeholder,textarea::placeholder{color:var(--ink3)}
+.chips{display:flex; flex-wrap:wrap; gap:7px}
+.chip{position:relative}
+.chip input{position:absolute; opacity:0; width:0; height:0}
+.chip span{display:block; border:1px solid var(--bd2); padding:7px 13px; font-size:13px; cursor:pointer; background:var(--bg); transition:.15s; user-select:none}
+.chip span:hover{border-color:var(--ink3)}
+.chip input:checked + span{background:var(--ac); border-color:var(--ac); color:var(--ac-on); font-weight:500}
+.chip input:focus-visible + span{outline:2px solid var(--ac); outline-offset:2px}
+.acks{display:flex; flex-direction:column; gap:9px}
+.ack{display:flex; gap:11px; align-items:flex-start; font-size:13px; cursor:pointer; border:1px solid var(--bd); background:var(--bg); padding:11px 13px; transition:.15s}
+.ack:hover{border-color:var(--bd2)}
+.ack input{margin:4px 0 0; accent-color:var(--ac); width:15px; height:15px; flex:none}
+.ack.on{border-color:var(--ac); background:var(--ac-soft)}
+
+/* ---- footer actions ---- */
+.done{border:1px solid var(--bd); background:var(--bg2); padding:28px 24px; display:flex; flex-direction:column; gap:16px}
+.done h2{font-size:17px; font-weight:700}
+.done p{font-size:13px; color:var(--ink2); max-width:60ch}
+.acts{display:flex; flex-wrap:wrap; gap:9px}
+button.b{border:1px solid var(--ac); background:var(--ac); color:var(--ac-on); padding:11px 22px; font-size:13.5px; font-weight:600; cursor:pointer; transition:.15s}
+button.b:hover{opacity:.88}
+button.g{border:1px solid var(--bd2); background:var(--bg); color:var(--ink); padding:11px 18px; font-size:13px; cursor:pointer; transition:.15s}
+button.g:hover{border-color:var(--ink3)}
+button:focus-visible{outline:2px solid var(--ac); outline-offset:2px}
+.flash{font-size:12.5px; color:var(--ok); min-height:18px}
+footer{max-width:820px; margin:0 auto; padding:0 24px 60px; font-size:11.5px; color:var(--ink3); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+@media print{
+  .bar,.acts,.done .flash{display:none}
+  body{background:#fff; color:#000; font-size:11px}
+  section{break-inside:avoid; border-color:#bbb}
+  .s-body{padding-left:24px}
+  input,textarea{border-color:#bbb}
+}
+</style>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="bar-name">LPヒアリングシート<small>TeeenS</small></div>
+    <div class="prog">
+      <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+      <div class="prog-num" id="pn">必須 0 / 0</div>
+    </div>
+    <div class="save" id="sv">未入力</div>
+  </div>
+</div>
+
+<div class="head">
+  <div class="eyebrow">Landing Page · Hearing Sheet</div>
+  <h1>LP制作 ヒアリングシート</h1>
+  <p>LPは「誰に・何を・どう伝えるか」で成果が決まります。書ける範囲で構いませんので、できるだけ<strong>ご自身の言葉</strong>でご記入ください。空欄があっても提出いただけます。残りは打ち合わせで一緒に埋めていきます。<br>※ LP（ランディングページ）＝ 1ページで完結する、ご案内専用のページのことです。</p>
+  <div class="meta">
+    <span>所要 15〜20分</span>
+    <span>入力内容は自動保存されます</span>
+    <span>途中で閉じても再開できます</span>
+    <span>株式会社TeeenS</span>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<footer>
+  <span>株式会社TeeenS ／ 岡山県岡山市中区浜3-4-39</span>
+  <span>ご記入いただいた内容は本件の制作目的以外には使用しません。</span>
+</footer>
+
+<script>
+const SECTIONS = [
+{n:"00", t:"案件の体制・窓口", lead:"ご紹介やお取次ぎの方が間に入る場合、ここが曖昧なまま進むと後半で必ず手戻りが起きます。最初に決めさせてください。",
+ note:"「最終的に決める方」と「やり取りの窓口」が別の場合は、その旨も遠慮なくお書きください。進め方をこちらで調整します。",
+ f:[
+  {k:"writer", l:"このシートをご記入の方（お名前）", t:"text", req:1},
+  {k:"writer_role", l:"ご記入者のお立場", t:"radio", o:["発注元のご担当者","ご紹介・お取次ぎの方","その他"]},
+  {k:"client_name", l:"発注元の会社名・屋号", t:"text", req:1},
+  {k:"decider", l:"ページの内容を最終的に決定される方", t:"text", req:1, h:"役職とお名前。ここが決まっていると、確認のたびに止まることがなくなります。"},
+  {k:"channel_who", l:"制作中のやり取りの窓口", t:"radio", req:1, o:["発注元のご担当者と直接","ご紹介の方を経由","両方が入るグループで"]},
+  {k:"channel_how", l:"主な連絡手段（複数可）", t:"check", o:["LINE","メール","電話","Chatwork / Slack など","対面"]},
+  {k:"reply_speed", l:"確認依頼へのお返事にいただける目安", t:"radio", o:["当日中","2〜3営業日","1週間程度"], h:"この目安からスケジュールを逆算します。"},
+  {k:"contact", l:"ご連絡先（メールアドレス・電話番号）", t:"text", req:1}
+]},
+
+{n:"01", t:"会社・事業について", lead:"ページの背景になる情報です。すでにホームページがある場合は、URLだけでも構いません。", f:[
+  {k:"biz", l:"事業内容（誰に、何を提供されていますか）", t:"area", req:1},
+  {k:"founded", l:"創業年・従業員数", t:"text"},
+  {k:"area", l:"所在地・商圏（対応エリア）", t:"text", p:"例：岡山市を中心に県内全域"},
+  {k:"urls", l:"現在お持ちのドメイン（アドレス）", t:"text", h:"例：teeen-s.com。すでにホームページをお持ちであれば、そのURLでも構いません。お持ちでなければ空欄で大丈夫です。"},
+  {k:"rivals", l:"競合・同業で気になっている会社", t:"area", h:"社名やURLがあれば。「この会社より良く見せたい」という基準になります。"}
+]},
+
+{n:"02", t:"このページの目的とゴール", lead:"1ページで1つの目的に絞るほど成果が出ます。いちばん叶えたいことを選んでください。", f:[
+  {k:"goal_type", l:"ページの目的", t:"radio", req:1, o:["採用エントリー","商品・サービスの販売","問い合わせ・資料請求","予約・来店","その他"]},
+  {k:"goal_state", l:"「これが叶えば成功」と言える状態", t:"area", h:"例：月に問い合わせが5件くる／半年で3名採用できる。数字にしておくと、公開したあとに「うまくいっているか」を判断できます。"},
+  {k:"cv", l:"ページを見た方に、最終的に何をしてほしいですか（複数可）", t:"check", o:["問い合わせフォームから送信してもらう","電話をかけてもらう","LINEで友だち追加してもらう","そのまま購入してもらう","予約してもらう","資料をダウンロードしてもらう"]},
+  {k:"now_how", l:"今はどうやって集客・募集していますか", t:"area", h:"うまくいっている点・いっていない点があればぜひ。"},
+  {k:"who_reply", l:"問い合わせが来たとき、対応されるのはどなたですか", t:"text"}
+]},
+
+{n:"03", t:"どんな方に届けたいか", lead:"「誰でも歓迎」と書いたページは、結果的に誰にも刺さりません。あえて一人に絞ってお答えください。", f:[
+  {k:"target", l:"いちばん届けたい相手", t:"area", req:1, h:"年齢・性別・職業・地域・家族構成など。実在するお客様を一人思い浮かべて書いていただくのがおすすめです。"},
+  {k:"pain", l:"その方が抱えている悩み・不安", t:"area", h:"ここがページの書き出しになります。お客様が実際に口にした言葉があれば、そのまま書いてください。"},
+  {k:"stage", l:"その方の検討段階", t:"radio", o:["まだ課題に気づいていない","情報を集めている・比較検討中","ほぼ決めていて最後の一押し待ち"]},
+  {k:"objection", l:"申し込みをためらう理由", t:"area", h:"「値段が高い」「時間がない」「効果が不安」など。ここに挙げていただいた分だけ、ページ側で先回りして解消できます。"}
+]},
+
+{n:"04", t:"商品・サービスの中身", lead:"文章はTeeenSが無料で作成します。素材になる情報を、箇条書きでも構いませんのでお聞かせください。", f:[
+  {k:"product", l:"商品・サービス名", t:"text", req:1},
+  {k:"detail", l:"内容と、申し込みから提供までの流れ", t:"area"},
+  {k:"price", l:"価格・料金体系", t:"text", req:1, h:"ページに載せるかどうかは別途ご相談できます。まずは実際の金額をお聞かせください。"},
+  {k:"strength", l:"他社と比べて優れている点・こだわり", t:"area", h:"ご自身では当たり前だと思っていることほど、強みになります。"},
+  {k:"proof", l:"実績・数字", t:"area", h:"導入社数、創業年数、リピート率、資格・許認可、受賞歴、メディア掲載など。"},
+  {k:"voice", l:"お客様の声・推薦のコメント", t:"area", h:"あれば掲載します。なければ空欄で構いません。"},
+  {k:"offer", l:"保証・特典・キャンペーン", t:"area", p:"例：初回無料相談、返金保証、今月限定◯%OFF"},
+  {k:"ng", l:"書いてはいけない表現・業界のルール", t:"area", h:"医療・美容・食品・金融などは、法律で使える表現が制限されている場合があります。心当たりがあればご記入ください。判断が難しい場合はこちらで確認します。"}
+]},
+
+{n:"05", t:"デザインの方向性", lead:"言葉で説明しにくい部分なので、参考になるページを挙げていただくのが一番確実です。", f:[
+  {k:"ref", l:"参考にしたいページ（3つ）と、その理由", t:"area", h:"URLで教えてください。「この配色が好き」「この写真の使い方が良い」など、どこが良いと感じたかまで書いていただけると精度が上がります。"},
+  {k:"avoid", l:"避けたい雰囲気・好みでない表現", t:"area", h:"こちらも同じくらい重要です。「子どもっぽいのは避けたい」程度で構いません。"},
+  {k:"color", l:"イメージカラー・指定の色", t:"text", req:1, p:"例：コーポレートカラーの青（#003E7E）／落ち着いた緑系"},
+  {k:"color_ng", l:"使ってほしくない色", t:"text", h:"他社を連想させる色、業界で避けられている色などがあれば。"},
+  {k:"mood", l:"目指したい印象をキーワードで3つ", t:"text", p:"例：誠実・力強い・親しみやすい"},
+  {k:"font", l:"文字の雰囲気のご希望", t:"radio", o:["きっちり・信頼感のある明朝系","読みやすく親しみのあるゴシック系","こだわらない・おまかせ"]}
+]},
+
+{n:"06", t:"お写真・ロゴ・文章の素材", lead:"文章はこちらで作成しますので、お写真とロゴだけご相談させてください。", f:[
+  {k:"photo", l:"お写真の素材", t:"radio", req:1, o:["用意できる","一部ある","ない（手配を相談したい）"]},
+  {k:"photo_what", l:"用意できるお写真の中身と枚数", t:"area", h:"例：店舗の外観・内観が10枚、スタッフ集合写真が1枚、商品写真が5枚。スマホで撮ったものでも構いません。"},
+  {k:"shoot", l:"撮影のご希望", t:"radio", o:["撮影してほしい","不要","相談したい"], h:"お写真の質はページの印象を大きく左右します。迷われたら「相談したい」で大丈夫です。"},
+  {k:"logo", l:"ロゴのデータ", t:"radio", req:1, o:["ロゴを作ったときの元データがある","画像（png・jpg）だけある","ロゴがない（作成を相談したい）"], h:"元データがあると、大きく表示しても文字や線がぼやけません。制作会社から受け取ったファイル一式があれば、そのままお送りください。"},
+  {k:"video", l:"動画素材", t:"radio", o:["ある","ない","撮りたい"]},
+  {k:"catch", l:"キャッチコピーのご希望", t:"area", h:"ページの一番上に大きく出る言葉です。こちらで案を作成しますが、「この言葉は必ず入れたい」「すでに使っているスローガンがある」という場合はお書きください。方向性だけ（力強く／やさしく等）でも構いません。"},
+  {k:"catch_ng", l:"使いたくない言い回し", t:"text", h:"例：「業界No.1」のような大げさな表現は避けたい、など。"},
+  {k:"copy_who", l:"ページに載せる文章について", t:"radio", req:1, o:["TeeenSに作ってほしい（無料）","自社で用意する","一部は自社で用意する"], h:"ヒアリングの内容をもとに、こちらで文章を丸ごと作成します。追加費用はかかりません。"},
+  {k:"must_text", l:"必ず掲載が必要な文言", t:"area", h:"会社概要、免責事項、許認可番号、資格の表示など。ネットで販売される場合は「特定商取引法に基づく表記」という決められた表示も必要になります。"},
+  {k:"material_date", l:"素材をご提出いただける予定日", t:"date", req:1, h:"ここが公開日を左右する、いちばん大きな要素です。"}
+]},
+
+{n:"07", t:"ページに必要な機能", lead:"「絶対に必要なもの」と「あったら嬉しいもの」を分けていただけると、優先順位をつけて設計できます。",
+ note:"予算やスケジュールの都合で全部は入れられない場合があります。そのときは「絶対に必要」と書かれたものを必ず優先します。",
+ f:[
+  {k:"feat_list", l:"入れたい機能（あてはまるものすべて）", t:"check", o:["お問い合わせフォーム","電話ボタン（タップで発信）","LINEの友だち追加ボタン","予約の受付","地図・アクセス案内","動画の掲載","写真のギャラリー","よくある質問","お客様の声","料金表","SNSへのリンク","資料のダウンロード","オンラインでの支払い","チャットでの問い合わせ窓口"]},
+  {k:"feat_must", l:"絶対に必要な機能", t:"area", req:1, h:"「これがないとページの意味がない」というものをお書きください。上の選択肢にないものでも構いません。"},
+  {k:"feat_nice", l:"あったら嬉しい機能", t:"area", h:"優先度は低いけれど、できれば入れたいもの。予算やスケジュールに余裕があれば反映します。"},
+  {k:"structure", l:"入れたい内容・大まかな構成", t:"area", h:"「こういう順番で見せたい」「この話は必ず入れたい」というご希望があれば。箇条書きで構いません。構成はこちらで設計しますので、空欄でも問題ありません。"},
+  {k:"feat_ref", l:"「こういうことができるページ」の例", t:"area", h:"他社のページで見かけた仕組みがあれば、URLと「ここの動きが良い」という一言で教えてください。言葉にしにくい部分が一発で伝わります。"},
+  {k:"feat_ack", l:"できることの範囲について", t:"acks", o:["会員登録の仕組み、細かい条件での検索、本格的なネットショップなどは、今回のつくり方では対応できない場合があることを理解しました（ご希望の場合は、別のつくり方を改めてご提案します）"]}
+]},
+
+{n:"08", t:"公開まわりの確認", lead:"ページを実際に公開するために必要な、事務的な確認です。わからない項目は空欄で構いません。こちらで調べてご案内します。", f:[
+  {k:"domain", l:"今回のページで使うアドレス", t:"radio", o:["上でお答えしたドメインを使う","新しく用意したい","決めていない・おまかせ"], h:"すでにお持ちのドメインがあれば、その中の一部（例：teeen-s.com/lp）として公開することもできます。"},
+  {k:"domain_name", l:"ご希望のアドレス／お持ちのアドレス", t:"text"},
+  {k:"domain_admin", l:"そのアドレスを契約している会社と、管理画面にログインできる方", t:"text", h:"お名前.com、ムームードメイン、エックスサーバー など。公開するときに、その管理画面で設定を変える作業が必要になります。ご不明な場合は空欄で大丈夫です。"},
+  {k:"old_site", l:"既存サイトの扱い", t:"radio", o:["既存サイトはない","既存サイトは残す","既存サイトと差し替える"]},
+  {k:"form_mail", l:"お問い合わせを受け取るメールアドレス", t:"text", req:1, h:"ページから問い合わせがあったときに、お知らせが届く先です。複数でも設定できます。"},
+  {k:"auto_reply", l:"問い合わせた方へ、自動でお礼メールを返しますか", t:"radio", o:["返したい","不要"], h:"「お問い合わせありがとうございます」という確認メールが自動で届く仕組みです。"},
+  {k:"form_items", l:"問い合わせのときに書いてもらいたいこと", t:"area", h:"お名前・メールアドレス・電話番号・お問い合わせ内容 以外に必要なものがあれば。"},
+  {k:"pw", l:"公開前に、関係者だけが見られる状態にしますか", t:"radio", o:["そうしたい","不要"], h:"社内確認のあいだ、第三者には見られないようにしておく設定です。"}
+]},
+
+{n:"09", t:"スケジュールと費用", lead:"最短1週間で公開できます。お急ぎの事情があればお書きください。", f:[
+  {k:"open_date", l:"公開のご希望日", t:"date", req:1},
+  {k:"why_date", l:"その日でなければならない理由", t:"text", h:"展示会、採用解禁、キャンペーン開始など。理由があれば優先して調整します。"},
+  {k:"plan", l:"ご希望のお支払い方法", t:"radio", req:1, o:["月額プラン（初期費用0円）","買い切りプラン（一括）","相談したい"]},
+  {k:"budget", l:"ご予算の目安", t:"text", h:"「まだ決まっていない」でも構いません。相場からご提案します。"}
+]},
+
+{n:"10", t:"進め方についての確認", lead:"お互いに気持ちよく進めるための確認事項です。内容をご確認のうえチェックをお願いします。", f:[
+  {k:"agree", l:"ご確認事項", t:"acks", o:[
+    "確認依頼へのお返事が遅れた場合、公開日が後ろ倒しになることを理解しました",
+    "デザインの修正は、確定後の大幅な方向転換を除き標準2回までであることを理解しました",
+    "素材（お写真・ロゴ・必須掲載文言）のご提出が遅れた場合、スケジュールを再調整することに同意します",
+    "制作中の指示・ご依頼は、上記でお決めいただいた窓口を通して行うことに同意します"
+  ]},
+  {k:"free", l:"その他、伝えておきたいこと・不安なこと", t:"area", h:"「何から決めればいいかわからない」でも大歓迎です。"}
+]}
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const state = {};
+let reqKeys = [];
+
+function fieldHTML(f){
+  const req = f.req ? '<span class="req">必須</span>' : '<span class="opt">任意</span>';
+  const hint = f.h ? `<p class="hint">${esc(f.h)}</p>` : '';
+  let ctrl = '';
+  if(f.t === 'text' || f.t === 'date'){
+    ctrl = `<input type="${f.t}" id="${f.k}" data-k="${f.k}"${f.p ? ` placeholder="${esc(f.p)}"` : ''}>`;
+  } else if(f.t === 'area'){
+    ctrl = `<textarea id="${f.k}" data-k="${f.k}"${f.p ? ` placeholder="${esc(f.p)}"` : ''}></textarea>`;
+  } else if(f.t === 'radio' || f.t === 'check'){
+    ctrl = `<div class="chips">` + f.o.map((o,i) =>
+      `<label class="chip"><input type="${f.t === 'radio' ? 'radio' : 'checkbox'}" name="${f.k}" value="${esc(o)}" data-k="${f.k}" data-multi="${f.t === 'check' ? 1 : 0}"${i === 0 ? ` id="${f.k}"` : ''}><span>${esc(o)}</span></label>`
+    ).join('') + `</div>`;
+  } else if(f.t === 'acks'){
+    ctrl = `<div class="acks">` + f.o.map((o,i) =>
+      `<label class="ack"><input type="checkbox" value="${esc(o)}" data-k="${f.k}" data-multi="1"><span>${esc(o)}</span></label>`
+    ).join('') + `</div>`;
+  }
+  const labelTag = (f.t === 'radio' || f.t === 'check' || f.t === 'acks')
+    ? `<div class="f-l">${esc(f.l)} ${req}</div>`
+    : `<label for="${f.k}">${esc(f.l)} ${req}</label>`;
+  return `<div class="f">${labelTag}${hint}${ctrl}</div>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = SECTIONS.map(s => `
+    <section>
+      <div class="s-head">
+        <div class="s-n">${s.n}</div>
+        <div class="s-t"><h2>${esc(s.t)}</h2>${s.lead ? `<p>${esc(s.lead)}</p>` : ''}</div>
+      </div>
+      <div class="s-body">
+        ${s.note ? `<div class="note">${esc(s.note)}</div>` : ''}
+        ${s.f.map(fieldHTML).join('')}
+      </div>
+    </section>`).join('') + `
+    <div class="done">
+      <h2>ご記入ありがとうございました</h2>
+      <p>「送信する」を押すと、内容がTeeenSに届きます。空欄が残っていても送信できます。送信後も内容の修正は可能です。</p>
+      <div class="acts">
+        <button class="b" id="submit">送信する</button>
+        <button class="g" id="copy">内容をコピー</button>
+        <button class="g" id="dl" hidden>テキストで保存</button>
+        <button class="g" id="print">印刷 / PDF</button>
+      </div>
+      <div class="flash" id="flash"></div>
+    </div>`;
+
+  reqKeys = SECTIONS.flatMap(s => s.f.filter(f => f.req).map(f => f.k));
+
+  app.addEventListener('input', onChange);
+  app.addEventListener('change', onChange);
+  document.getElementById('submit').addEventListener('click', submit);
+  document.getElementById('copy').addEventListener('click', copyAll);
+  document.getElementById('print').addEventListener('click', () => window.print());
+}
+
+function onChange(e){
+  const el = e.target;
+  const k = el.dataset.k;
+  if(!k) return;
+  if(el.type === 'checkbox'){
+    const boxes = [...document.querySelectorAll(`[data-k="${k}"][type=checkbox]`)];
+    state[k] = boxes.filter(b => b.checked).map(b => b.value);
+    boxes.forEach(b => { const p = b.closest('.ack'); if(p) p.classList.toggle('on', b.checked); });
+  } else {
+    state[k] = el.value;
+  }
+  updateProgress();
+  queueSave();
+}
+
+function filled(k){
+  const v = state[k];
+  return Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
+}
+
+function updateProgress(){
+  const done = reqKeys.filter(filled).length;
+  const pct = reqKeys.length ? Math.round(done / reqKeys.length * 100) : 0;
+  document.getElementById('pf').style.width = pct + '%';
+  document.getElementById('pn').textContent = `必須 ${done} / ${reqKeys.length}`;
+}
+
+function restore(data){
+  Object.assign(state, data || {});
+  for(const [k, v] of Object.entries(state)){
+    if(Array.isArray(v)){
+      document.querySelectorAll(`[data-k="${k}"][type=checkbox]`).forEach(b => {
+        b.checked = v.includes(b.value);
+        const p = b.closest('.ack'); if(p) p.classList.toggle('on', b.checked);
+      });
+    } else {
+      const r = document.querySelector(`[data-k="${k}"][type=radio][value="${CSS.escape(v)}"]`);
+      if(r){ r.checked = true; continue; }
+      const el = document.querySelector(`input[data-k="${k}"]:not([type=radio]):not([type=checkbox]), textarea[data-k="${k}"]`);
+      if(el) el.value = v;
+    }
+  }
+  updateProgress();
+}
+
+/* ---- persistence ---- */
+const LSK = 'teeens-lp-hearing';
+let sid = null, db = null, timer = null;
+
+try {
+  const saved = JSON.parse(localStorage.getItem(LSK) || 'null');
+  if(saved && saved.sid) sid = saved.sid;
+} catch(e){}
+if(!sid) sid = 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+function setSave(msg, ok){
+  const el = document.getElementById('sv');
+  el.textContent = msg;
+  el.classList.toggle('on', !!ok);
+}
+
+function localSave(){
+  try { localStorage.setItem(LSK, JSON.stringify({sid, state})); } catch(e){}
+}
+
+function queueSave(){
+  localSave();
+  setSave('保存中…');
+  clearTimeout(timer);
+  timer = setTimeout(save, 700);
+}
+
+async function save(submitted){
+  localSave();
+  if(!db){ setSave('この端末に保存しました', true); return; }
+  try {
+    await db.doc('hearings/' + sid).set({
+      sid, answers: state,
+      client: state.client_name || '',
+      writer: state.writer || '',
+      submitted: !!submitted,
+      updatedAt: new Date().toISOString()
+    });
+    setSave(submitted ? '送信しました' : '保存しました', true);
+  } catch(e){
+    setSave('この端末に保存しました', true);
+  }
+}
+
+async function submit(){
+  await save(true);
+  const flash = document.getElementById('flash');
+  const missing = reqKeys.filter(k => !filled(k)).length;
+  flash.textContent = missing
+    ? `送信しました。未記入の必須項目が${missing}件ありますが、打ち合わせで一緒に埋めていきます。`
+    : '送信しました。2営業日以内にTeeenSからご連絡します。';
+}
+
+function asText(){
+  const lines = ['LP制作ヒアリングシート / 株式会社TeeenS', '記入日時: ' + new Date().toLocaleString('ja-JP'), ''];
+  for(const s of SECTIONS){
+    lines.push(`■ ${s.n} ${s.t}`);
+    for(const f of s.f){
+      const v = state[f.k];
+      const val = Array.isArray(v) ? v.join(' / ') : (v || '');
+      lines.push(`・${f.l}\n  ${val || '（未記入）'}`);
+    }
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+async function copyAll(){
+  const flash = document.getElementById('flash');
+  try {
+    await navigator.clipboard.writeText(asText());
+    flash.textContent = '内容をコピーしました。メールやチャットに貼り付けてお使いいただけます。';
+  } catch(e){
+    flash.textContent = 'コピーできませんでした。「印刷 / PDF」からの保存をお試しください。';
+  }
+}
+
+render();
+restore(null);
+setSave('未入力');
+
+(async () => {
+  if(!window.claude || !window.claude.use) { setSave('この端末に保存されます'); return; }
+  try {
+    db = await claude.use('db');
+    if(!db){ setSave('この端末に保存されます'); return; }
+    const snap = await db.doc('hearings/' + sid).get();
+    if(snap && snap.answers) restore(snap.answers);
+    try {
+      const saved = JSON.parse(localStorage.getItem(LSK) || 'null');
+      if(saved && saved.state) restore(saved.state);
+    } catch(e){}
+    setSave('自動保存されます', true);
+  } catch(e){
+    setSave('この端末に保存されます');
+  }
+
+  try {
+    const d = await claude.use('downloads');
+    if(d){
+      const b = document.getElementById('dl');
+      b.hidden = false;
+      b.addEventListener('click', async () => {
+        try {
+          await d.save({filename: `LPヒアリングシート_${state.client_name || '未記入'}.txt`, data: asText()});
+        } catch(e){}
+      });
+    }
+  } catch(e){}
+})();
+</script>

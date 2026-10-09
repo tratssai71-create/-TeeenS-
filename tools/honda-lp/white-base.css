@@ -1,0 +1,200 @@
+/* ══════════════════════════════════════════════════════
+   白ベース × 赤多め × 黒すこし
+   公式サイト（hondamobility-chushikoku.co.jp）の
+   「白地・赤のアクセント・暖かみのある黒文字」に寄せる。
+
+   面の配分
+     白            … ほとんどのセクション
+     うすいグレー  … 交互に敷く（#F7F4F2）
+     赤ベタ        … 数字／最終CTA の2面（赤多めの主役）
+     黒ベタ        … フッターのみ（黒すこし）
+   ══════════════════════════════════════════════════════ */
+
+:root{
+  --red:#CA0E15;        /* 公式サイトのボタン実測値 */
+  --red-d:#A00A10;      /* 赤の濃い側 */
+  --ink:#231815;        /* 公式サイトの本文色 */
+  --ink2:#5c5450;
+  --ink3:#968f8a;
+  --line:#e7e1dd;
+  --soft:#f7f4f2;
+  --black:#231815;
+}
+
+/* ── 地 ───────────────────────────────────────── */
+body,body.has-bg{background:#efeae6!important;background-image:none!important}
+.phone{background:#fff!important;background-image:none!important;
+  box-shadow:0 0 0 1px rgba(35,24,21,.06),0 0 60px rgba(35,24,21,.1)}
+
+/* ── 暗い装飾レイヤーを止める ──────────────────── */
+.grain,.vig,.glow,.fv-sweep,.fv-band,.fv-grid,.fv-ticks,.fv-ghost,
+.br,.fv-side,.fv-foot,.pl,.fv-scrim,.bg-stage,.sec-rail,.side,.sec-mark,
+.nums .mesh,.last::before{display:none!important}
+
+/* ── ヘッダー：白＋下に赤の線 ──────────────────── */
+.hdr{background:rgba(255,255,255,.94)!important;
+  backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);
+  box-shadow:0 4px 18px -14px rgba(35,24,21,.5)!important}
+.hdr::before{display:none!important}
+.hdr::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:var(--red);z-index:1}
+.hdr-logo{background:none!important;padding:0!important;border-radius:0!important;
+  box-shadow:none!important;filter:none!important}
+.hdr-logo img{height:18px}
+.sns{opacity:1}
+.sns svg{fill:var(--ink)}
+.burger i{background:var(--ink)}
+
+/* ── ドロワー：白 ──────────────────────────────── */
+.drawer{background:rgba(255,255,255,.98)}
+.drawer a.mi{color:var(--ink);border-bottom-color:var(--line)}
+.drawer a.mi small{color:var(--red)}
+
+/* ── ファーストビュー：白地・黒見出し・Hondaだけ赤 ── */
+.fv{background:#fff!important;color:var(--ink);min-height:auto;
+  display:flex;flex-direction:column;padding:60px 0 34px;overflow:visible}
+.fv-in{order:1;padding:0 22px 0;position:relative;z-index:3}
+.fv-video{order:2;position:relative;inset:auto;height:252px;margin:20px 16px 0;
+  border-radius:18px;overflow:hidden;background:#ddd7d3}
+.fv-act{order:3;margin:20px 16px 0;padding:0;border-top:0}
+.fv-mov{opacity:1!important}
+.fv-eyebrow{color:var(--red)}
+.fv h1{color:var(--ink);font-size:36px;text-shadow:none}
+.fv h1 em{color:var(--red);text-shadow:none}
+.fv p{color:var(--ink2);text-shadow:none}
+
+/* 残り5名：白いカード＋赤い縦線＋赤い数字 */
+.slot{background:#fff;border:1px solid var(--line);
+  box-shadow:0 8px 24px -16px rgba(35,24,21,.6);backdrop-filter:none}
+.slot::after{display:none}
+.slot-tx b{color:var(--ink)}
+.slot-tx small{color:var(--ink3)}
+.slot-n{border-left-color:var(--line)}
+.slot-n small{color:var(--ink3)}
+.slot-n b{color:var(--red);text-shadow:none}
+.slot-n span{color:var(--ink)}
+.slot-note{color:var(--ink3)}
+
+/* FVのボタン：LINEは緑、エントリーは赤の白抜き */
+.lk-sub{border:1.5px solid var(--red);color:var(--red);background:#fff}
+.lk-sub svg{stroke:var(--red)}
+
+/* ── セクションの地：白とうすいグレーを交互に ──── */
+section.s{background:#fff}
+section.s.know,section.s.shops,section.s.flow{background:none}
+section.s#conditions,section.s#interview,section.s#flow{background:var(--soft)}
+section.s#why,section.s#positions,section.s#faq{background:#fff}
+h2.t{color:var(--ink)}
+.body{color:var(--ink2)}
+
+/* 見出しの上に赤い短い線（赤を増やす） */
+section.s > h2.t::before{content:'';display:block;width:30px;height:3px;
+  background:var(--red);border-radius:2px;margin-bottom:16px}
+.nums h2.t::before{background:#fff}
+
+/* ── 数字：赤ベタ（そのまま主役として残す）──────── */
+section.s.nums{background:linear-gradient(168deg,#CA0E15 0%,#AE0A11 54%,#8E060C 100%)!important;
+  color:#fff;margin:16px 10px;border-radius:22px}
+.nums h2.t,.nums .sub-h{color:#fff}
+.nums .body{color:rgba(255,255,255,.88)}
+.ncell{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.28)}
+.ncell.wide{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.36)}
+.ncell .v,.ncell .v[style],.ncell.wide .v{color:#fff!important;text-shadow:none}
+.ncell .k{color:rgba(255,255,255,.86)}
+.ncell .sub{color:rgba(255,255,255,.76)}
+.fy{border-color:rgba(255,255,255,.5);color:#fff}
+.ncell.wide .rb{background:#fff;color:var(--red)}
+/* 赤い面の上に置く白いカード */
+.nums .fact{background:#fff;border-left-color:var(--red)}
+.nums .fact-hd{color:var(--ink)}
+.nums .fact-hd b{color:var(--red)}
+.nums .fact p{color:var(--ink2)}
+
+/* ── 選ばれる理由：番号を赤で大きく ─────────────── */
+.rc{background:#fff;border-color:var(--line)}
+.rc .n{color:var(--red);-webkit-text-stroke:0;opacity:.9}
+.rc h3{color:var(--ink)}
+.rc h3 mark{background:linear-gradient(transparent 60%,rgba(202,14,21,.2) 60%)}
+.rc p{color:var(--ink2)}
+
+/* ── 中見出し：上に赤い線 ──────────────────────── */
+.sub-h{color:var(--ink);border-top-color:var(--line);position:relative}
+.sub-h::before{content:'';position:absolute;top:-1px;left:0;width:44px;height:3px;
+  background:var(--red);border-radius:2px}
+.nums .sub-h{border-top-color:rgba(255,255,255,.28)}
+.nums .sub-h::before{background:#fff}
+
+/* ── カード類：白＋うすい枠 ────────────────────── */
+.map,.fact,.tr-i,.tr-note,.cp-i,.bn-i,.rq,.job-card,.shoplist{
+  background:#fff;border-color:var(--line)}
+.tr-i .when{color:var(--red)}
+.bn-i .ic{background:rgba(202,14,21,.09)}
+.bn-i .ic svg{stroke:var(--red);fill:none}
+.job-b .ic{color:var(--red)}
+.fact{border-left-color:var(--red)}
+.fact-hd b{color:var(--red)}
+.more{border-color:var(--red);color:var(--red)}
+.more span{color:var(--red)}
+.rq dt{color:var(--ink2)}
+.rq dd{color:var(--ink)}
+.prof dt{color:var(--ink3)}
+.prof dd{color:var(--ink2)}
+.cap-n,.tbd{color:var(--ink3)}
+
+/* ── インタビュー：バッジを赤に ────────────────── */
+.vid .badge{background:var(--red);color:#fff}
+.vid .play{background:#fff}
+.vid .play::after{border-left-color:var(--red)}
+
+/* ── FAQ：Qを赤、罫線をうすく ──────────────────── */
+.faq{border-top-color:var(--line)}
+.qa{border-bottom-color:var(--line)}
+.qa button{color:var(--ink)}
+.qa .q{color:var(--red)}
+.qa .mk::before,.qa .mk::after{background:var(--ink)}
+.qa .a{color:var(--ink2)}
+
+/* ── 選考の流れ：丸を赤に ──────────────────────── */
+.steps::before{background:var(--line)}
+.st::before{background:#fff;border-color:var(--line)}
+.st.on::before{background:var(--red);border-color:var(--red)}
+.st h3{color:var(--ink)}
+.st p{color:var(--ink2)}
+
+/* ── 途中のLINE導線：うすいグレー面 ────────────── */
+.line-cut{background:var(--soft)!important;color:var(--ink)}
+.line-cut .k{color:#06C755}
+.line-cut .k::before{background:#06C755}
+.line-cut h3{color:var(--ink)}
+.line-cut p{color:var(--ink2)}
+
+/* ── 最終CTA：赤ベタ（締めの一押し）──────────── */
+.last{background:linear-gradient(168deg,#CA0E15 0%,#AE0A11 56%,#8E060C 100%)!important;
+  color:#fff;margin:16px 10px;border-radius:22px}
+.last h2{color:#fff}
+.last h2 em{color:#fff;font-style:normal;
+  background:linear-gradient(transparent 62%,rgba(255,255,255,.35) 62%)}
+.last p{color:rgba(255,255,255,.88)}
+.last .ph-box.dark{border:0}
+.last .btn-red{background:#fff;color:var(--red)}
+.last .qr .box{background:#fff;color:var(--ink)}
+.last .qr .tx{color:rgba(255,255,255,.85)}
+
+/* ── フッター：黒（ここだけ黒ベタ）────────────── */
+.ft{background:var(--ink);color:rgba(255,255,255,.55)}
+.ft-info{border-top-color:rgba(255,255,255,.14);color:rgba(255,255,255,.5)}
+.ft-info b{color:rgba(255,255,255,.8)}
+.ft-lk a{color:rgba(255,255,255,.6)}
+.ft-cr{color:rgba(255,255,255,.35)}
+
+/* ── 下部の固定バー ────────────────────────────── */
+.fixed{background:rgba(255,255,255,.93);
+  box-shadow:0 -1px 0 var(--line),0 -6px 26px rgba(35,24,21,.1)}
+.fixed .btn-red{background:#fff;color:var(--red);box-shadow:inset 0 0 0 1.5px var(--red)}
+
+/* ── PC：左右はうすいグレー（背景は後日）──────── */
+@media (min-width:1024px){
+  body,body.has-bg{background:#efeae6!important}
+  .phone{box-shadow:0 0 0 1px rgba(35,24,21,.07),0 0 70px rgba(35,24,21,.13)}
+  .fixed{background:rgba(255,255,255,.95)}
+}

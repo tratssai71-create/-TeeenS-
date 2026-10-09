@@ -1,0 +1,7 @@
+name,url,industry,contact_form_url,notes,score,findings
+オートボデーエム,https://www.autobodym.com/index.html,,,,40,"スマホ対応(viewportタグ)なし; コピーライト表記が2010年で止まっている; 最終更新(サーバー応答): Thu, 09 Apr 2026 10:03:10 GMT"
+ALMOND HOME,https://www.almondhome.co.jp/,,,,25,スマホ対応(viewportタグ)なし
+美濱不動産,https://mihama-f.jp/property/,,,,5,h1タグなし(SEO構造が弱い)
+Deal,https://deal-0502.jp/,,,,5,h1タグなし(SEO構造が弱い)
+スマートハウジング,https://smarthousing.info/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+おおたか不動産,https://www.ootaka-f.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

@@ -1,0 +1,7 @@
+name,url,industry,contact_form_url,notes,score,findings
+my-story,http://www.my-story.co.jp/ms/contact.html,,,,50,SSL(https)未対応; meta descriptionが未設定(SEO弱い); コピーライト表記が2020年で止まっている
+kamo-den,http://www.kamo-den.co.jp/,,,,25,SSL(https)未対応
+yamaosangyou,https://www.yamaosangyou.com/,,,,25,スマホ対応(viewportタグ)なし
+kurashiki-sougi,https://kurashiki-sougi.com/,,,,25,meta descriptionが未設定(SEO弱い); コピーライト表記が2020年で止まっている
+hss-gakusyujuku,https://hss-gakusyujuku.com/,,,,5,h1タグなし(SEO構造が弱い)
+cosmos-hall,https://cosmos-hall.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

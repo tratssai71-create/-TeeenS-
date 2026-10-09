@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>新卒採用 デザイン案 | ホンダモビリティ中四国</title>
+<meta name="robots" content="noindex,nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E60012;
+  --ink:#141414;
+  --ink2:#5a5a5e;
+  --ink3:#9a9aa0;
+  --line:#e6e6e8;
+  --bg:#ffffff;
+  --bg2:#f6f6f7;
+  --black:#101014;
+  --num:'Barlow Condensed','Noto Sans JP',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans JP',sans-serif;color:var(--ink);background:#e9e9ec;-webkit-font-smoothing:antialiased;line-height:1.8;
+  background-image:radial-gradient(rgba(0,0,0,.06) 1px,transparent 1px);background-size:14px 14px}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+/* 作業用ラベル */
+.draft{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--black);color:#fff;
+  font-size:10.5px;letter-spacing:.14em;padding:7px 16px;text-align:center}
+.draft b{color:#ffb3b8;font-weight:700}
+
+/* スマホ枠 ＝ ページ全体の地。
+   方眼をここに敷くことで、セクションをまたいで一本の図面として繋がる。 */
+.phone{max-width:412px;margin:0 auto;min-height:100vh;
+  box-shadow:0 0 60px rgba(0,0,0,.13);position:relative;overflow:hidden;padding-top:30px;
+  background-image:
+    linear-gradient(rgba(22,24,34,.075) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(22,24,34,.075) 1px,transparent 1px),
+    linear-gradient(rgba(22,24,34,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(22,24,34,.032) 1px,transparent 1px),
+    radial-gradient(64% 22% at 100% 34%,rgba(230,0,18,.05),transparent 62%),
+    linear-gradient(180deg,#fbfbfc 0%,#f2f3f6 58%,#eceef2 100%);
+  background-size:92px 92px,92px 92px,23px 23px,23px 23px,100% 100%,100% 100%;
+  background-position:14px 0,14px 0,14px 0,14px 0,0 0,0 0}
+
+/* ══ 背景の質感（共通パーツ） ══════════════════════
+   grain  … 粒子テクスチャ（STUDIO：ノイズPNGを繰り返し背景に／描画モード オーバーレイ）
+   glow   … 色の滲み（STUDIO：円形ボックス＋ぼかし／ゆっくり動かす）
+   vig    … 周辺光量落ち（STUDIO：円形グラデーションのボックス）        */
+.grain{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.42;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px}
+.glow{position:absolute;border-radius:50%;pointer-events:none;filter:blur(30px)}
+.vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(118% 88% at 50% 36%,transparent 34%,rgba(0,0,0,.66) 100%)}
+@keyframes drift-a{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-34px,26px) scale(1.14)}}
+@keyframes drift-b{0%{transform:translate(0,0) scale(1.08)}100%{transform:translate(30px,-22px) scale(.94)}}
+@keyframes sweep{0%{transform:translateX(-62%) rotate(12deg);opacity:0}
+  18%{opacity:.5}50%{opacity:.34}82%{opacity:0}100%{transform:translateX(142%) rotate(12deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.glow,.fv-sweep,.fv-vtag .dot,.fv-live i{animation:none!important}}
+
+/* ══ FV ═══════════════════════════════════════════════
+   構成：[映像/下地] → [面（フェイセット）] → [計測グリッド]
+        → [枠・注記] → [ビネット/グレイン] → [スクリム] → [文字]
+   映像が入っても、上に重なる設計レイヤーがそのまま生きる作り。 */
+.fv{position:relative;background:#08080c;color:#fff;overflow:hidden;
+  min-height:706px;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:30px}
+/* 動画レイヤー（STUDIO：背景動画ボックス／ループ・自動再生・ミュート） */
+.fv-video{position:absolute;inset:0;overflow:hidden;
+  background:
+   radial-gradient(76% 52% at 78% 6%, #4a0f16 0%, transparent 60%),
+   radial-gradient(64% 46% at 8% 88%, #16232f 0%, transparent 64%),
+   linear-gradient(162deg,#1c1c22 0%,#2c2c34 46%,#111116 100%)}
+.fv-g1{width:440px;height:440px;right:-150px;top:-120px;
+  background:radial-gradient(circle,rgba(230,0,18,.42),rgba(230,0,18,.1) 44%,transparent 68%);
+  animation:drift-a 26s ease-in-out infinite alternate}
+.fv-g2{width:380px;height:380px;left:-140px;bottom:120px;
+  background:radial-gradient(circle,rgba(70,120,190,.24),rgba(70,120,190,.06) 46%,transparent 70%);
+  animation:drift-b 34s ease-in-out infinite alternate}
+
+/* ① 面（フェイセット）＝ 車体パネルに光が当たったような角のある面構成 */
+.pl{position:absolute;pointer-events:none;left:-60%;width:220%}
+.pl-1{height:360px;top:-150px;transform:rotate(-17deg);
+  background:linear-gradient(176deg,rgba(255,255,255,.075),rgba(255,255,255,.012));
+  border-bottom:1px solid rgba(255,255,255,.14)}
+.pl-2{height:300px;top:236px;transform:rotate(-17deg);
+  background:linear-gradient(176deg,rgba(0,0,0,.34),rgba(0,0,0,.05));
+  border-bottom:1px solid rgba(255,255,255,.07)}
+.pl-3{height:420px;bottom:-230px;transform:rotate(9deg);
+  background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);
+  border-top:1px solid rgba(255,255,255,.1)}
+/* ② 赤の面：細いストライプではなく、構造として効く帯 */
+.fv-band{position:absolute;pointer-events:none;left:-30%;width:180%;height:82px;top:178px;
+  transform:rotate(-17deg);
+  background:linear-gradient(90deg,transparent,rgba(230,0,18,.5) 22%,rgba(230,0,18,.34) 64%,rgba(230,0,18,0));
+  box-shadow:0 0 52px rgba(230,0,18,.2)}
+.fv-band::after{content:'';position:absolute;left:0;right:0;bottom:-6px;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.72) 28%,rgba(255,255,255,.34) 66%,transparent)}
+
+/* ③ 計測グリッド＋目盛り（精密さ＝信頼感の記号） */
+.fv-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.062) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.062) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center top;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 88%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 52%,transparent 88%)}
+.fv-ticks{position:absolute;left:0;right:0;top:66px;height:9px;pointer-events:none;
+  background-image:linear-gradient(90deg,rgba(255,255,255,.34) 1px,transparent 1px);
+  background-size:23px 9px;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 18%,#000 72%,transparent)}
+
+/* ④ コーナーマーカー（版面を示す技術図面の記号） */
+.br{position:absolute;width:20px;height:20px;pointer-events:none;
+  border:1px solid rgba(255,255,255,.42);z-index:2}
+.br-tl{top:66px;left:12px;border-right:0;border-bottom:0}
+.br-tr{top:66px;right:12px;border-left:0;border-bottom:0}
+.br-bl{bottom:22px;left:12px;border-right:0;border-top:0}
+.br-br{bottom:22px;right:12px;border-left:0;border-top:0}
+
+/* ⑤ 縁の注記 */
+.fv-side{position:absolute;right:15px;top:214px;z-index:2;pointer-events:none;
+  writing-mode:vertical-rl;font-size:8.5px;font-weight:700;letter-spacing:.34em;
+  color:rgba(255,255,255,.44)}
+.fv-foot{position:absolute;left:14px;bottom:30px;z-index:2;pointer-events:none;
+  font-family:var(--num);font-size:10px;font-weight:600;letter-spacing:.2em;
+  color:rgba(255,255,255,.34)}
+
+/* ゆっくり通り過ぎる光 */
+.fv-sweep{position:absolute;top:-16%;left:0;width:56%;height:132%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.07) 42%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.05) 58%,transparent);
+  filter:blur(8px);animation:sweep 13s ease-in-out infinite;animation-delay:2s}
+
+/* ── 背景動画 ─────────────────────────────────
+   STUDIO実装：ボックスの背景に動画を設定し、
+   「自動再生・ループ・ミュート」をオンにするだけ。
+   読み込めなかった場合は、下地のグラデーションがそのまま残る。 */
+.fv-mov{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:0;pointer-events:none;
+  opacity:0;transition:opacity 1.1s ease}
+.fv-mov.on{opacity:.62}
+/* 動画が入ると情報量が増えるので、文字を守る側を少し強める */
+.fv.has-mov .fv-scrim{background:
+  linear-gradient(180deg,rgba(10,10,14,.78) 0%,rgba(10,10,14,.34) 24%,rgba(10,10,14,.58) 52%,
+  rgba(8,8,12,.93) 78%,#08080c 100%)}
+.fv.has-mov .fv-grid{opacity:.5}
+.fv.has-mov .pl-1,.fv.has-mov .pl-2,.fv.has-mov .pl-3{opacity:.5}
+@media (prefers-reduced-motion:reduce){ .fv-mov{display:none} }
+.fv-note{position:absolute;left:16px;top:114px;z-index:2;
+  font-size:9.5px;letter-spacing:.04em;color:rgba(255,255,255,.5);line-height:1.7;
+  border:1px dashed rgba(255,255,255,.3);padding:6px 11px;max-width:70%;
+  background:rgba(8,8,12,.4)}
+/* 文字を読ませるためのスクリム（映像の明るさに左右されないための保険） */
+.fv-scrim{position:absolute;inset:0;pointer-events:none;background:
+  linear-gradient(180deg,rgba(10,10,14,.6) 0%,rgba(10,10,14,.12) 24%,rgba(10,10,14,.46) 52%,
+  rgba(8,8,12,.9) 78%,#08080c 100%)}
+.fv-ghost{position:absolute;left:-8px;top:262px;font-family:var(--num);font-weight:700;font-size:128px;
+  line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;
+  white-space:nowrap;pointer-events:none;z-index:1}
+.fv-vtag{position:absolute;left:16px;top:82px;z-index:3;display:flex;align-items:center;gap:6px;
+  background:rgba(16,16,20,.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);
+  border-radius:2px 8px 8px 8px;padding:5px 9px 5px 7px}
+.fv-vtag .dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse-dot 1.8s ease-out infinite}
+.fv-vtag span{font-size:9.5px;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.85)}
+.fv-mute{position:absolute;right:16px;top:82px;z-index:3;width:30px;height:30px;border-radius:2px 8px 8px 8px;
+  background:rgba(16,16,20,.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center}
+.fv-mute svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
+
+.fv-in{padding:0 22px 26px;position:relative;z-index:3}
+.fv-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:10px;font-weight:700;
+  letter-spacing:.24em;color:rgba(255,255,255,.72);margin-bottom:20px}
+.fv-eyebrow::before{content:'';width:22px;height:2px;background:var(--red);flex:none}
+.fv h1{font-size:38px;font-weight:900;line-height:1.24;letter-spacing:-.02em;margin-bottom:16px;
+  text-shadow:0 2px 26px rgba(0,0,0,.65)}
+.fv h1 em{font-style:normal;font-family:var(--num);color:#fff;letter-spacing:0}
+.fv p{font-size:13.5px;color:rgba(255,255,255,.75);text-shadow:0 1px 12px rgba(0,0,0,.7)}
+
+/* ── ヒーローのアクション（控えめに） ── */
+.fv-act{margin-top:26px;padding-top:18px;border-top:1px solid rgba(255,255,255,.16)}
+.fv-live{display:flex;align-items:center;gap:8px;font-size:11.5px;color:rgba(255,255,255,.66);
+  letter-spacing:.02em;margin-bottom:14px}
+.fv-live i{width:6px;height:6px;border-radius:50%;background:var(--red);flex:none;
+  animation:pulse-dot 2s ease-out infinite}
+.fv-live b{color:#fff;font-weight:700}
+.fv-live b em{font-style:normal;font-family:var(--num);font-size:15px;letter-spacing:0;margin:0 1px}
+.fv-links{display:flex;gap:9px;align-items:stretch}
+.lk{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;
+  font-size:13.5px;font-weight:700;border-radius:3px 12px 12px 12px;transition:.18s ease;letter-spacing:.01em}
+.lk svg{flex:none}
+.lk-line{background:#06C755;color:#fff}
+.lk-line svg{width:19px;height:19px;fill:#fff}
+.lk-sub{border:1px solid rgba(255,255,255,.32);color:#fff;background:rgba(255,255,255,.03)}
+.lk-sub svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.lk:hover{filter:brightness(1.07)}
+.lk:active{transform:scale(.985)}
+@keyframes pulse-dot{0%{box-shadow:0 0 0 0 rgba(230,0,18,.7)}70%{box-shadow:0 0 0 7px rgba(230,0,18,0)}100%{box-shadow:0 0 0 0 rgba(230,0,18,0)}}
+
+.btns{display:flex;flex-direction:column;gap:10px}
+.btn{position:relative;display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-radius:4px 16px 16px 16px;font-size:15px;font-weight:700;text-align:center;transition:.18s ease;line-height:1.4;
+  isolation:isolate;overflow:hidden}
+.btn::before{content:'';position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);z-index:1}
+.btn .ic{flex:none;width:34px;height:34px;border-radius:2px 9px 9px 9px;display:flex;align-items:center;justify-content:center}
+.btn .ic svg{width:17px;height:17px}
+.btn .lbl{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.btn-line{background:#06C755;color:#fff}
+.btn-line .ic{background:rgba(255,255,255,.18)}
+.btn .li{flex:none;width:21px;height:21px;fill:#fff}
+.btn small{font-size:10px;font-weight:500;opacity:.85;letter-spacing:.03em;line-height:1.3}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{border:1px solid rgba(255,255,255,.22);color:#fff;background:rgba(255,255,255,.045)}
+.btn-ghost .lbl{flex:1}
+.btn-ghost .ic{background:rgba(255,255,255,.08);margin-left:auto}
+.btn-ghost .ic svg{width:13px;height:13px}
+.btn:active{transform:scale(.98)}
+.btn:hover{filter:brightness(1.08)}
+
+/* ── 共通：セクションの下地システム ──
+   地の方眼は .phone が持つ。セクションは「透かす／曇らせる」で層を作る。 */
+body{counter-reset:sec}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+section.s{scroll-margin-top:64px;padding:62px 30px 58px;position:relative;isolation:isolate;counter-increment:sec;
+  background:transparent}
+section.s>*:not(.grain):not(.glow){position:relative;z-index:1}
+/* 一段沈めた面（白すぎる面を曇らせ、方眼は透かしたまま残す） */
+section.s.know,section.s.shops,section.s.flow{background:linear-gradient(180deg,rgba(223,226,235,.62),rgba(209,213,226,.56))}
+/* 左の綴じ罫（ページ全体を貫く一本。セクションが連続して1本に見える） */
+section.s::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:1px;z-index:0;
+  pointer-events:none;background:rgba(22,24,34,.18)}
+/* セクション番号（通し番号。版面の索引として機能させる） */
+section.s::after{content:counter(sec,decimal-leading-zero);position:absolute;top:20px;right:16px;z-index:0;
+  font-family:var(--num);font-size:92px;font-weight:700;line-height:.8;letter-spacing:-.02em;
+  color:transparent;-webkit-text-stroke:1px rgba(22,24,34,.16);pointer-events:none}
+/* セクション上端の見切り線＋赤いインデックス */
+.s-rule{position:absolute;left:0;right:0;top:0;height:1px;z-index:1;
+  background:linear-gradient(90deg,transparent 0 14px,var(--red) 14px 60px,rgba(22,24,34,.16) 60px)}
+/* 綴じ罫の上に打つ節点マーカー */
+.s-rule::after{content:'';position:absolute;left:11px;top:-3px;width:7px;height:7px;
+  background:var(--red);border-radius:50%;box-shadow:0 0 0 3px rgba(242,243,246,.9)}
+.lab{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:.22em;
+  color:var(--red);margin-bottom:12px}
+.lab::before{content:'';width:18px;height:2px;background:var(--red)}
+h2.t{font-size:25px;font-weight:900;line-height:1.42;letter-spacing:-.005em;margin-bottom:14px}
+h2.t em{font-style:normal;font-family:var(--num);color:var(--red)}
+.body{font-size:13.5px;color:var(--ink2)}
+
+
+/* ══════ 出現モーション ════════════════════════════
+   STUDIO標準の「スクロールで表示」だけで作れる動きに限定。
+   使っているのは STUDIO のプリセットと同じ5種類：
+     スライド（上/左/右） ／ ズーム ／ ぼかし
+   マスクで文字がせり上がる演出とカウントアップは、
+   STUDIOに無くカスタムコードが要るので使っていません。
+
+   速さの設計：0.34〜0.40秒（従来の半分以下）。
+   移動距離は逆に大きく取り、少し行き過ぎてから戻る動きにして
+   「キレ」と「勢い」が出るようにしています。              */
+:root{
+  --mv:.36s;
+  --ez:cubic-bezier(.3,1.35,.5,1);   /* 少し行き過ぎて戻る＝キレのある動き */
+  --ez2:cubic-bezier(.2,.9,.25,1);   /* 大きい面はオーバーシュートなし     */
+}
+
+.js-rv [data-rv]{opacity:0;will-change:transform,opacity;
+  transition:opacity var(--mv) var(--ez2),transform var(--mv) var(--ez),filter var(--mv) var(--ez2)}
+.js-rv [data-rv="up"]{transform:translateY(44px)}
+.js-rv [data-rv="left"]{transform:translateX(-56px)}
+.js-rv [data-rv="right"]{transform:translateX(56px)}
+.js-rv [data-rv="zoom"]{transform:scale(.86);transition-timing-function:var(--ez2)}
+.js-rv [data-rv="blur"]{transform:translateY(26px);filter:blur(9px)}
+.js-rv [data-rv].rv{opacity:1;transform:none;filter:none}
+
+/* 見出しは「左からスライド＋ぼかしが晴れる」。STUDIOのプリセットの組み合わせ */
+.js-rv h2.t,.js-rv .fv h1,.js-rv .last h2{opacity:0;transform:translateX(-40px);filter:blur(7px);
+  transition:opacity .4s var(--ez2),transform .44s var(--ez),filter .4s var(--ez2)}
+.js-rv h2.t.rv,.js-rv .fv h1.rv,.js-rv .last h2.rv{opacity:1;transform:none;filter:none}
+
+/* セクション上端の赤い線：左から一気に引く（速め） */
+.js-rv .s-rule{transform-origin:left center;transform:scaleX(0);
+  transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.js-rv .s-rule.rv{transform:scaleX(1)}
+.js-rv .s-rule::after{opacity:0;transform:scale(.4);
+  transition:opacity .25s ease .28s,transform .3s var(--ez) .28s}
+.js-rv .s-rule.rv::after{opacity:1;transform:scale(1)}
+
+/* 縦のライン：上から一気に落ちる */
+.js-rv .day::before,.js-rv .steps::before{transform-origin:top center;transform:scaleY(0);
+  transition:transform .55s cubic-bezier(.16,1,.3,1)}
+.js-rv .day.rv::before,.js-rv .steps.rv::before{transform:scaleY(1)}
+
+
+/* ── 写真のワイプ出現（幕が滑って消える）────────────
+   STUDIO実装：画像ボックスの上に赤いボックスを重ね、
+   「スクロールで表示 → スライド（右）」で画面外へ逃がすだけ。
+   幕が抜けたあとに、中の文字が少し遅れて出ます。          */
+.js-rv [data-rv="wipe"]{opacity:1;transform:none}
+.js-rv [data-rv="wipe"]{position:relative;overflow:hidden}
+.js-rv [data-rv="wipe"]::after{
+  content:'';position:absolute;inset:0;z-index:6;background:#14110f;
+  transform:translateY(0);
+  transition:transform .58s cubic-bezier(.78,0,.18,1)}
+.js-rv [data-rv="wipe"].rv::after{transform:translateY(-101%)}
+/* 幕の先端に赤いラインを入れて、滑っている感じを強める */
+.js-rv [data-rv="wipe"]::before{
+  content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;z-index:7;
+  background:var(--red);opacity:0;
+  transition:transform .58s cubic-bezier(.78,0,.18,1),opacity .2s ease}
+.js-rv [data-rv="wipe"].rv::before{transform:translateY(-101%);opacity:0}
+.js-rv [data-rv="wipe"]:not(.rv)::before{opacity:.95}
+
+/* ★ 主役の写真だけ「赤・右へ」にして、ページに強弱をつける
+   （各セクションで最初に出てくる大きい写真＝その節の主役）      */
+.js-rv [data-rv="wipe"].wipe-key::after{
+  background:var(--red);transform:translateX(0);
+  transition:transform .62s cubic-bezier(.78,0,.18,1)}
+.js-rv [data-rv="wipe"].wipe-key.rv::after{transform:translateX(101%)}
+.js-rv [data-rv="wipe"].wipe-key::before{
+  top:0;bottom:0;left:auto;right:-2px;width:2px;height:auto;background:#fff;
+  transition:transform .62s cubic-bezier(.78,0,.18,1),opacity .2s ease}
+.js-rv [data-rv="wipe"].wipe-key.rv::before{transform:translateX(101%);opacity:0}
+
+/* 中身は幕が抜けたあとに出す */
+.js-rv [data-rv="wipe"] > *{opacity:0;transition:opacity .35s ease .32s}
+.js-rv [data-rv="wipe"].rv > *{opacity:1}
+
+/* 幕が乗っている間は、画像枠の破線を出さない（幕の外に線が見えないように） */
+.js-rv .ph-box[data-rv="wipe"]:not(.rv){border-color:transparent}
+.js-rv .ph-box[data-rv="wipe"]{transition:border-color .2s ease .42s}
+/* 角丸が効いている案でも幕がはみ出さないように */
+.js-rv [data-rv="wipe"]{isolation:isolate}
+@media (prefers-reduced-motion:reduce){
+  .js-rv [data-rv="wipe"]::after,.js-rv [data-rv="wipe"]::before{display:none}
+  .js-rv [data-rv="wipe"] > *{opacity:1!important;transition:none!important}
+}
+
+/* 数字は少し大きめに跳ねさせる */
+.js-rv .ncell[data-rv]{transform:translateY(34px) scale(.9)}
+
+/* 触れたときも動く（STUDIOのホバー設定で再現可）
+   ※出現用の指定より後に効かせるため .rv を付けて優先度を上げている */
+.js-rv .rc.rv,.js-rv .job-card.rv,.js-rv .bn-i.rv,.js-rv .cp-i.rv,
+.js-rv .tr-i.rv,.js-rv .vid.rv,.js-rv .shop.rv{
+  transition:transform .2s var(--ez),box-shadow .2s ease,background .2s ease}
+.rc:hover,.job-card:hover,.bn-i:hover,.cp-i:hover,.tr-i:hover,
+.js-rv .rc.rv:hover,.js-rv .job-card.rv:hover,.js-rv .bn-i.rv:hover,
+.js-rv .cp-i.rv:hover,.js-rv .tr-i.rv:hover{transform:translateY(-4px)}
+.vid:hover,.js-rv .vid.rv:hover{transform:scale(1.015)}
+.shop:hover,.js-rv .shop.rv:hover{transform:translateX(5px)}
+
+/* ヒーローは読み込み直後に、短い間隔で畳みかける */
+.js-rv .fv-eyebrow,.js-rv .fv p,.js-rv .fv-act{opacity:0;transform:translateY(26px);
+  transition:opacity .38s var(--ez2),transform .4s var(--ez)}
+.js-rv .fv.go .fv-eyebrow{opacity:1;transform:none;transition-delay:.06s}
+.js-rv .fv.go h1{opacity:1;transform:none;filter:none;transition-delay:.16s}
+.js-rv .fv.go p{opacity:1;transform:none;transition-delay:.3s}
+.js-rv .fv.go .fv-act{opacity:1;transform:none;transition-delay:.4s}
+.js-rv .fv-band{transform-origin:left center;transform:rotate(-17deg) scaleX(0);
+  transition:transform .7s cubic-bezier(.16,1,.3,1) .1s}
+.js-rv .fv.go .fv-band{transform:rotate(-17deg) scaleX(1)}
+.js-rv .fv-vtag,.js-rv .fv-mute,.js-rv .fv-note{opacity:0;transition:opacity .4s ease .5s}
+.js-rv .fv.go .fv-vtag,.js-rv .fv.go .fv-mute,.js-rv .fv.go .fv-note{opacity:1}
+
+/* 動きが苦手な方の設定に従う */
+@media (prefers-reduced-motion:reduce){
+  .js-rv [data-rv],.js-rv h2.t,.js-rv .fv h1,.js-rv .last h2,.js-rv .s-rule,
+  .js-rv .day::before,.js-rv .steps::before,
+  .js-rv .fv-eyebrow,.js-rv .fv p,.js-rv .fv-act,.js-rv .fv-band,
+  .js-rv .fv-vtag,.js-rv .fv-mute,.js-rv .fv-note{
+    transition:none!important;transform:none!important;opacity:1!important;filter:none!important}
+  .rc:hover,.job-card:hover,.bn-i:hover,.cp-i:hover,.tr-i:hover,.vid:hover,.shop:hover{transform:none}
+}
+
+/* ══════ 追加セクション ══════════════════════════ */
+
+/* 代表メッセージ */
+.msg-q{font-family:var(--num);font-size:76px;font-weight:700;line-height:.7;color:var(--red);
+  opacity:.22;margin-bottom:-6px}
+.msg-body{font-size:14.5px;line-height:2.05;color:var(--ink);margin-top:14px}
+.msg-body p+p{margin-top:16px}
+.msg-who{display:flex;align-items:center;gap:14px;margin-top:24px;
+  padding-top:20px;border-top:1px solid var(--line)}
+.msg-who .ph-box{width:64px;height:64px;flex:none;border-radius:50%}
+.msg-who .ph-box .pt{font-size:8px}.msg-who .ph-box .pd{display:none}
+.msg-who .nm{font-size:14.5px;font-weight:700}
+.msg-who .ro{font-size:11.5px;color:var(--ink3);margin-top:1px}
+
+/* 1日のスケジュール */
+.day{margin-top:24px;position:relative;padding-left:66px}
+.day::before{content:'';position:absolute;left:52px;top:10px;bottom:16px;width:1px;background:var(--line)}
+.dr{position:relative;padding-bottom:22px}
+.dr:last-child{padding-bottom:0}
+.dr .tm{position:absolute;left:-66px;top:-1px;width:44px;text-align:right;
+  font-family:var(--num);font-size:17px;font-weight:700;color:var(--red);letter-spacing:.01em}
+.dr::before{content:'';position:absolute;left:-17px;top:6px;width:9px;height:9px;border-radius:50%;
+  background:#fff;border:2px solid var(--line)}
+.dr.key::before{background:var(--red);border-color:var(--red)}
+.dr h3{font-size:14.5px;font-weight:700;margin-bottom:3px}
+.dr p{font-size:12.5px;color:var(--ink2);line-height:1.8}
+
+/* 研修・サポート */
+.tr-list{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.tr-i{border:1px solid var(--line);background:#fff;padding:18px 18px 18px 20px;position:relative;
+  border-radius:14px;display:flex;gap:15px;align-items:flex-start}
+.tr-i .when{flex:none;width:58px;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+  color:var(--red);line-height:1.5;padding-top:2px}
+.tr-i h3{font-size:14.5px;font-weight:700;margin-bottom:4px}
+.tr-i p{font-size:12.5px;color:var(--ink2);line-height:1.8}
+.tr-note{margin-top:14px;padding:15px 17px;border-radius:14px;
+  background:rgba(230,0,18,.05);border:1px solid rgba(230,0,18,.18);
+  font-size:12.5px;line-height:1.85;color:var(--ink2)}
+.tr-note b{color:var(--ink);font-weight:700}
+
+/* キャリアパス */
+.cp{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.cp-i{border:1px solid var(--line);background:#fff;border-radius:14px;padding:18px 20px;position:relative}
+.cp-i .yr{display:inline-flex;align-items:baseline;gap:3px;margin-bottom:8px}
+.cp-i .yr b{font-family:var(--num);font-size:26px;font-weight:700;color:var(--red);line-height:1}
+.cp-i .yr s{font-size:11px;font-weight:700;text-decoration:none;color:var(--ink2)}
+.cp-i h3{font-size:14.5px;font-weight:700;margin-bottom:4px}
+.cp-i p{font-size:12.5px;color:var(--ink2);line-height:1.8}
+
+/* 福利厚生 */
+.bn{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:22px}
+.bn-i{border:1px solid var(--line);background:#fff;border-radius:14px;padding:16px 15px}
+.bn-i .ic{width:30px;height:30px;border-radius:9px;background:rgba(230,0,18,.08);
+  display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.bn-i .ic svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:1.8}
+.bn-i h3{font-size:13px;font-weight:700;margin-bottom:3px;line-height:1.5}
+.bn-i p{font-size:11.5px;color:var(--ink2);line-height:1.7}
+
+/* 募集要項 */
+.rq{margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.rq dl{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.rq dl:last-child{border-bottom:0}
+.rq dt{width:96px;flex:none;padding:15px 0 15px 17px;font-size:12px;font-weight:700;
+  color:var(--ink2);line-height:1.7}
+.rq dd{flex:1;padding:15px 17px 15px 10px;font-size:12.5px;line-height:1.85}
+.tbd{font-size:10.5px;font-weight:400;opacity:.5;letter-spacing:.02em}
+p.tbd{display:block;margin-top:14px}
+.rq dd .tbd{color:var(--ink3)}
+
+/* 会社を知る */
+
+.map{background:#fff;border:1px solid var(--line);padding:22px;margin-top:20px}
+.map-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ink3);margin-bottom:14px}
+.pref{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pref div{border:1px solid var(--line);padding:11px 0;text-align:center;font-size:13px;font-weight:700}
+.pref div small{display:block;font-size:9.5px;color:var(--ink3);font-weight:500;letter-spacing:.06em;margin-top:2px}
+
+/* 選ばれる理由 */
+.reason{display:flex;flex-direction:column;gap:18px;margin-top:26px}
+.rc{border:1px solid var(--line);padding:22px 20px;position:relative;background:#fff;
+  box-shadow:0 14px 28px -18px rgba(20,20,20,.28)}
+.rc:nth-child(2){transform:rotate(.5deg)}
+.rc:nth-child(3){transform:rotate(-.5deg)}
+.rc::after{content:'';position:absolute;top:0;right:0;width:0;height:0;
+  border-style:solid;border-width:0 22px 22px 0;border-color:transparent var(--bg2) transparent transparent}
+.rc .n{font-family:var(--num);font-size:56px;font-weight:700;color:transparent;
+  -webkit-text-stroke:1.4px rgba(230,0,18,.4);position:absolute;top:10px;right:14px;line-height:1}
+.rc h3{font-size:16.5px;font-weight:700;line-height:1.5;margin-bottom:8px;max-width:80%}
+.rc h3 mark{background:linear-gradient(transparent 62%,rgba(230,0,18,.18) 62%);padding:0 1px}
+.rc p{font-size:13px;color:var(--ink2)}
+
+/* 数字 */
+section.s.nums{color:#fff;position:relative;overflow:hidden;
+  background:
+   radial-gradient(78% 50% at 88% 0%, #3a0a10 0%, transparent 60%),
+   radial-gradient(64% 44% at 4% 100%, #16222c 0%, transparent 64%),
+   var(--black)}
+/* 暗い面は左の綴じ罫を白で継ぐ（線が途切れないように） */
+.nums::before{background:rgba(255,255,255,.22)}
+.nums .s-rule::after{box-shadow:0 0 0 3px #101014}
+/* 面に敷く方眼（白） */
+.nums .mesh{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:92px 92px,92px 92px,23px 23px,23px 23px;background-position:14px 0}
+section.s.nums::after{-webkit-text-stroke:1px rgba(255,255,255,.22)}
+.nums .s-rule{background:linear-gradient(90deg,var(--red) 0 46px,rgba(255,255,255,.14) 46px)}
+.nums .glow{width:360px;height:360px;right:-130px;top:-90px;
+  background:radial-gradient(circle,rgba(230,0,18,.3),transparent 66%);
+  animation:drift-a 30s ease-in-out infinite alternate}
+.nums h2.t{color:#fff}
+.nums .body{color:rgba(255,255,255,.6)}
+.ngrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.14);margin-top:24px;position:relative;z-index:1}
+.ncell{background:var(--black);padding:20px 14px;text-align:center;position:relative}
+.ncell.wide{grid-column:1 / -1;background:linear-gradient(180deg,#1a1a20,#101014);overflow:hidden}
+.ncell.wide .rb{position:absolute;top:11px;right:-30px;/* 丸み版で上書き */background:var(--red);color:#fff;font-size:9px;
+  font-weight:700;letter-spacing:.1em;padding:3px 32px;transform:rotate(35deg);box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.ncell .k{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.04em;margin-bottom:6px}
+.ncell .v{font-family:var(--num);font-size:44px;font-weight:700;line-height:1;letter-spacing:.01em}
+.ncell.wide .v{font-size:62px;color:var(--red);text-shadow:0 0 34px rgba(230,0,18,.45)}
+.ncell .v span{font-family:'Noto Sans JP';font-size:14px;font-weight:700;margin-left:3px}
+.ncell .sub{font-size:10.5px;color:rgba(255,255,255,.45);margin-top:7px}
+.fy{display:inline-block;font-size:9px;letter-spacing:.08em;border:1px solid rgba(255,255,255,.3);
+  padding:1px 6px;margin-top:9px;color:rgba(255,255,255,.62)}
+
+
+/* 暗い面は斜めに切って入る／抜ける（縦に流れるリズムを作る） */
+section.s.nums{clip-path:polygon(0 0,100% 26px,100% 100%,0 calc(100% - 26px))}
+.last{clip-path:polygon(0 26px,100% 0,100% 100%,0 100%)}
+section.s.nums{margin-top:-1px;margin-bottom:-1px}
+
+/* 職種 */
+.jobs{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.job-card{border:1px solid var(--line);background:#fff}
+.job-b{padding:20px;display:flex;gap:16px;align-items:flex-start}
+.job .ic{width:44px;height:44px;background:var(--red);flex:none;display:flex;align-items:center;justify-content:center}
+.job .ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.7}
+.job h3{font-size:16px;font-weight:700;margin-bottom:5px}
+.job p{font-size:12.5px;color:var(--ink2)}
+.more{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--ink);
+  padding:15px 18px;font-size:13.5px;font-weight:700;margin-top:12px}
+
+/* 店舗タブ */
+
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-top:22px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;padding:9px 16px;font-size:13px;font-weight:700;color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.shoplist{margin-top:14px}
+.sl-h{display:flex;align-items:baseline;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:.06em;
+  margin:16px 0 9px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+.sl-h:first-child{margin-top:0}
+.sl-h span{margin-left:auto;font-size:10.5px;font-weight:400;color:var(--ink3);letter-spacing:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11.5px;background:#fff;border:1px solid var(--line);padding:6px 10px;color:var(--ink2);line-height:1.2}
+.chip.u{border-style:dashed;color:var(--ink3)}
+
+/* 会社の事実 */
+.fact{margin-top:20px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--red);padding:16px 17px}
+.fact-hd{font-size:14.5px;font-weight:700;line-height:1.6;margin-bottom:7px}
+.fact-hd b{color:var(--red)}
+.fact p{font-size:12.5px;color:var(--ink2);line-height:1.85}
+.fact-s{margin-top:22px}
+
+/* 会社概要 */
+.prof{margin-top:18px;border-top:1px solid var(--line)}
+.prof dl{display:flex;gap:14px;padding:11px 2px;border-bottom:1px solid var(--line);font-size:12.5px}
+.prof dt{flex:0 0 74px;color:var(--ink3);font-weight:700}
+.prof dd{flex:1;color:var(--ink2);line-height:1.75}
+.shop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.shop:last-child{border-bottom:0}
+.shop .nm{font-size:13.5px;font-weight:700}
+.shop .ad{font-size:11px;color:var(--ink3);margin-top:1px}
+.shop svg{width:15px;height:15px;stroke:var(--ink3);fill:none;stroke-width:2;flex:none}
+
+/* インタビュー */
+.iv{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.vid{position:relative;aspect-ratio:16/10;background:linear-gradient(140deg,#33333a,#55555e);overflow:hidden}
+.vid .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10.5px;letter-spacing:.1em;color:rgba(255,255,255,.4)}
+.vid .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;
+  border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center}
+.vid .play::after{content:'';border-left:15px solid var(--black);border-top:9px solid transparent;
+  border-bottom:9px solid transparent;margin-left:4px}
+.vid .cap{position:absolute;left:0;right:0;bottom:0;padding:26px 16px 13px;color:#fff;font-size:13.5px;font-weight:700;
+  background:linear-gradient(transparent,rgba(0,0,0,.82))}
+.vid .badge{position:absolute;top:11px;left:11px;background:rgba(0,0,0,.6);color:#fff;font-size:9.5px;
+  letter-spacing:.08em;padding:3px 8px}
+
+/* FAQ */
+.faq{margin-top:22px;border-top:1px solid var(--line)}
+.qa{border-bottom:1px solid var(--line)}
+.qa button{width:100%;display:flex;align-items:center;gap:13px;padding:17px 2px;text-align:left;font-size:13.5px;font-weight:700;line-height:1.6}
+.qa .q{color:var(--red);font-family:var(--num);font-size:20px;font-weight:700;flex:none;line-height:1}
+.qa .mk{margin-left:auto;width:13px;height:13px;position:relative;flex:none}
+.qa .mk::before,.qa .mk::after{content:'';position:absolute;background:var(--ink);transition:.2s}
+.qa .mk::before{left:0;top:6px;width:13px;height:1.5px}
+.qa .mk::after{left:6px;top:0;width:1.5px;height:13px}
+.qa[open] .mk::after{transform:rotate(90deg);opacity:0}
+.qa .a{padding:0 2px 18px 33px;font-size:13px;color:var(--ink2);display:none}
+.qa[open] .a{display:block}
+
+/* 流れ */
+
+.steps{margin-top:24px;position:relative;padding-left:30px}
+.steps::before{content:'';position:absolute;left:9px;top:8px;bottom:26px;width:1px;background:var(--line)}
+.st{position:relative;padding-bottom:22px}
+.st:last-child{padding-bottom:0}
+.st::before{content:'';position:absolute;left:-30px;top:5px;width:19px;height:19px;border-radius:50%;
+  background:#fff;border:2px solid var(--line)}
+.st.on::before{background:var(--red);border-color:var(--red)}
+.st h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.st p{font-size:12.5px;color:var(--ink2)}
+
+/* 最終CTA */
+.last{color:#fff;text-align:center;padding:60px 22px 46px;position:relative;overflow:hidden;
+  background:
+   radial-gradient(82% 52% at 50% 108%, #4a0d14 0%, transparent 62%),
+   radial-gradient(60% 40% at 6% 0%, #16222c 0%, transparent 66%),
+   var(--black)}
+.last::before{content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(-35deg,rgba(230,0,18,.07) 0 2px,transparent 2px 34px);pointer-events:none}
+.last .glow{width:420px;height:420px;left:50%;margin-left:-210px;bottom:-190px;
+  background:radial-gradient(circle,rgba(230,0,18,.34),transparent 66%);
+  animation:drift-b 28s ease-in-out infinite alternate}
+.last>*:not(.grain):not(.glow){position:relative;z-index:1}
+.last h2{font-size:26px;font-weight:900;line-height:1.5;margin-bottom:14px}
+.last h2 em{font-style:normal;font-family:var(--num);color:var(--red)}
+.last p{font-size:13px;color:rgba(255,255,255,.66);margin-bottom:26px}
+.last .btns{text-align:left}
+.qr{margin-top:22px;border:1px solid rgba(255,255,255,.2);padding:16px;display:flex;align-items:center;gap:14px;text-align:left}
+.qr .box{width:66px;height:66px;background:#fff;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#999;letter-spacing:.04em}
+.qr .tx{font-size:11.5px;color:rgba(255,255,255,.62);line-height:1.65}
+
+
+
+
+/* ヘッダー */
+.hdr{position:absolute;top:30px;left:0;right:0;z-index:20;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;padding:14px 16px}
+.hdr-logo{background:#fff;padding:7px 10px;border-radius:3px;display:block;line-height:0;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);flex:none}
+.hdr-logo img{height:15px;width:auto;display:block}
+.hdr-cta{display:inline-flex;align-items:center;gap:6px;background:#06C755;color:#fff;
+  font-size:11.5px;font-weight:700;padding:9px 14px;border-radius:999px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(6,199,85,.3)}
+.hdr-cta svg{width:15px;height:15px;fill:#fff;flex:none}
+.hdr-logo-old{display:none;
+  align-items:center;line-height:1.3}
+.hdr-logo .pt{font-size:8.5px;letter-spacing:.14em;color:rgba(255,255,255,.55);font-weight:700}
+.hdr-logo .pn{font-size:11px;font-weight:700;color:#fff;letter-spacing:.02em}
+.hdr-r{display:flex;align-items:center;gap:4px}
+.sns{width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+.sns svg{width:18px;height:18px;fill:#fff}
+.burger{width:36px;height:34px;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  align-items:flex-end;margin-left:2px}
+.burger i{display:block;height:1.7px;background:#fff;transition:.25s}
+.burger i:nth-child(1){width:20px}
+.burger i:nth-child(2){width:14px}
+.burger i:nth-child(3){width:20px}
+.burger.on i:nth-child(1){transform:translateY(6.7px) rotate(45deg);width:20px}
+.burger.on i:nth-child(2){opacity:0}
+.burger.on i:nth-child(3){transform:translateY(-6.7px) rotate(-45deg);width:20px}
+
+/* ドロワー */
+.drawer{position:absolute;top:30px;left:0;right:0;bottom:0;z-index:19;background:rgba(16,16,20,.97);
+  backdrop-filter:blur(6px);padding:82px 26px 40px;opacity:0;pointer-events:none;transition:.25s}
+.drawer.on{opacity:1;pointer-events:auto}
+.drawer a.mi{display:block;color:#fff;font-size:19px;font-weight:700;padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.12)}
+.drawer a.mi small{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--red);font-weight:700;margin-bottom:3px}
+.drawer .d-cta{margin-top:26px;display:flex;flex-direction:column;gap:9px}
+
+/* フッター */
+.ft{background:#08080b;color:rgba(255,255,255,.5);padding:44px 22px 100px}
+.ft-logo{background:#fff;padding:10px 14px;border-radius:3px;display:inline-block;line-height:0;margin-bottom:22px}
+.ft-logo img{height:17px;width:auto;display:block}
+.ft-lk{display:flex;gap:18px;margin-top:16px}
+.ft-lk a{font-size:11.5px;color:rgba(255,255,255,.55);text-decoration:underline;text-underline-offset:3px}
+.ft-logo-old{display:none;
+  align-items:center;line-height:1.3;margin-bottom:22px}
+.ft-logo .pt{font-size:8.5px;letter-spacing:.14em;color:rgba(255,255,255,.4);font-weight:700}
+.ft-logo .pn{font-size:12px;font-weight:700;color:rgba(255,255,255,.85)}
+.ft-nav{display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;margin-bottom:26px}
+.ft-nav a{font-size:12.5px;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:7px}
+.ft-nav a::before{content:'';width:4px;height:1px;background:var(--red);flex:none}
+.ft-sns{display:flex;gap:8px;margin-bottom:24px}
+.ft-sns a{width:38px;height:38px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.ft-sns svg{width:17px;height:17px;fill:rgba(255,255,255,.8)}
+.ft-info{font-size:11.5px;line-height:1.85;color:rgba(255,255,255,.45);border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
+.ft-info b{color:rgba(255,255,255,.75);font-weight:700;font-size:12.5px}
+.ft-cr{font-size:10.5px;color:rgba(255,255,255,.3);margin-top:18px;letter-spacing:.02em}
+
+/* 画像枠 */
+.ph-box{position:relative;background:repeating-linear-gradient(45deg,#f0f0f2 0 10px,#eaeaee 10px 20px);
+  border:1px dashed #c6c6cc;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;text-align:center;padding:14px}
+.ph-box .pt{font-size:9.5px;letter-spacing:.14em;color:#a9a9b2;font-weight:700}
+.ph-box .pd{font-size:11.5px;color:#86868f;line-height:1.55;max-width:24ch}
+.ph-box.dark{background:repeating-linear-gradient(45deg,#1c1c22 0 10px,#22222a 10px 20px);border-color:#3a3a45}
+.ph-box.dark .pt{color:#6d6d7a}
+.ph-box.dark .pd{color:#8b8b97}
+.r-16x9{aspect-ratio:16/9}
+.r-4x3{aspect-ratio:4/3}
+.r-1x1{aspect-ratio:1/1}
+.r-3x2{aspect-ratio:3/2}
+.cap-n{font-size:10.5px;color:var(--ink3);margin-top:7px;letter-spacing:.02em}
+
+/* 固定CTA */
+.fixed{position:fixed;left:0;right:0;bottom:0;z-index:900;max-width:412px;margin:0 auto;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.fixed .btn{flex:1;padding:11px 6px;font-size:13.5px}
+.fixed .btn small{font-size:9.5px}
+
+/* ══════ PCで見たときの見せ方 ══════════════════════
+   スマホ幅（412px）のまま見せるが、左右を「空白」ではなく
+   「本体が浮いている面」として見せる。
+   ※ 実機のスマホ（560px未満）には一切影響しない。
+   ※ 本番サイトでは、STUDIOのPCブレークポイントで
+     本文カラムを640〜720pxに広げる想定。ここは確認用の見せ方。 */
+@media (min-width:560px){
+  body{
+    background:#dcd9d4;
+    background-image:
+      radial-gradient(rgba(60,50,48,.16) 1.2px,transparent 1.2px),
+      radial-gradient(70% 50% at 50% 0%,rgba(255,255,255,.55),transparent 62%);
+    background-size:26px 26px,100% 100%;
+    background-attachment:fixed;
+    padding:26px 0 30px}
+
+  .phone{
+    border-radius:20px;
+    margin:0 auto;
+    min-height:auto;
+    box-shadow:
+      0 2px 4px rgba(40,32,28,.10),
+      0 12px 28px -8px rgba(40,32,28,.22),
+      0 44px 80px -24px rgba(40,32,28,.42);
+    outline:1px solid rgba(255,255,255,.7);
+    outline-offset:-1px}
+
+  /* 上の作業ラベルは画面いっぱいのまま、本体と干渉させない */
+  .draft{position:sticky;top:0;border-radius:0}
+  .phone{padding-top:0}
+  .hdr{top:0}
+  .drawer{top:0;border-radius:20px}
+
+  /* 固定CTAは画面下に貼り付けず、本体幅に合わせて浮かせる */
+  .fixed{
+    bottom:22px;
+    border-radius:16px;
+    box-shadow:0 10px 26px -10px rgba(40,32,28,.4);
+    border:1px solid rgba(40,32,28,.1);
+    max-width:412px}
+
+  /* 左右の余白を「空白」にせず、縦組みの注記として使う
+     （角丸で中身を切り抜くため .phone の overflow は hidden のまま） */
+  body::before{
+    content:'スマートフォン表示 ／ 実機幅 412px';
+    position:fixed;left:26px;top:50%;transform:translateY(-50%);
+    writing-mode:vertical-rl;font-size:10px;font-weight:700;letter-spacing:.26em;
+    color:rgba(40,32,28,.34);z-index:1;pointer-events:none}
+  body::after{
+    content:'HONDA MOBILITY CHUSHIKOKU ／ RECRUIT 2027';
+    position:fixed;right:26px;top:50%;transform:translateY(-50%);
+    writing-mode:vertical-rl;font-size:10px;font-weight:700;letter-spacing:.26em;
+    color:rgba(40,32,28,.3);z-index:1;pointer-events:none}
+}
+/* 画面が狭いと注記が本体に重なるので、広いときだけ出す */
+@media (max-width:900px){ body::before,body::after{display:none} }
+/* 画面が十分高いときだけ、上下に余裕を持たせる */
+@media (min-width:560px) and (min-height:760px){
+  body{padding:36px 0 46px}
+}
+
+
+
+/* ══════ PC：画面全体の背景に動画を敷く ══════════════
+   本体（412px）は手前に浮かせ、動画は左右の余白で見せる。
+   そのままだと本文と喧嘩するので、ぼかし・暗さ・彩度を落として
+   「空気」として扱う。方眼はその上に重ねて設計言語を保つ。
+   スマホでは読み込みもしない（JS側で出し分け）。            */
+.bg-stage{display:none}
+@media (min-width:1024px){
+  .bg-stage{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg-stage video{width:100%;height:100%;object-fit:cover;
+    filter:blur(4px) saturate(.6) brightness(.38);
+    transform:scale(1.06);
+    opacity:0;transition:opacity 1.4s ease}
+  .bg-stage video.on{opacity:1}
+  /* 中央を暗く落として、本体まわりを締める */
+  .bg-stage .tint{position:absolute;inset:0;
+    background:
+      radial-gradient(38% 60% at 50% 50%,rgba(8,8,11,.72),transparent 70%),
+      radial-gradient(60% 40% at 82% 6%,rgba(230,0,18,.16),transparent 62%),
+      linear-gradient(180deg,rgba(8,8,11,.5),rgba(8,8,11,.22) 40%,rgba(8,8,11,.68))}
+  /* 方眼は動画の上に重ねる */
+  .bg-stage .mesh{position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+    background-size:92px 92px}
+
+  /* 動画が乗ったら、周りを暗い側に振る */
+  body.has-bg{background:#0b0b0f;background-image:none}
+  body.has-bg .phone{
+    box-shadow:0 2px 6px rgba(0,0,0,.4),
+      0 22px 44px -12px rgba(0,0,0,.55),
+      0 70px 120px -34px rgba(0,0,0,.8);
+    outline-color:rgba(255,255,255,.14)}
+  body.has-bg .side-l .vt{color:rgba(255,255,255,.5)}
+  body.has-bg .side-l .rule{background:linear-gradient(180deg,var(--red),rgba(255,255,255,.18))}
+  body.has-bg .fixed{border-color:rgba(255,255,255,.14)}
+
+  .phone,.side{z-index:2}
+}
+@media (prefers-reduced-motion:reduce){ .bg-stage video{display:none} }
+
+
+
+/* QRコードはPCのときだけ出す（スマホはボタンから直接LINEへ飛ばす） */
+@media (max-width:1023px){ .qr{display:none} }
+
+/* ── 途中に挟むLINE導線 ────────────────────────── */
+.line-cut{margin:0;padding:38px 22px;position:relative;
+  background:linear-gradient(160deg,#0f1a12,#0b0d0b);color:#fff;overflow:hidden}
+.line-cut .in{position:relative;z-index:1;max-width:412px;margin:0 auto}
+.line-cut .k{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:700;
+  letter-spacing:.2em;color:#4ade80;margin-bottom:12px}
+.line-cut .k::before{content:'';width:18px;height:2px;background:#4ade80}
+.line-cut h3{font-size:19px;font-weight:800;line-height:1.55;margin-bottom:8px}
+.line-cut p{font-size:12.5px;color:rgba(255,255,255,.66);margin-bottom:18px}
+.line-cut .btn{width:100%}
+@media (min-width:1024px){ .line-cut{padding:52px 22px} }
+
+/* ── 右の余白：セクションごとの番号（ページと一緒に流れる）── */
+.sec-rail,.side,.sec-mark{display:none!important}
+.s-rule,.lab{display:none}
+@media (min-width:1024px){
+  body{position:relative}
+  .sec-rail{display:block;position:absolute;top:0;left:0;right:0;
+    z-index:1;pointer-events:none}
+  .sec-mark{position:absolute;left:calc(50% + 250px);
+    display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .sec-mark .n{font-family:var(--num);font-size:132px;font-weight:700;line-height:.76;
+    color:transparent;-webkit-text-stroke:1.5px rgba(22,24,34,.2)}
+  .sec-mark .bar{width:40px;height:2px;background:var(--red)}
+  .sec-mark .t{font-size:10.5px;font-weight:700;letter-spacing:.26em;
+    color:rgba(40,32,28,.5)}
+  body.has-bg .sec-mark .n{-webkit-text-stroke:1.5px rgba(255,255,255,.28)}
+  body.has-bg .sec-mark .t{color:rgba(255,255,255,.58)}
+}
+@media (max-width:1180px){ .sec-rail{display:none} }
+
+/* ══════ PC表示：本文はスマホ幅のまま、左右を使う ══════
+   カラムを広げるのをやめ、412pxのまま中央に置く。
+   空いた左右には、版面の設計言語（方眼・赤の罫・通し番号・縦組み）を
+   そのまま大きく展開して、余白を「背景」として成立させる。
+   STUDIO実装：PCブレークポイントで、本文ボックスの幅は変えずに
+   背景ボックスと固定パーツを左右に置くだけ。                      */
+@media (min-width:1024px){
+  /* 地：方眼を画面全体に広げる */
+  body{
+    background:#dcd9d4;
+    background-image:
+      linear-gradient(rgba(22,24,34,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(22,24,34,.05) 1px,transparent 1px),
+      radial-gradient(64% 40% at 82% 8%,rgba(230,0,18,.07),transparent 62%),
+      radial-gradient(60% 40% at 10% 96%,rgba(30,46,64,.08),transparent 66%);
+    background-size:92px 92px,92px 92px,100% 100%,100% 100%;
+    background-attachment:fixed;
+    padding:40px 0 48px}
+
+  /* 本文はスマホ幅のまま中央に */
+  .phone{max-width:412px;border-radius:22px;
+    box-shadow:0 2px 4px rgba(40,32,28,.1),
+      0 16px 32px -10px rgba(40,32,28,.26),
+      0 54px 96px -30px rgba(40,32,28,.5);
+    outline:1px solid rgba(255,255,255,.72);outline-offset:-1px}
+  .fixed{max-width:412px;bottom:26px;border-radius:16px;
+    box-shadow:0 12px 30px -12px rgba(40,32,28,.45);
+    border:1px solid rgba(40,32,28,.1)}
+
+  /* 既定の縦組み注記は、下の side パーツに置き換える */
+  body::before,body::after{display:none}
+
+  /* ── 左：社名と赤の罫 ── */
+  .side{position:fixed;top:0;bottom:0;z-index:2;pointer-events:none;
+    display:flex;flex-direction:column;justify-content:center;gap:22px}
+  .side-l{left:max(30px,calc(50% - 560px))}
+  .side-l .rule{width:1px;flex:0 0 120px;
+    background:linear-gradient(180deg,var(--red),rgba(22,24,34,.2))}
+  .side-l .vt{writing-mode:vertical-rl;font-size:10px;font-weight:700;
+    letter-spacing:.3em;color:rgba(40,32,28,.42)}
+  .side-l .vt b{color:var(--red)}
+
+  /* ── 右：いま見ているセクションを大きく出す ── */
+
+  /* 画面が狭いと本体に重なるので、そのときは隠す */
+  @media (max-width:1180px){ .side{display:none} }
+}
+@media (max-width:1023px){ .side{display:none} }
+
+
+/* ══════ 丸みを持たせる（かっこよさを少し抜く）══════════
+   角の切り欠き・斜め切り・通し番号・斜めリボンといった
+   「とがった記号」をやめて、均等な丸みに寄せる。        */
+:root{ --r-s:10px; --r-m:16px; --r-l:22px }
+
+/* 通し番号（04 の輪郭文字）と製図の縦罫をやめる */
+section.s::after{display:none}
+section.s::before{display:none}
+
+/* 暗い面の斜め切りをやめて、上下を大きく丸める */
+section.s.nums{clip-path:none;border-radius:var(--r-l);margin:14px 10px;overflow:hidden}
+.last{clip-path:none;border-radius:var(--r-l);margin:14px 10px}
+
+/* ボタン：切り欠き（3px 12px 12px 12px）→ 均等な丸み */
+.btn{border-radius:var(--r-m)}
+.btn .ic{border-radius:12px}
+.fv .lk,.lk{border-radius:14px}
+.fv-vtag,.fv-mute{border-radius:10px}
+
+/* 写真・動画・図版 */
+.ph-box,.vid{border-radius:var(--r-m);overflow:hidden}
+.msg-who .ph-box{border-radius:50%}
+
+/* 面・カード類 */
+.map,.fact,.tr-i,.tr-note,.cp-i,.bn-i,.rq,.line-cut{border-radius:var(--r-m)}
+.prof dl:first-child{border-top-left-radius:var(--r-s);border-top-right-radius:var(--r-s)}
+.tab,.chip{border-radius:999px}
+.fy{border-radius:999px}
+
+/* 数字：1pxの目地グリッド → ふっくらしたカードの並び */
+.ngrid{background:transparent;border:0;gap:9px}
+.ncell{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-m);padding:22px 14px}
+.ncell.wide{background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+  border-radius:var(--r-l);padding:26px 16px 24px}
+
+/* 斜めのMOSTリボン → 小さな丸いラベル */
+.ncell.wide .rb{position:static;transform:none;display:inline-block;background:var(--red);
+  border-radius:999px;padding:4px 13px;font-size:9.5px;letter-spacing:.1em;
+  box-shadow:0 3px 12px rgba(230,0,18,.35);margin-bottom:12px}
+.ncell.wide .v{text-shadow:0 0 26px rgba(230,0,18,.3)}
+
+/* 方眼を薄くして、面をやわらかく */
+.nums .mesh{opacity:.5}
+
+
+/* ══════ 数字のセクションを「赤い面 × 白文字」に ══════════
+   黒地に赤い数字が光るとゲームのUIに寄るので、
+   面を赤にして文字は白で通す。信頼側に振れる。        */
+section.s.nums{background:linear-gradient(168deg,#d20014 0%,#ab000f 52%,#7c0009 100%)}
+.nums .glow{display:none}
+.nums .mesh{opacity:.3}
+.nums .body{color:rgba(255,255,255,.85)}
+
+.ncell{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.26)}
+.ncell.wide{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.34)}
+.ncell .k{color:rgba(255,255,255,.84)}
+.ncell .sub{color:rgba(255,255,255,.74)}
+.ncell .v,.ncell .v[style],.ncell.wide .v{color:#fff!important;text-shadow:none}
+.fy{border-color:rgba(255,255,255,.45);color:#fff}
+
+/* ラベルは白ベタ＋赤文字で抜く */
+.ncell.wide .rb{background:#fff;color:#a8000f;box-shadow:0 3px 12px rgba(0,0,0,.18)}
+
+
+/* ══════ 下部の固定バーを引き締める ══════════════════
+   横幅いっぱいの大きなボタンが2つ並ぶと重いので、
+   主役（LINE）だけを塗って、エントリーは白抜きに。   */
+.fixed{padding:7px 8px calc(7px + env(safe-area-inset-bottom));gap:7px;border-top:0;
+  background:rgba(255,255,255,.9);backdrop-filter:blur(16px) saturate(1.3);
+  -webkit-backdrop-filter:blur(16px) saturate(1.3);
+  box-shadow:0 -1px 0 rgba(40,32,28,.07),0 -6px 26px rgba(40,32,28,.1)}
+.fixed .btn{flex:1;height:48px;padding:0 12px;gap:8px;font-size:13px;border-radius:13px;
+  justify-content:center;box-shadow:none}
+.fixed .btn::before{display:none}
+.fixed .btn-line{flex:1.45;box-shadow:0 2px 10px rgba(6,199,85,.28)}
+.fixed .btn .li{width:19px;height:19px}
+.fixed .btn .lbl{gap:0;align-items:flex-start;line-height:1.25}
+.fixed .btn small{font-size:9px;font-weight:400;opacity:.88;letter-spacing:.02em}
+
+/* エントリーは白抜き：LINEを主役にして、バー全体を軽くする */
+.fixed .btn-red{background:#fff;color:var(--red);box-shadow:inset 0 0 0 1.5px var(--red)}
+
+@media (min-width:1024px){
+  .fixed{bottom:22px;border-radius:17px;padding:7px 8px;
+    box-shadow:0 10px 30px -8px rgba(40,32,28,.34),0 2px 6px rgba(40,32,28,.14)}
+}
+
+</style>
+</head>
+<body>
+
+<div class="draft">DESIGN DRAFT ／ デザイン案 <b>v2</b> ／ <b>※確認中</b>は仮テキスト</div>
+
+
+<!-- PC表示のとき、画面全体の背景に流す動画 -->
+<div class="bg-stage" id="bgStage" aria-hidden="true">
+  <div class="tint"></div>
+  <div class="mesh"></div>
+</div>
+
+
+<!-- PC表示のとき、左右の余白に出るパーツ -->
+
+
+<div class="phone">
+
+    <header class="hdr">
+      <a class="hdr-logo" href="#top" aria-label="株式会社ホンダモビリティ中四国">
+        <img src="data:image/png;base64,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" alt="株式会社ホンダモビリティ中四国">
+      </a>
+      <div class="hdr-r">
+        <a class="sns" href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.07-1.1.05-1.7.24-2.1.4-.5.2-.9.44-1.3.84-.4.4-.64.8-.84 1.3-.16.4-.35 1-.4 2.1C2.6 9.9 2.6 10.3 2.6 12s0 2.1.06 3.3c.05 1.1.24 1.7.4 2.1.2.5.44.9.84 1.3.4.4.8.64 1.3.84.4.16 1 .35 2.1.4 1.2.06 1.6.06 4.7.06s3.5 0 4.7-.06c1.1-.05 1.7-.24 2.1-.4.5-.2.9-.44 1.3-.84.4-.4.64-.8.84-1.3.16-.4.35-1 .4-2.1.06-1.2.06-1.6.06-3.3s0-2.1-.06-3.3c-.05-1.1-.24-1.7-.4-2.1-.2-.5-.44-.9-.84-1.3-.4-.4-.8-.64-1.3-.84-.4-.16-1-.35-2.1-.4C15.5 4 15.1 4 12 4zm0 3.1a4.9 4.9 0 110 9.8 4.9 4.9 0 010-9.8zm0 1.8a3.1 3.1 0 100 6.2 3.1 3.1 0 000-6.2zm5.1-.6a1.15 1.15 0 11-2.3 0 1.15 1.15 0 012.3 0z"/></svg></a>
+        <a class="sns" href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M22.5 7.2a2.8 2.8 0 00-1.95-1.97C18.8 4.75 12 4.75 12 4.75s-6.8 0-8.55.48A2.8 2.8 0 001.5 7.2C1 8.95 1 12 1 12s0 3.05.5 4.8a2.8 2.8 0 001.95 1.97c1.75.48 8.55.48 8.55.48s6.8 0 8.55-.48a2.8 2.8 0 001.95-1.97c.5-1.75.5-4.8.5-4.8s0-3.05-.5-4.8zM9.8 15.3V8.7l5.7 3.3-5.7 3.3z"/></svg></a>
+        <a class="sns" href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0115.54 3h-3.1v12.4a2.6 2.6 0 01-2.6 2.5 2.6 2.6 0 112.6-2.6V12a5.7 5.7 0 105.7 5.7V9.5a7.3 7.3 0 004.3 1.4V7.8a4.3 4.3 0 01-3.3-1.98z"/></svg></a>
+        <button class="burger" id="burger" aria-label="メニュー" aria-expanded="false"><i></i><i></i><i></i></button>
+      </div>
+    </header>
+
+    <nav class="drawer" id="drawer">
+      <a class="mi" href="#about"><small>ABOUT</small>会社を知る</a>
+      <a class="mi" href="#why"><small>WHY US</small>選ばれる理由</a>
+      <a class="mi" href="#numbers"><small>NUMBERS</small>数字で見る</a>
+      <a class="mi" href="#positions"><small>POSITIONS</small>募集職種</a>
+      <a class="mi" href="#oneday"><small>ONE DAY</small>1日の流れ</a>
+      <a class="mi" href="#training"><small>TRAINING</small>入社後の流れ</a>
+      <a class="mi" href="#shops"><small>SHOPS</small>働く場所</a>
+      <a class="mi" href="#requirements"><small>REQUIREMENTS</small>募集要項</a>
+      <a class="mi" href="#faq"><small>FAQ</small>よくある質問</a>
+      <a class="mi" href="#flow"><small>FLOW</small>選考の流れ</a>
+      <div class="d-cta">
+        <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">LINEで相談する<small>友だち追加はこちら</small></span></a>
+        <a class="btn btn-red" href="#">エントリー</a>
+      </div>
+    </nav>
+
+  <!-- FV -->
+  <div class="fv">
+    <!-- 仮素材（Mixkitのフリー動画）。本番は御社の映像に差し替えること。 -->
+    <div class="fv-video">
+      <!-- 確認用の仮素材（Mixkitのフリー動画・ご来店のお客様への接客シーン＝営業職）。
+           本番は先方の素材に差し替え、ファイルは自前で持つこと。 -->
+      <video class="fv-mov" autoplay muted loop playsinline preload="metadata"
+             poster="" aria-hidden="true" data-clip="0,10">
+        <source src="https://assets.mixkit.co/videos/23476/23476-720.mp4" type="video/mp4">
+      </video>
+      <div class="glow fv-g1"></div>
+      <div class="glow fv-g2"></div>
+      <div class="fv-sweep"></div>
+    </div>
+
+    <!-- 面の構成 -->
+    <div class="pl pl-1"></div>
+    <div class="pl pl-2"></div>
+    <div class="pl pl-3"></div>
+    <div class="fv-band"></div>
+
+    <!-- 計測グリッド・目盛り -->
+    <div class="fv-grid"></div>
+    <div class="fv-ticks"></div>
+
+    <div class="vig"></div>
+    <div class="grain"></div>
+    <div class="fv-scrim"></div>
+
+    <!-- 版面のコーナーマーカー -->
+    <span class="br br-tl"></span><span class="br br-tr"></span>
+    <span class="br br-bl"></span><span class="br br-br"></span>
+    <span class="fv-side">6 PREFECTURES ／ 75 SHOPS</span>
+    <span class="fv-foot">RECRUIT 2027</span>
+
+    <div class="fv-in">
+      <span class="fv-eyebrow">2027年度 新卒採用</span>
+      <h1>中四国で、<br><em>Honda</em>と働く。</h1>
+      <p>岡山・広島・山口・香川・愛媛・高知。<br>6県のカーライフを、私たちが支えています。</p>
+
+      <div class="fv-act">
+        <span class="fv-live"><i></i>オンライン個別面談を受付中　<b>残り<em>5</em>名</b></span>
+        <div class="fv-links">
+          <a class="lk lk-line" href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+            まずは気軽に個別面談
+          </a>
+          <a class="lk lk-sub" href="#">エントリー
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 会社を知る -->
+  <section class="s know" id="about">
+    <h2 class="t">6県で、<em>75店舗</em>。<br>地域のカーライフを支える。</h2>
+    <p class="body">ホンダモビリティ中四国は、中四国エリアでHondaの正規ディーラーを展開しています。クルマの販売から点検・整備、保険まで。地域のお客様の毎日に、いちばん近いところで関わる仕事です。</p>
+
+    <div class="fact">
+      <div class="fact-hd"><b>本田技研工業株式会社</b>の100%出資会社です</div>
+      <p>親会社はHondaそのもの。設立は昭和53年、従業員は1,711名。中四国で最大規模のHonda販売網を担っています。</p>
+    </div>
+
+    <div class="prof">
+      <dl><dt>社名</dt><dd>株式会社 ホンダモビリティ中四国</dd></dl>
+      <dl><dt>設立</dt><dd>昭和53年9月27日</dd></dl>
+      <dl><dt>資本金</dt><dd>4億9,280万円</dd></dl>
+      <dl><dt>株主</dt><dd>本田技研工業株式会社 100%</dd></dl>
+      <dl><dt>代表者</dt><dd>仲 敏彦</dd></dl>
+      <dl><dt>従業員数</dt><dd>1,711名（2025年4月現在）</dd></dl>
+      <dl><dt>本社</dt><dd>岡山県岡山市北区今保144-1</dd></dl>
+      <dl><dt>事業内容</dt><dd>新車・中古車販売、リース、レンタカー、車検・点検・整備・修理、損害保険代理店業務、部品用品販売</dd></dl>
+    </div>
+    <div class="ph-box r-16x9" style="margin-top:20px">
+      <span class="pt">画像予定</span>
+      <span class="pd">店舗外観、またはショールーム内の様子</span>
+    </div>
+    <p class="cap-n">※ 明るく開放的な店内が伝わるカットを想定</p>
+
+    <div class="map">
+      <div class="map-h">展開エリア（Honda Cars ／ U-Select 計75店舗）</div>
+      <div class="pref">
+        <div>岡山<small>OKAYAMA</small></div>
+        <div>広島<small>HIROSHIMA</small></div>
+        <div>山口<small>YAMAGUCHI</small></div>
+        <div>香川<small>KAGAWA</small></div>
+        <div>愛媛<small>EHIME</small></div>
+        <div>高知<small>KOCHI</small></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 代表メッセージ -->
+  <section class="s msg" id="message">
+    <h2 class="t">「わからない」から<br>始めて、いい。</h2>
+    <div class="msg-q">&ldquo;</div>
+    <div class="msg-body">
+      <p>採用の面接で、いちばんよく聞かれるのが「クルマに詳しくないのですが、大丈夫でしょうか」という質問です。答えはいつも同じで、大丈夫です。いま店舗で活躍している社員の多くが、知識ゼロで入社しています。</p>
+      <p>私たちの仕事は、クルマを売り込むことではありません。お客様の暮らしを聞いて、いちばん合う一台を一緒に選ぶことです。だから必要なのは、知識よりも先に、人の話をきちんと聞ける姿勢だと考えています。知識のほうは、入社してから時間をかけて身につけてもらえば間に合います。</p>
+      <p>中四国の6県で、75の店舗が地域の毎日を支えています。その一つひとつに、人の生活があります。そこに関わる仕事に少しでも興味を持っていただけたなら、まずは気軽に話を聞きに来てください。お会いできることを楽しみにしています。</p>
+      <p class="tbd">※本文は代表メッセージの下書きです。ご本人の言葉に差し替えてください。</p>
+    </div>
+    <div class="msg-who">
+      <div class="ph-box"><span class="pt">顔写真</span></div>
+      <div>
+        <div class="nm">仲 敏彦</div>
+        <div class="ro">代表取締役社長</div>
+      </div>
+    </div>
+    <p class="cap-n">※ 明るい室内で、正面よりやや斜めからのカットを想定</p>
+  </section>
+
+  <!-- 選ばれる理由 -->
+  <section class="s" id="why">
+    <h2 class="t">「営業」のイメージ、<br>変わるかもしれません。</h2>
+    <p class="body">売り込みが苦手。知識がない。そんな不安を持っている方にこそ、読んでほしい3つのことがあります。</p>
+
+    <div class="reason">
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">来店したお客様を迎えるスタッフ</span>
+        </div>
+        <span class="n">01</span>
+        <h3><mark>飛び込み営業は、ありません。</mark></h3>
+        <p>基本は来店型。「Hondaの車が気になって」と足を運んでくださったお客様をお迎えするところから始まります。知らない家のインターホンを押す仕事ではありません。</p>
+      </div>
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">カウンターで商談している様子</span>
+        </div>
+        <span class="n">02</span>
+        <h3><mark>売り込むのではなく、聞く。</mark></h3>
+        <p>お子さんが生まれる。通勤距離が変わる。お客様の生活を伺って、合う一台をご提案する。話を聞くのが好きな人ほど、向いている仕事です。</p>
+      </div>
+      <div class="rc">
+        <div class="ph-box r-3x2" style="margin:-22px -20px 18px">
+          <span class="pt">画像予定</span>
+          <span class="pd">先輩が新人に教えている研修シーン</span>
+        </div>
+        <span class="n">03</span>
+        <h3><mark>クルマの知識は、入社後で。</mark></h3>
+        <p>ほとんどの先輩が、知識ゼロからのスタートでした。研修と、隣にいる先輩のサポートがあります。「好き」より「知りたい」があれば十分です。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数字 -->
+  <section class="s nums" id="numbers">
+    <div class="mesh"></div>
+    <div class="glow"></div>
+    <div class="grain"></div>
+    <h2 class="t">数字で見る、<br>私たちの働き方。</h2>
+    <p class="body">給与だけでなく、休みも、続けやすさも。事実だけをお見せします。</p>
+
+    <div class="ngrid">
+      <div class="ncell wide">
+        <span class="rb">いちばん気になる数字</span>
+        <div class="k">四大卒・新卒初任給（総支給額）</div>
+        <div class="v">267,700<span>円</span></div>
+        <div class="sub">＋ インセンティブあり</div>
+        <span class="fy">2026年度実績</span>
+      </div>
+      <div class="ncell">
+        <div class="k">賞与</div>
+        <div class="v">6.25<span>ヶ月</span></div>
+        <span class="fy">2026年度実績</span>
+      </div>
+      <div class="ncell">
+        <div class="k">年間休日</div>
+        <div class="v">120<span>日</span></div>
+        <div class="sub">9連休の取得実績あり</div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均有給取得</div>
+        <div class="v">12.5<span>日</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均残業時間</div>
+        <div class="v">16.8<span>時間</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">離職率</div>
+        <div class="v">3.95<span>%</span></div>
+      </div>
+      <div class="ncell">
+        <div class="k">平均勤続年数</div>
+        <div class="v">13.3<span>年</span></div>
+      </div>
+      <div class="ncell wide">
+        <div class="k">平均年齢</div>
+        <div class="v" style="font-size:44px;color:#fff">39.8<span>歳</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 途中のLINE導線 -->
+  <div class="line-cut">
+    <div class="in">
+      <span class="k">LINE</span>
+      <h3>気になることは、<br>LINEで聞けます。</h3>
+      <p>選考前の情報収集だけでも構いません。エントリーの前に、働き方や仕事内容を気軽に聞いてみてください。</p>
+      <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">採用情報をLINEで受け取る<small>友だち追加はこちら</small></span></a>
+    </div>
+  </div>
+
+
+  <!-- 職種 -->
+  <section class="s" id="positions">
+    <h2 class="t">募集している職種</h2>
+    <div class="jobs">
+      <div class="job-card">
+        <div class="ph-box r-16x9">
+          <span class="pt">画像予定</span>
+          <span class="pd">営業スタッフの接客カット</span>
+        </div>
+        <div class="job-b">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3v13h2a3 3 0 006 0h4a3 3 0 006 0h2v-5l-3-4z"/></svg></div>
+          <div><h3>営業職</h3><p>ご来店いただいたお客様への提案、納車後のフォロー、保険や点検のご案内まで。</p></div>
+        </div>
+      </div>
+      <div class="job-card">
+        <div class="ph-box r-16x9">
+          <span class="pt">画像予定</span>
+          <span class="pd">整備士の作業カット（ピット内）</span>
+        </div>
+        <div class="job-b">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 01-5 5L4 17v3h3l5.7-5.7a4 4 0 015-5l-2 2 2.3 2.3 2-2a4 4 0 01-5.3-5.3z"/></svg></div>
+          <div><h3>サービス職（整備）</h3><p>点検・整備・車検。国家資格の取得支援があります。手を動かすのが好きな方へ。</p></div>
+        </div>
+      </div>
+    </div>
+    <a class="more" href="#">詳しい募集要項を見る<span>→</span></a>
+    <p class="cap-n">※ 別ページ、または公式の採用ページへ遷移します</p>
+  </section>
+
+
+  <!-- 1日のスケジュール -->
+  <section class="s oneday" id="oneday">
+    <h2 class="t">入社1年目の、<br>ある1日。</h2>
+    <p class="body">「実際、どんな風に働くんだろう」。いちばん想像しにくいところを、時間割でお見せします。</p>
+
+    <div class="ph-box r-16x9" style="margin-top:20px">
+      <span class="pt">画像予定</span>
+      <span class="pd">朝礼、または開店前の店内の様子</span>
+    </div>
+
+    <div class="day">
+      <div class="dr key">
+        <span class="tm">9:00</span>
+        <h3>出社・朝礼</h3>
+        <p>店舗に出社。その日の来店予定や納車予定を全員で共有します。</p>
+      </div>
+      <div class="dr">
+        <span class="tm">9:30</span>
+        <h3>準備・確認</h3>
+        <p>展示車の点検、商談に使う資料の準備。先輩に相談する時間もここで。</p>
+      </div>
+      <div class="dr key">
+        <span class="tm">10:00</span>
+        <h3>開店・接客</h3>
+        <p>ご来店のお客様を迎えます。最初のうちは先輩と一緒に対応します。</p>
+      </div>
+      <div class="dr">
+        <span class="tm">12:00</span>
+        <h3>休憩</h3>
+        <p>交代で1時間。休憩室で過ごす人も、外に食べに出る人もいます。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+      <div class="dr">
+        <span class="tm">13:00</span>
+        <h3>納車・点検のご案内</h3>
+        <p>ご購入いただいた車のお引き渡しや、点検のご案内を行います。</p>
+      </div>
+      <div class="dr">
+        <span class="tm">16:00</span>
+        <h3>事務作業・お客様へのご連絡</h3>
+        <p>書類の作成や、気になっていらっしゃるお客様へのフォロー。</p>
+      </div>
+      <div class="dr key">
+        <span class="tm">18:30</span>
+        <h3>退勤</h3>
+        <p>平均残業時間は月16.8時間。予定を立てやすい働き方です。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 研修・サポート -->
+  <section class="s training" id="training">
+    <h2 class="t">入社してから、<br>ちゃんと教えます。</h2>
+    <p class="body">知識ゼロで入社した先輩が、どうやって独り立ちしていくのか。入社後の流れをお見せします。</p>
+
+    <div class="tr-list">
+      <div class="tr-i">
+        <span class="when">入社前</span>
+        <div>
+          <h3>内定者向けのフォロー</h3>
+          <p>内定者向けの研修と、同期が顔を合わせる場を用意しています。入社までの不安をなくすための時間です。 <span class="tbd">※内容は確認中</span></p>
+        </div>
+      </div>
+      <div class="tr-i">
+        <span class="when">1〜3ヶ月</span>
+        <div>
+          <h3>基礎研修・先輩に同行</h3>
+          <p>クルマの基礎知識、接客の流れ、社内システムの使い方を学びます。この期間は、ひとりで商談を任されることはありません。</p>
+        </div>
+      </div>
+      <div class="tr-i">
+        <span class="when">3ヶ月〜</span>
+        <div>
+          <h3>先輩と一緒に接客</h3>
+          <p>実際にお客様の前に立ちます。隣に先輩がいる状態で、少しずつ担当できる範囲を広げていきます。</p>
+        </div>
+      </div>
+      <div class="tr-i">
+        <span class="when">1年目〜</span>
+        <div>
+          <h3>お客様を担当する</h3>
+          <p>自分のお客様を持ちます。困ったときに相談できる体制は、そのまま続きます。</p>
+        </div>
+      </div>
+      <div class="tr-i">
+        <span class="when">継続</span>
+        <div>
+          <h3>資格取得の支援</h3>
+          <p>整備士の国家資格、中古自動車販売士など。受験費用の補助や、勤務時間内での学習時間の確保を行っています。 <span class="tbd">※内容は確認中</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tr-note">
+      <b>「クルマが好きじゃないと無理ですか？」</b><br>
+      いいえ。実際に、免許を取ったばかりで入社した先輩もいます。大切なのは「好き」よりも、お客様の話をきちんと聞けることです。
+    </div>
+  </section>
+
+  <!-- キャリアパス -->
+  <section class="s career" id="career">
+    <h2 class="t">5年後、10年後の<br>働き方。</h2>
+    <p class="body">平均勤続年数は13.3年。長く働いている人が多いぶん、その先の道もはっきりしています。</p>
+
+    <div class="cp">
+      <div class="cp-i">
+        <div class="yr"><b>1</b><s>年目</s></div>
+        <h3>まず、仕事を覚える</h3>
+        <p>先輩のサポートを受けながら、接客と商談の流れを身につけます。</p>
+      </div>
+      <div class="cp-i">
+        <div class="yr"><b>3</b><s>年目</s></div>
+        <h3>自分のお客様がつく</h3>
+        <p>点検や車検のたびに顔を出してくださる、いわゆる「担当のお客様」が増えてきます。</p>
+      </div>
+      <div class="cp-i">
+        <div class="yr"><b>5</b><s>年目〜</s></div>
+        <h3>後輩を育てる側へ</h3>
+        <p>新入社員の指導役を任されることがあります。チーフなどの役職へ進む道もここから始まります。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+      <div class="cp-i">
+        <div class="yr"><b>10</b><s>年目〜</s></div>
+        <h3>店舗を任される</h3>
+        <p>店長として店舗運営を担うほか、本部での企画や採用に携わる道もあります。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 福利厚生 -->
+  <section class="s benefits" id="benefits">
+    <h2 class="t">暮らしを支える、<br>会社の制度。</h2>
+    <p class="body">給与や休みだけでなく、生活のうえで実際に効いてくる部分をまとめました。</p>
+
+    <div class="bn">
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/></svg></div>
+        <h3>住宅・転居の支援</h3>
+        <p>転居をともなう配属の場合、住まいの負担を軽くする制度があります。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/></svg></div>
+        <h3>資格取得の支援</h3>
+        <p>受験費用の補助と、学習時間の確保。働きながら資格を取る先輩が多くいます。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3z"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+        <h3>年間休日120日</h3>
+        <p>9連休の取得実績あり。有給の平均取得は12.5日です。</p>
+      </div>
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 8h-3V4H3v13h2a3 3 0 006 0h4a3 3 0 006 0h2v-5l-3-4z"/></svg></div>
+        <h3>社員向けの車両優待</h3>
+        <p>社員本人とご家族が、優待価格でクルマを購入できる制度があります。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg></div>
+        <h3>勤務地の希望を考慮</h3>
+        <p>6県75店舗。選考時にご希望のエリアをお伝えいただけます。</p>
+      </div>
+      <div class="bn-i">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="3.2"/><path d="M21 20v-2a4 4 0 00-3-3.9"/></svg></div>
+        <h3>産休・育休</h3>
+        <p>取得実績があり、復帰後に時短勤務を選んでいる社員もいます。 <span class="tbd">※内容は確認中</span></p>
+      </div>
+    </div>
+    <div class="fact fact-s">
+      <div class="fact-hd"><b>健康経営優良法人2026</b>に認定されています</div>
+      <p>経済産業省と日本健康会議による認定制度で、働く人の健康づくりに取り組む企業として選ばれました。</p>
+    </div>
+    <p class="cap-n">※ 制度の詳細は募集要項および選考時にご説明します</p>
+  </section>
+
+  <!-- 店舗 -->
+  <section class="s shops" id="shops">
+    <h2 class="t">働く場所を、選べる。</h2>
+    <p class="body">気になる県を選んでください。ご希望のエリアを選考時にお伝えいただけます。</p>
+
+    <div class="ph-box r-16x9" style="margin-top:20px">
+      <span class="pt">画像予定</span>
+      <span class="pd">店舗の外観（代表的な1店舗）</span>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-p="岡山">岡山</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="広島">広島</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="山口">山口</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="香川">香川</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="愛媛">愛媛</button>
+      <button class="tab" role="tab" aria-selected="false" data-p="高知">高知</button>
+    </div>
+    <div class="shoplist" id="shoplist"></div>
+    <p class="cap-n">※ 2025年時点の店舗です。最新の情報は公式サイトをご確認ください</p>
+  </section>
+
+  <!-- 途中のLINE導線 -->
+  <div class="line-cut">
+    <div class="in">
+      <span class="k">LINE</span>
+      <h3>気になることは、<br>LINEで聞けます。</h3>
+      <p>選考前の情報収集だけでも構いません。エントリーの前に、働き方や仕事内容を気軽に聞いてみてください。</p>
+      <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">採用情報をLINEで受け取る<small>友だち追加はこちら</small></span></a>
+    </div>
+  </div>
+
+
+  <!-- インタビュー -->
+  <section class="s" id="interview">
+    <h2 class="t">若手社員に、<br>裏側を聞いてみた。</h2>
+    <p class="body">気になるけど面接では聞きにくいこと。先に答えておきます。</p>
+    <div class="iv">
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">Instagram</span>
+        <div class="cap">社内の雰囲気ってどんな感じですか？</div>
+      </div>
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">TikTok</span>
+        <div class="cap">同期との関係はどうですか？</div>
+      </div>
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">Instagram</span>
+        <div class="cap">営業ってノルマがありますか？</div>
+      </div>
+      <div class="vid">
+        <div class="ph">画像予定 ／ 動画サムネイル</div><div class="play"></div>
+        <span class="badge">Instagram</span>
+        <div class="cap">クルマやHondaの専門知識は必要ですか？</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 募集要項 -->
+  <section class="s req" id="requirements">
+    <h2 class="t">募集要項</h2>
+    <p class="body">2027年度 新卒採用の募集条件です。</p>
+
+    <div class="rq">
+      <dl><dt>募集職種</dt><dd>営業職 ／ サービス職（整備）</dd></dl>
+      <dl><dt>対象</dt><dd>2027年3月卒業見込みの方<br>（既卒の方もご相談ください）<span class="tbd">※確認中</span></dd></dl>
+      <dl><dt>初任給</dt><dd>267,700円（四大卒・総支給額）<br>＋ インセンティブあり　<span class="tbd">※2026年度実績</span></dd></dl>
+      <dl><dt>賞与</dt><dd>年2回　6.25ヶ月　<span class="tbd">※2026年度実績</span></dd></dl>
+      <dl><dt>勤務地</dt><dd>岡山・広島・山口・香川・愛媛・高知の各店舗<br>ご希望のエリアを選考時にお伝えいただけます</dd></dl>
+      <dl><dt>勤務時間</dt><dd>9:30〜18:30（実働8時間・休憩60分）<br>平均残業時間 月16.8時間<span class="tbd">※確認中</span></dd></dl>
+      <dl><dt>休日休暇</dt><dd>年間休日120日（シフト制・週休2日）<br>夏季・年末年始の連休、有給休暇<span class="tbd">※確認中</span></dd></dl>
+      <dl><dt>待遇・福利厚生</dt><dd>各種社会保険完備、通勤手当、資格取得支援、<br>社員向け車両優待、退職金制度<span class="tbd">※確認中</span></dd></dl>
+      <dl><dt>必要な免許</dt><dd>普通自動車運転免許（入社までに取得／AT限定可）<span class="tbd">※確認中</span></dd></dl>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="s" id="faq">
+    <h2 class="t">よくある質問</h2>
+    <div class="faq">
+      <details class="qa" open>
+        <summary><button type="button"><span class="q">Q</span>クルマの知識がなくても応募できますか？<span class="mk"></span></button></summary>
+        <div class="a">はい。多くの先輩が知識ゼロで入社しています。入社後の研修と、先輩社員のサポートがあります。</div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>配属先や勤務地はどのように決まりますか？<span class="mk"></span></button></summary>
+        <div class="a">ご希望のエリアを選考のなかで伺い、適性と合わせて決定します。中四国6県・75店舗のなかから、通いやすい場所を一緒に考えます。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>転勤はありますか？<span class="mk"></span></button></summary>
+        <div class="a">全国転勤はありません。異動があるとしても中四国6県のなかで、生活が大きく変わらない範囲を基本としています。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>営業職に個人ノルマはありますか？<span class="mk"></span></button></summary>
+        <div class="a">目標の数字はありますが、一人で抱える形ではなく店舗のチームで追いかけます。飛び込み営業や、知人への売り込みをお願いすることはありません。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>入社後の研修について教えてください<span class="mk"></span></button></summary>
+        <div class="a">まずはビジネスマナーとクルマの基礎知識から始めます。店舗に配属されたあとも先輩が隣について、いきなり一人で商談を任されることはありません。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>選考前に社員の方と話すことはできますか？<span class="mk"></span></button></summary>
+        <div class="a">できます。オンラインの個別面談で、実際に店舗で働く社員に直接質問していただけます。聞きたいことだけ聞いて終わっても構いません。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+      <details class="qa">
+        <summary><button type="button"><span class="q">Q</span>オンライン個別面談は選考に影響しますか？<span class="mk"></span></button></summary>
+        <div class="a">影響しません。情報収集のための場としてご利用ください。話を聞いたうえで、そのままエントリーいただくこともできます。 <span class="tbd">※内容は確認中</span></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- 選考の流れ -->
+  <section class="s flow" id="flow">
+    <h2 class="t">選考の流れ</h2>
+    <div class="steps">
+      <div class="st on"><h3>エントリー</h3><p>LINE、または応募フォームから。</p></div>
+      <div class="st on"><h3>会社説明・個別面談</h3><p>オンラインで実施。ここは選考ではありません。</p></div>
+      <div class="st"><h3>面接・適性検査</h3><p>人柄を知るための面接です。志望動機を完璧に用意する必要はありません。</p></div>
+      <div class="st"><h3>最終面接</h3><p>配属や働き方について、具体的にすり合わせる場でもあります。</p></div>
+      <div class="st"><h3>内定</h3><p>内定後も、入社までLINEで相談していただけます。</p></div>
+    </div>
+  </section>
+
+  <!-- 最終CTA -->
+  <div class="last">
+    <div class="glow"></div>
+    <div class="grain"></div>
+    <div class="ph-box dark r-16x9" style="margin-bottom:28px">
+      <span class="pt">画像予定</span>
+      <span class="pd">若手社員の笑顔のカット（横長）</span>
+    </div>
+    <h2>まだ迷っていて、<br><em>大丈夫です。</em></h2>
+    <p>選考前の情報収集だけでも構いません。仕事内容や働き方について、まずは気軽に聞いてみませんか。</p>
+    <div class="btns">
+      <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">まずはLINEで気軽に相談<small>友だち追加はこちら</small></span></a>
+      <a class="btn btn-red" href="#">新卒採用にエントリー</a>
+    </div>
+    <div class="qr">
+      <div class="box">QRコード</div>
+      <div class="tx"><b style="color:#fff">スマートフォンで読み取り</b><br>採用公式LINEの友だち追加ページへ移動します。</div>
+    </div>
+  </div>
+
+  <footer class="ft">
+    <div class="ft-logo"><img src="data:image/png;base64,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" alt="株式会社ホンダモビリティ中四国"></div>
+    <div class="ft-info">
+      〒701-0145　岡山県岡山市北区今保144-1<br>
+      本田技研工業株式会社 100%出資　／　従業員数 1,711名（2025年4月現在）
+    </div>
+    <div class="ft-lk">
+      <a href="https://hondamobility-chushikoku.co.jp/" target="_blank" rel="noopener">コーポレートサイト</a>
+      <a href="#">プライバシーポリシー</a>
+    </div>
+    <div class="ft-cr">© Honda Mobility Chushikoku.</div>
+  </footer>
+
+  <!-- 固定CTA -->
+  <div class="fixed">
+    <a class="btn btn-line" href="#"><svg class="li" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.64.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.036.194-.36.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg><span class="lbl">LINEで相談<small>友だち追加</small></span></a>
+    <a class="btn btn-red" href="#">エントリー</a>
+  </div>
+
+</div>
+
+<script>
+var SHOPS = {
+  "岡山":{"n":["後楽園店","倉敷笹沖店","倉田店","中島西店","2号バイパス店","岡山高屋店","倉敷中島店","倉敷東塚店","青江店","福富店","西大寺店","中仙道店","岡山中央店","岡山東店"],
+          "u":["岡山西","倉敷","岡山平島"]},
+  "広島":{"n":["大芝店","安佐南大町店","緑井店","可部店","東雲店","大州店","府中店","観音店","西店","五日市店","商工センター店","廿日市店","西条中央店","広東店","呉西中央店","栗原店","東福山店","西福山店","西風新都店"],
+          "u":["祇園","舟入"]},
+  "山口":{"n":["下関宝町店","新下関店","宇部厚南店","宇部神原店","維新公園店","防府西店","防府東店","徳山西店","岩国中央店"],
+          "u":["山口朝田"]},
+  "香川":{"n":["太田店","丸亀北店","香西店","国分寺西店","屋島店","高松中央インター店","春日店","高松東バイパス林店","丸亀田村店","観音寺出作店"],
+          "u":["高松"]},
+  "愛媛":{"n":["松山南環状店","松山北環状店","今治産業道路店","新居浜萩生店","中央店","天山店","上泉店","松山久米店","松山空港通店"],
+          "u":[]},
+  "高知":{"n":["一宮店","いの店","城山店","高知インター店","かづらしま店","野市店"],
+          "u":["高須新町"]}
+};
+function render(p){
+  var d = SHOPS[p], h = '';
+  h += '<div class="sl-h">Honda Cars ' + p + '<span>新車販売 ' + d.n.length + '店舗</span></div>';
+  h += '<div class="chips">' + d.n.map(function(n){ return '<span class="chip">'+n+'</span>'; }).join('') + '</div>';
+  if(d.u.length){
+    h += '<div class="sl-h">U-Select<span>中古車 ' + d.u.length + '店舗</span></div>';
+    h += '<div class="chips">' + d.u.map(function(n){ return '<span class="chip u">'+n+'</span>'; }).join('') + '</div>';
+  }
+  document.getElementById('shoplist').innerHTML = h;
+}
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected','false'); });
+    t.setAttribute('aria-selected','true');
+    render(t.dataset.p);
+  });
+});
+render('岡山');
+var bg=document.getElementById('burger'), dw=document.getElementById('drawer');
+if(bg && dw){
+  bg.addEventListener('click',function(){
+    var on = bg.classList.toggle('on'); dw.classList.toggle('on');
+    bg.setAttribute('aria-expanded', on ? 'true' : 'false');
+  });
+  dw.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(){ bg.classList.remove('on'); dw.classList.remove('on'); bg.setAttribute('aria-expanded','false'); });
+  });
+}
+document.querySelectorAll('.qa summary').forEach(function(s){
+  s.addEventListener('click', function(e){ e.preventDefault(); var d=s.parentElement; d.open=!d.open; });
+});
+
+
+/* ══ 出現モーション ══════════════════════════════
+   やっていることは STUDIO の「スクロールで表示」と同じ。
+   画面に入ったらクラスを付けるだけで、動き自体はCSS側。     */
+(function(){
+  var root = document.documentElement;
+  if(!('IntersectionObserver' in window)) return;
+  root.classList.add('js-rv');
+
+  /* 保険：万一処理が走らなくても5秒後には必ず全部表示 */
+  setTimeout(function(){
+    document.querySelectorAll('[data-rv]:not(.rv), h2.t:not(.rv), .last h2:not(.rv), .s-rule:not(.rv), .day:not(.rv), .steps:not(.rv)')
+      .forEach(function(el){ el.classList.add('rv'); });
+    var f=document.querySelector('.fv'); if(f) f.classList.add('go');
+  }, 5000);
+
+  /* 種類を割り当てる（STUDIOの「スライド上／左／右・ズーム・ぼかし」に対応） */
+  var MAP = [
+    ['.lab','right'],
+    ['.body, .msg-body, .tr-note, .cap-n','up'],
+    ['.map, .rq, .shoplist, .more, .msg-who, .qr, .day, .steps, .ngrid','zoom'],
+    ['.rc, .job-card, .ncell, .bn-i, .cp-i, .tr-i, .qa, .dr, .st, .rq dl, .pref div, .shop, .tab','up']
+  ];
+  MAP.forEach(function(pair){
+    document.querySelectorAll(pair[0]).forEach(function(el){
+      if(!el.hasAttribute('data-rv') && !el.closest('.fv')) el.setAttribute('data-rv', pair[1]);
+    });
+  });
+
+  /* 写真は「幕が滑って消える」ワイプ。小さい丸写真は除外 */
+  document.querySelectorAll('.ph-box, .vid').forEach(function(el){
+    if(el.closest('.fv')) return;
+    if(el.getBoundingClientRect().width < 120) { el.setAttribute('data-rv','zoom'); return; }
+    el.setAttribute('data-rv','wipe');
+  });
+  /* 各セクションで最初に出てくる大きい写真＝その節の主役 → 赤・右へ */
+  document.querySelectorAll('section.s, .last').forEach(function(sec){
+    var first = sec.querySelector('[data-rv="wipe"]');
+    if(first) first.classList.add('wipe-key');
+  });
+
+  /* 横に並ぶカードは左右交互に振って、動きを出す */
+  ['.reason','.cp','.tr-list'].forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(box){
+      Array.prototype.forEach.call(box.children, function(el,i){
+        if(el.hasAttribute('data-rv')) el.setAttribute('data-rv', i%2 ? 'right' : 'left');
+      });
+    });
+  });
+
+  /* 順番に出す（45ms間隔＝速い波） */
+  ['.reason','.jobs','.ngrid','.bn','.cp','.tr-list','.iv','.faq','.day','.steps','.rq','.pref','.shoplist','.tabs']
+    .forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(box){
+        Array.prototype.forEach.call(box.querySelectorAll(':scope > [data-rv]'), function(el,i){
+          el.style.transitionDelay = (i*45) + 'ms';
+        });
+      });
+    });
+
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.querySelectorAll('[data-rv], h2.t, .last h2, .s-rule, .day, .steps')
+      .forEach(function(el){ el.classList.add('rv'); });
+    var fvR=document.querySelector('.fv'); if(fvR) fvR.classList.add('go');
+    return;
+  }
+
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      e.target.classList.add('rv');
+      io.unobserve(e.target);
+    });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.1});
+
+  document.querySelectorAll('[data-rv], h2.t, .last h2, .s-rule, .day, .steps')
+    .forEach(function(el){ io.observe(el); });
+
+  var fv=document.querySelector('.fv');
+  if(fv) requestAnimationFrame(function(){ setTimeout(function(){ fv.classList.add('go'); }, 60); });
+})();
+
+/* ══ PC：セクションごとに番号を1枚ずつ、右の余白に置く ══════
+   JSで中身を書き換えるのではなく、各セクションが自分の番号を持ち、
+   ページと一緒に流れていくだけ。STUDIOでは、各セクションの中に
+   番号のボックスを置くだけで同じ形になる（コード不要）。      */
+(function(){
+  var rail=document.getElementById('secRail');
+  if(!rail) return;
+  var secs=[].slice.call(document.querySelectorAll('section.s'));
+  if(!secs.length) return;
+
+  secs.forEach(function(sec,i){
+    var lab=sec.querySelector('.lab');
+    var el=document.createElement('div');
+    el.className='sec-mark';
+    el.innerHTML='<span class="n">'+('0'+(i+1)).slice(-2)+'</span>'+
+                 '<span class="bar"></span>'+
+                 '<span class="t">'+(lab?lab.textContent.trim():'')+'</span>';
+    rail.appendChild(el);
+    sec._mark=el;
+  });
+
+  function place(){
+    secs.forEach(function(sec){
+      var r=sec.getBoundingClientRect();
+      sec._mark.style.top=Math.round(r.top+window.scrollY+40)+'px';
+    });
+  }
+  place();
+  window.addEventListener('resize',place);
+  window.addEventListener('load',place);
+  setTimeout(place,600);
+})();
+
+
+/* ══ 背景動画：読み込めたときだけ出す ══════════════ */
+(function(){
+  var v=document.querySelector('.fv-mov');
+  if(!v) return;
+  var fv=v.closest('.fv');
+  function on(){ v.classList.add('on'); fv.classList.add('has-mov'); }
+  if(v.readyState>=2) on();
+  v.addEventListener('loadeddata',on);
+  v.addEventListener('error',function(){ v.remove(); });
+  kick(v);
+})();
+
+
+/* ══ PC：背景動画を敷く（スマホでは読み込まない）══════════ */
+(function(){
+  var stage=document.getElementById('bgStage');
+  if(!stage) return;
+  if(!window.matchMedia('(min-width:1024px)').matches) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var v=document.createElement('video');
+  v.muted=true; v.loop=true; v.autoplay=true; v.playsInline=true;
+  v.setAttribute('playsinline',''); v.preload='auto';
+  /* 確認用の仮素材。本番は先方の映像に差し替え、ファイルは自前で持つこと */
+  v.src='https://assets.mixkit.co/videos/23989/23989-720.mp4';
+  v.addEventListener('loadeddata',function(){
+    v.classList.add('on');
+    document.body.classList.add('has-bg');
+  });
+  v.addEventListener('error',function(){ v.remove(); });
+  stage.insertBefore(v, stage.firstChild);
+  kick(v);
+})();
+
+/* 自動再生が止められた／タブが裏に回った場合に、再生し直す */
+function kick(v){
+  var t=function(){ var p=v.play&&v.play(); if(p&&p.catch) p.catch(function(){}); };
+  t();
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible' && v.paused) t();
+  });
+  ['pointerdown','keydown','touchstart'].forEach(function(e){
+    window.addEventListener(e,function h(){ if(v.paused) t(); }, {once:false,passive:true});
+  });
+}
+
+</script>
+
+<!-- ══ 計測タグの受け口 ══════════════════════════════
+     依頼文にあった Googleアナリティクス・Metaピクセル・
+     ボタン別のクリック計測を、あとで差し込めるようにしてある。
+     公開前に測定IDを入れて、コメントを外すこと。
+Googleアナリティクスは、GA4で発行される測定ID入りのコードをそのまま貼り付ける。
+Metaピクセルは、Meta側で発行されるコードをそのまま貼り付ける。
+-->
+<script>
+/* どのボタンから申し込まれたかを数えるための下ごしらえ。
+   計測タグを入れたら、下のsendの中身を gtag / fbq の呼び出しに差し替える。 */
+(function(){
+  function label(a){
+    if(a.closest('.fixed'))     return '下部固定バー';
+    if(a.closest('.fv'))        return 'ファーストビュー';
+    if(a.closest('.line-cut'))  return '途中のLINE導線';
+    if(a.closest('.last'))      return '最下部';
+    if(a.closest('.drawer'))    return 'メニュー内';
+    return 'その他';
+  }
+  function send(kind, place){
+    /* 例）gtag('event','cta_click',{cta:kind, place:place});
+           fbq('trackCustom','CTAClick',{cta:kind, place:place});        */
+    if(window.console) console.log('[計測]', kind, '／', place);
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a.btn, a.lk');
+    if(!a) return;
+    var kind = a.classList.contains('btn-line')||a.classList.contains('lk-line') ? 'LINE登録'
+             : a.classList.contains('btn-red') ? 'エントリー' : 'その他';
+    send(kind, label(a));
+  }, true);
+})();
+
+/* ══ 長い素材は、頭の見せたい部分だけを繰り返す ══════════
+   data-clip="開始,終了"（秒）を指定した動画に効く。
+   STUDIOでは、あらかじめ切り出した短い動画を入れれば同じこと。 */
+(function(){
+  document.querySelectorAll('video[data-clip]').forEach(function(v){
+    var a=v.dataset.clip.split(',').map(Number), from=a[0], to=a[1];
+    v.addEventListener('loadedmetadata',function(){ if(v.currentTime<from) v.currentTime=from; });
+    v.addEventListener('timeupdate',function(){
+      if(v.currentTime>=to || v.currentTime<from) v.currentTime=from;
+    });
+  });
+})();
+
+</script>
+</body>
+</html>

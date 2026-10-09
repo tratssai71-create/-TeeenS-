@@ -1,0 +1,15 @@
+name,url,industry,contact_form_url,notes,score,findings
+narakikenzai,http://www.narakikenzai.co.jp/,,,,50,SSL(https)未対応; スマホ対応(viewportタグ)なし
+khkk,https://khkk.net/,,,,30,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Fri, 10 Apr 2026 06:05:00 GMT; h1タグなし(SEO構造が弱い)"
+nitta-kougyo,http://nitta-kougyo.com/,,,,25,SSL(https)未対応
+kurashikitosou,https://kurashikitosou.net/,,,,15,コピーライト表記が2023年で止まっている
+nagase-home,https://www.nagase-home.com/,,,,15,コピーライト表記が2010年で止まっている
+g-tech-okayama,https://g-tech-okayama.com/,,,,10,meta descriptionが未設定(SEO弱い)
+yoshikawa-tosou,https://yoshikawa-tosou.com/,,,,5,h1タグなし(SEO構造が弱い)
+ys-ken,https://ys-ken.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mikihousing,https://www.mikihousing.net/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+hakutou,https://www.hakutou.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+kibikougen,https://kibikougen.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+rokushima2020,https://rokushima2020.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mikien,https://www.mikien.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+taketa-engei,https://www.taketa-engei.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

@@ -1,0 +1,6 @@
+name,url,industry,contact_form_url,notes,score,findings
+yamashita-juku,https://www.yamashita-juku.com/,,,,45,スマホ対応(viewportタグ)なし; コピーライト表記が2007年で止まっている; h1タグなし(SEO構造が弱い)
+saki-sola,https://saki-sola.com/access,,,,35,スマホ対応(viewportタグ)なし; meta descriptionが未設定(SEO弱い)
+poodock,https://poodock.racms.jp/,,,,25,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Thu, 10 Sep 2026 00:11:18 GMT"
+ohana-dogsalon,https://ohana-dogsalon.com/,,,,0,"最終更新(サーバー応答): Mon, 27 Jul 2026 00:58:00 GMT"
+dogalldogall,https://dogalldogall.net/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>STUDIO 制作メモ</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f5f4f2; --panel:#ffffff; --ink:#1a1a1c; --ink2:#55555c; --ink3:#8d8d96;
+  --line:#e4e2df; --red:#CA0E15; --green:#06C755; --code:#f0eeeb; --accent:#1a1a1c;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#141416; --panel:#1c1c1f; --ink:#f0f0f2; --ink2:#a9a9b2; --ink3:#77777f;
+  --line:#2c2c31; --code:#232327; --accent:#f0f0f2;
+}}
+:root[data-theme="dark"]{
+  --bg:#141416; --panel:#1c1c1f; --ink:#f0f0f2; --ink2:#a9a9b2; --ink3:#77777f;
+  --line:#2c2c31; --code:#232327; --accent:#f0f0f2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans JP",system-ui,sans-serif;font-size:15px;line-height:1.85;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:840px;margin:0 auto;padding:56px 16px 120px}
+header.top{margin-bottom:44px;padding-bottom:26px;border-bottom:2px solid var(--accent)}
+header.top .eyebrow{font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.18em;
+  color:var(--red);font-weight:500;margin-bottom:10px}
+h1{font-size:30px;font-weight:900;letter-spacing:-.02em;line-height:1.35;text-wrap:balance}
+header.top p{color:var(--ink2);font-size:13.5px;margin-top:10px}
+h2{font-size:20px;font-weight:900;letter-spacing:-.01em;margin:52px 0 6px;
+  padding-top:22px;border-top:1px solid var(--line);text-wrap:balance}
+h2:first-of-type{border-top:0;padding-top:0}
+h2 .n{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--red);
+  display:block;font-weight:500;letter-spacing:.14em;margin-bottom:4px}
+h3{font-size:15px;font-weight:700;margin:26px 0 8px}
+p{color:var(--ink2);font-size:13.5px}
+p.lead{color:var(--ink);font-size:14px;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin:12px 0 4px;font-size:13px;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-weight:700;font-size:11.5px;letter-spacing:.04em;color:var(--ink3);
+  background:var(--code);white-space:nowrap}
+td:first-child{white-space:nowrap;font-weight:500;width:34%}
+code,.v{font-family:"Roboto Mono",monospace;font-size:12.5px;background:var(--code);
+  padding:1px 6px;border-radius:5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;
+  vertical-align:-1px;border:1px solid rgba(128,128,128,.3)}
+ul{margin:8px 0 8px 20px;color:var(--ink2);font-size:13.5px}
+li{margin-bottom:5px}
+.note{background:var(--panel);border-left:3px solid var(--red);border-radius:0 10px 10px 0;
+  padding:14px 16px;margin:16px 0;font-size:13px;color:var(--ink2)}
+.note b{color:var(--ink)}
+.ok{border-left-color:var(--green)}
+.steps{counter-reset:s;list-style:none;margin-left:0}
+.steps li{counter-increment:s;position:relative;padding-left:30px;margin-bottom:9px;color:var(--ink2);font-size:13.5px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:20px;height:20px;
+  border-radius:50%;background:var(--accent);color:var(--bg);font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-family:"Roboto Mono",monospace}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.card h4{font-size:13px;font-weight:700;margin-bottom:7px}
+.card p{font-size:12.5px;line-height:1.7}
+.tag{display:inline-block;font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.06em;
+  padding:2px 8px;border-radius:999px;background:var(--code);color:var(--ink3);margin-left:7px;
+  vertical-align:2px;font-weight:500}
+.tag.warn{background:rgba(230,0,18,.1);color:var(--red)}
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">HONDA MOBILITY CHUSHIKOKU / RECRUIT 2027</div>
+  <h1>STUDIO 制作メモ</h1>
+  <p>モックアップから実測した数値です。STUDIOの無料プラン前提。公開目標 9/23（水）。<br><b>配色を白ベース×赤多め×黒すこしに変更しました（9/17更新）。</b></p>
+</header>
+
+<h2><span class="n">00</span>先に決まっていること</h2>
+<table>
+  <tr><th>項目</th><th>内容</th></tr>
+  <tr><td>プラン</td><td>STUDIO 無料プラン（カスタムコード・GA4・ピクセルは入らない）</td></tr>
+  <tr><td>公開URL</td><td><code>〇〇.studio.site</code>（独自ドメインは有料のため後日）</td></tr>
+  <tr><td>本体の幅</td><td><code>412px</code> 中央寄せ。PCも同じ幅のまま</td></tr>
+  <tr><td>PCの左右</td><td>背景色だけ。動画やパーツは置かない</td></tr>
+  <tr><td>セクション数</td><td>7（＋ファーストビュー＋最終CTA）</td></tr>
+</table>
+
+<h2><span class="n">01</span>全体設定</h2>
+
+<h3>フォント</h3>
+<table>
+  <tr><th>用途</th><th>指定</th></tr>
+  <tr><td>本文・見出し</td><td><code>Noto Sans JP</code></td></tr>
+  <tr><td>数字（初任給など）</td><td><code>Barlow Condensed</code>（無ければ Noto Sans JP の Bold で代用）</td></tr>
+</table>
+
+<h3>色</h3>
+<p class="lead">公式サイトのCSSを実測した値です。<b>白ベース・赤多め・黒すこし。</b></p>
+<table>
+  <tr><th>役割</th><th>値</th><th>使う場所</th></tr>
+  <tr><td>赤（Honda）</td><td><span class="sw" style="background:#CA0E15"></span><code>#CA0E15</code></td><td>数字／最終CTAの面、アクセント全般</td></tr>
+  <tr><td>赤（濃い側）</td><td><span class="sw" style="background:#8E060C"></span><code>#8E060C</code></td><td>赤い面のグラデーション下端</td></tr>
+  <tr><td>黒（文字）</td><td><span class="sw" style="background:#231815"></span><code>#231815</code></td><td>本文・見出し・フッターの面</td></tr>
+  <tr><td>薄い文字</td><td><span class="sw" style="background:#5c5450"></span><code>#5c5450</code></td><td>説明文</td></tr>
+  <tr><td>注記</td><td><span class="sw" style="background:#968f8a"></span><code>#968f8a</code></td><td>※注記・キャプション</td></tr>
+  <tr><td>罫線</td><td><span class="sw" style="background:#e7e1dd"></span><code>#e7e1dd</code></td><td>カードの枠・区切り線</td></tr>
+  <tr><td>うすいグレー</td><td><span class="sw" style="background:#f7f4f2"></span><code>#f7f4f2</code></td><td>交互に敷くセクションの地</td></tr>
+  <tr><td>白</td><td><span class="sw" style="background:#ffffff"></span><code>#ffffff</code></td><td>本体の地・カード</td></tr>
+  <tr><td>PCの左右</td><td><span class="sw" style="background:#efeae6"></span><code>#efeae6</code></td><td>背景（後日決める）</td></tr>
+  <tr><td>LINE緑</td><td><span class="sw" style="background:#06C755"></span><code>#06C755</code></td><td>LINEボタンのみ</td></tr>
+</table>
+
+<h3>面の配分</h3>
+<table>
+  <tr><th>面</th><th>どこ</th></tr>
+  <tr><td><span class="sw" style="background:#ffffff"></span>白</td><td>選ばれる理由／インタビュー／選考の流れ／会社概要</td></tr>
+  <tr><td><span class="sw" style="background:#f7f4f2"></span>うすいグレー</td><td>待遇と条件／よくある質問／途中のLINE導線</td></tr>
+  <tr><td><span class="sw" style="background:#CA0E15"></span>赤ベタ</td><td><b>数字で見る</b>／<b>最終CTA</b> の2面だけ</td></tr>
+  <tr><td><span class="sw" style="background:#231815"></span>黒ベタ</td><td><b>ファーストビュー（全面動画）</b>と<b>フッター</b></td></tr>
+</table>
+
+<div class="note">
+  <b>赤い面は角丸22px・左右10pxの余白</b>を空けて「浮いた板」にします。
+  白い面から赤い板が現れる形なので、ベタ塗りを全面に流すより白が生きます。
+</div>
+
+<h3>共通の数値</h3>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>セクションの余白</td><td>上 <code>62</code> ／ 左右 <code>30</code> ／ 下 <code>58</code></td></tr>
+  <tr><td>角丸：カード</td><td><code>16px</code></td></tr>
+  <tr><td>角丸：大きい面</td><td><code>22px</code></td></tr>
+  <tr><td>角丸：タブ・チップ</td><td><code>999px</code>（完全な丸）</td></tr>
+  <tr><td>見出し h2</td><td><code>25px</code> ／ Black(900) ／ 行間 <code>1.42</code> ／ 字間 <code>-0.005em</code></td></tr>
+  <tr><td>本文</td><td><code>13.5px</code> ／ Regular ／ 行間 <code>1.8</code></td></tr>
+  <tr><td>中見出し（統合部分）</td><td><code>19px</code> ／ Bold ／ 上に余白34・線からの間隔22・上罫線1px<br><b>上罫線の左端に赤い線（幅44px・太さ3px）を重ねる</b></td></tr>
+  <tr><td><b>見出しの上の赤い線</b></td><td>各セクションの h2 の上に <b>幅30px・太さ3px・赤</b>／下に余白16px</td></tr>
+</table>
+
+<div class="note">
+  <b>ブレークポイントは1つだけでOK。</b>
+  本体を「最大幅412px・中央寄せ」にしておけば、PCでは左右に <code>#0d0d11</code> の背景が出るだけです。
+  PC用のレイアウトを別途組む必要はありません。
+</div>
+
+<h2><span class="n">02</span>作る順番</h2>
+<ol class="steps">
+  <li>ヘッダー（固定）＋ ドロワー</li>
+  <li>ファーストビュー（全面動画・コピー・残り5名・ボタン2つ）</li>
+  <li>下部の固定バー ← ここまでで骨格が完成</li>
+  <li>数字で見る</li>
+  <li>選ばれる理由</li>
+  <li>待遇と、条件。（＋勤務地）</li>
+  <li>若手社員インタビュー</li>
+  <li>よくある質問 → 選考の流れ</li>
+  <li>会社概要 → 最終CTA</li>
+  <li>途中のLINE導線を2箇所に差し込む</li>
+  <li>フッター</li>
+</ol>
+
+<h2><span class="n">03</span>ヘッダー <span class="tag">固定</span></h2>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>配置</td><td>固定／上0・左0・右0／最大幅 <code>412px</code> 中央寄せ／最前面</td></tr>
+  <tr><td>高さ</td><td><code>50px</code>（内側の余白 上下10・左右16）</td></tr>
+  <tr><td>背景</td><td><b>白 <code>94%</code></b> ＋ 背景のぼかし／<b>下端に赤 <code>#CA0E15</code> の線 2px</b></td></tr>
+  <tr><td>並び</td><td>横並び・両端揃え</td></tr>
+  <tr><td>ロゴ</td><td><b>通常版（黒文字）</b>・高さ <code>18px</code>（幅は自動）</td></tr>
+  <tr><td>SNS</td><td><code>30×30</code> の箱にアイコン <code>16.5px</code>／<b>色は黒 <code>#231815</code></b>／間隔2px</td></tr>
+  <tr><td>ハンバーガー</td><td><code>32×30</code>／線の太さ <code>1.6px</code>／長さ 18・12・18／間隔 <code>4.5px</code>／<b>黒</b></td></tr>
+</table>
+<div class="note">
+  <b>開閉はSTUDIOのクリック動作で。</b> 線が×に変形するアニメーションは作り込まず、
+  <b>開いた状態の画像に差し替える</b>のが速いです。
+</div>
+
+<h3>ドロワー（7項目）</h3>
+<table>
+  <tr><th>英字（小）</th><th>日本語</th></tr>
+  <tr><td><code>NUMBERS</code></td><td>数字で見る</td></tr>
+  <tr><td><code>WHY US</code></td><td>選ばれる理由</td></tr>
+  <tr><td><code>CONDITIONS</code></td><td>待遇と条件</td></tr>
+  <tr><td><code>INTERVIEW</code></td><td>社員インタビュー</td></tr>
+  <tr><td><code>FAQ</code></td><td>よくある質問</td></tr>
+  <tr><td><code>FLOW</code></td><td>選考の流れ</td></tr>
+  <tr><td><code>COMPANY</code></td><td>会社概要</td></tr>
+</table>
+<p>ドロワーの地は<b>白98%</b>。日本語 <code>19px</code>／Bold／<b>黒</b>。英字 <code>9.5px</code>／Bold／赤 <code>#E60012</code>／字間 <code>0.16em</code>。
+各項目の下に白12%の罫線。下にボタン2つ（間隔9px）。</p>
+
+<h2><span class="n">04</span>ファーストビュー <span class="tag">全面動画</span></h2>
+<div class="note ok">
+  <b>ここだけ黒い面です。</b>御社提供の動画を画面幅いっぱいに敷き、その上に白い文字を乗せます。
+  ページのほかの部分は白ベースのままです。
+</div>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>高さ</td><td><code>768px</code>（下の余白 <code>28px</code>／文字は下寄せ）</td></tr>
+  <tr><td>動画</td><td>全面に敷く（ボックスの背景動画／自動再生・ループ・ミュート）<br>表示位置は<b>上から18%</b>の位置に寄せる</td></tr>
+  <tr><td>幕</td><td>動画の上に重ねる縦グラデーション。<b>上は薄く、画面の44%あたりから一気に濃く</b><br>
+      <code>rgba(15,11,10,.42)</code> 0% → <code>.06</code> 16% → <code>.14</code> 30% →
+      <code>.66</code> 44% → <code>.90</code> 58% → <code>.99</code> 100%</td></tr>
+  <tr><td>小見出し</td><td>「2027年度 新卒採用」<b>白</b>／赤い短い線＋<code>11px</code> Bold</td></tr>
+  <tr><td>大見出し</td><td><code>37px</code>／Black(900)／行間 <code>1.24</code>／<b>白</b><br>
+      「中四国で、Hondaと働く。」— <b>Hondaだけ <code>#E60020</code>（ロゴの赤）</b></td></tr>
+  <tr><td>説明文</td><td><code>13px</code>／行間 <code>1.75</code>／白82%</td></tr>
+  <tr><td>ボタン</td><td>高さ <code>46px</code>／角丸 <code>14px</code><br>①LINE緑 <code>#06C755</code>　②<b>白の枠線＋白文字</b></td></tr>
+</table>
+
+<div class="note">
+  <b>いまの素材にはテロップが焼き込まれています。</b>
+  画面の38〜48%の位置に「どこの自動車ディーラーに就職するか迷っているアナタ！」が出るため、
+  こちらの文字はその下（画面の55%以降）にまとめ、幕を濃くして干渉を避けています。
+  <b>テロップなしの書き出しをもらえれば、幕を薄くして映像をもっと見せられます。</b>
+</div>
+
+<h3>残り5名のカード</h3>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>サイズ</td><td>幅いっぱい × 高さ <code>58px</code></td></tr>
+  <tr><td>背景・枠</td><td>白 <code>10%</code> ＋ 白 <code>24%</code> の枠線 ＋ 背景のぼかし（映像の上のガラス）</td></tr>
+  <tr><td>角丸</td><td><code>15px</code>／左端に赤 <code>#E60012</code> の縦線 <code>3px</code></td></tr>
+  <tr><td>中身</td><td>赤い丸 <code>7px</code>／「オンライン個別面談」<code>12.5px</code> Bold <b>白</b>／<br>下に「選考ではありません。話を聞くだけでOK」<code>10px</code> 白66%</td></tr>
+  <tr><td>右側</td><td>白22%の縦線で区切り／「残り」<code>10px</code>＋「<b>5</b>」<code>30px</code> Bold <b>白</b>＋「名」<code>11.5px</code> 白</td></tr>
+  <tr><td>下の注記</td><td>「※ 先着順・今月の受付枠です」<code>9.5px</code> 白56%</td></tr>
+</table>
+<div class="note">
+  <b>「今月の受付枠」は仮の文言です。</b> 事実と違うと問題になるので、先方に確認してから公開してください。
+</div>
+
+<h2><span class="n">05</span>下部の固定バー <span class="tag">固定</span></h2>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>配置</td><td>固定／下0／最大幅 <code>412px</code> 中央寄せ</td></tr>
+  <tr><td>高さ</td><td><code>62px</code>（内側 上下7・左右8／ボタン間 7px）</td></tr>
+  <tr><td>背景</td><td>白 <code>90%</code> ＋ ぼかし。上に細い影</td></tr>
+  <tr><td>ボタン</td><td>高さ <code>48px</code>／角丸 <code>13px</code>／<code>13px</code> Bold</td></tr>
+  <tr><td>LINE（主役）</td><td>緑 <code>#06C755</code> 塗り／幅の比率 <code>1.45</code>／2行（「LINEで相談」＋「友だち追加」<code>9px</code>）</td></tr>
+  <tr><td>エントリー（脇役）</td><td><b>白地＋赤い枠線1.5px＋赤文字</b>／幅の比率 <code>1</code></td></tr>
+</table>
+<div class="note ok">
+  <b>塗りをLINEだけにしているのは意図的です。</b> メインCVがLINE登録なので、
+  2つを同じ強さで並べると迷わせます。ここは崩さないでください。
+</div>
+
+<h2><span class="n">06</span>数字で見る <span class="tag">赤い面</span></h2>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>面</td><td>赤のグラデーション <code>#CA0E15</code> → <code>#AE0A11</code> → <code>#8E060C</code>（上から下）<br>角丸 <code>22px</code>／上下16px・左右10px の余白を空けて浮かせる</td></tr>
+  <tr><td>見出し・本文</td><td>白／本文は白 <code>85%</code></td></tr>
+  <tr><td>最初のカード</td><td>白いカード（角丸16・左に赤3px）「本田技研工業株式会社の100%出資会社です」</td></tr>
+  <tr><td>数字の並び</td><td>2列グリッド／間隔 <code>9px</code></td></tr>
+  <tr><td>カード</td><td>白 <code>13%</code> ＋ 白 <code>28%</code> の枠／角丸 <code>16px</code>／余白 <code>22×14</code></td></tr>
+  <tr><td>初任給カード（横長）</td><td>白 <code>18%</code>／角丸 <code>22px</code>／余白 <code>26/16/24</code></td></tr>
+  <tr><td>数字</td><td>横長 <code>62px</code>／通常 <code>44px</code>／Bold／<b>すべて白</b></td></tr>
+  <tr><td>ラベル</td><td><code>11px</code>／白 <code>84%</code></td></tr>
+  <tr><td>「いちばん気になる数字」</td><td>白いピル（角丸999）＋赤文字 <code>#CA0E15</code>／<code>9.5px</code></td></tr>
+  <tr><td>「2026年度実績」</td><td>白45%の枠線＋白文字／<code>9px</code>／角丸999</td></tr>
+</table>
+
+<h3>載せる数字</h3>
+<table>
+  <tr><td>四大卒・新卒初任給</td><td><code>267,700円</code>（総支給）＋インセンティブあり <span class="tag">2026年度実績</span></td></tr>
+  <tr><td>賞与</td><td><code>6.25ヶ月</code> <span class="tag">2026年度実績</span></td></tr>
+  <tr><td>年間休日</td><td><code>120日</code>（9連休の取得実績あり）</td></tr>
+  <tr><td>平均有給取得</td><td><code>12.5日</code></td></tr>
+  <tr><td>平均残業時間</td><td><code>16.8時間</code></td></tr>
+  <tr><td>離職率</td><td><code>3.95%</code></td></tr>
+  <tr><td>平均勤続年数</td><td><code>13.3年</code></td></tr>
+  <tr><td>平均年齢</td><td><code>39.8歳</code></td></tr>
+</table>
+<div class="note"><b>「年間所定労働時間1,960時間」は載せません。</b>先方の指定です。</div>
+
+<h2><span class="n">07</span>選ばれる理由</h2>
+<p class="lead">見出し「「営業」のイメージ、変わるかもしれません。」</p>
+<ul>
+  <li>飛び込み営業がない（来店型）</li>
+  <li>売り込みではなく、話を聞いて提案する</li>
+  <li>クルマの知識ゼロで大丈夫</li>
+</ul>
+<p>カードは白／角丸 <code>16px</code>／枠線 <code>#e7e1dd</code>。番号 01・02・03 は<b>赤</b>で右上に大きく。
+見出しの文字には赤いマーカー（下60%に <code>rgba(202,14,21,.2)</code>）。</p>
+
+<h2><span class="n">08</span>待遇と、条件。</h2>
+<p class="lead">福利厚生6枚 → 中見出し「募集要項」→ 要項の表、という並び。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>福利厚生</td><td>2列グリッド／間隔 <code>9px</code>／カード幅 <code>150px</code>／白・角丸16・枠線</td></tr>
+  <tr><td>アイコン</td><td><code>30×30</code>／角丸 <code>9px</code>／背景は赤の8%</td></tr>
+  <tr><td>要項の表</td><td>白／角丸 <code>16px</code>／枠線／行ごとに下罫線</td></tr>
+  <tr><td>項目名（左）</td><td>幅 <code>96px</code>／<code>12px</code> Bold／<code>#5a5a5e</code></td></tr>
+  <tr><td>内容（右）</td><td><code>12.5px</code>／行間 <code>1.85</code></td></tr>
+</table>
+<p>要項の下に中見出し「<b>勤務地</b>」を置いて、6県のグリッドを入れます。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>勤務地の枠</td><td>白／角丸 <code>16px</code>／余白 <code>22px</code>／枠線</td></tr>
+  <tr><td>県の並び</td><td>3列 × 2段／間隔 <code>8px</code>／各 <code>82px</code> 幅</td></tr>
+</table>
+<div class="note">
+  いちばん下に「健康経営優良法人2026に認定されています」のカードを置いています（白・左に赤線）。
+</div>
+
+<h2><span class="n">09</span>会社概要 <span class="tag">いちばん最後</span></h2>
+<p class="lead">最終CTAの<b>直前</b>に置きます。地は白。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>表</td><td>行ごとに下罫線 <code>#e7e1dd</code>／行の余白 上下11px</td></tr>
+  <tr><td>項目名（左）</td><td>幅 <code>74px</code>／<code>12.5px</code> Bold／<code>#968f8a</code></td></tr>
+  <tr><td>内容（右）</td><td><code>12.5px</code>／行間 <code>1.75</code>／<code>#5c5450</code></td></tr>
+</table>
+<table>
+  <tr><td>社名</td><td>株式会社 ホンダモビリティ中四国</td></tr>
+  <tr><td>設立</td><td>昭和53年9月27日</td></tr>
+  <tr><td>資本金</td><td>4億9,280万円</td></tr>
+  <tr><td>株主</td><td>本田技研工業株式会社 100%</td></tr>
+  <tr><td>代表者</td><td>代表取締役社長　仲 敏彦</td></tr>
+  <tr><td>従業員数</td><td>1,711名（2025年4月現在）</td></tr>
+  <tr><td>本社</td><td>〒701-0145　岡山県岡山市北区今保144-1</td></tr>
+  <tr><td>販売拠点</td><td>75店舗（Honda Cars 67／U-Select 8）</td></tr>
+  <tr><td>事業内容</td><td>新車販売、中古車販売、リース、レンタカー、車検・点検・整備・修理、損害保険代理店業務、部品用品販売</td></tr>
+</table>
+
+<h2><span class="n">10</span>若手社員インタビュー</h2>
+<p>動画サムネイル4枚を縦に並べる（間隔12px）。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>サムネイル</td><td>比率 <code>16:10</code>／角丸 <code>16px</code></td></tr>
+  <tr><td>再生ボタン</td><td>中央に白い丸 <code>52px</code></td></tr>
+  <tr><td>バッジ</td><td>左上に「Instagram」「TikTok」黒60%／<code>9.5px</code></td></tr>
+  <tr><td>キャプション</td><td>下に白文字 <code>13.5px</code> Bold＋下から黒のグラデーション</td></tr>
+</table>
+<p>質問：社内の雰囲気／同期との関係／営業のノルマ／専門知識は必要か</p>
+
+<h2><span class="n">11</span>よくある質問</h2>
+<p>STUDIOのトグル（アコーディオン）で。1問目だけ「デフォルトで開く」ON。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>行</td><td>下罫線 <code>#e6e6e8</code>／質問の余白 上下 <code>17px</code></td></tr>
+  <tr><td>質問</td><td><code>13.5px</code> Bold／左に赤い「Q」<code>20px</code></td></tr>
+  <tr><td>回答</td><td><code>13px</code>／<code>#5a5a5e</code>／左を <code>33px</code> 下げる</td></tr>
+  <tr><td>開閉マーク</td><td>右に＋（開くと−）<code>13px</code></td></tr>
+</table>
+
+<h2><span class="n">12</span>選考の流れ</h2>
+<p>縦線＋丸のステップ表示。エントリー → 会社説明・個別面談 → 面接・適性検査 → 最終面接 → 内定。</p>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>丸</td><td><code>19px</code>／枠線2px／最初の2つだけ赤で塗る</td></tr>
+  <tr><td>縦線</td><td><code>1px</code>／<code>#e6e6e8</code></td></tr>
+  <tr><td>見出し</td><td><code>15px</code> Bold／説明 <code>12.5px</code></td></tr>
+</table>
+
+<h2><span class="n">13</span>最終CTA</h2>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>面</td><td><b>赤ベタ</b> <code>#CA0E15</code> → <code>#8E060C</code>／角丸 <code>22px</code>／上下16px・左右10px空ける／余白 <code>60/22/46</code></td></tr>
+  <tr><td>見出し</td><td><code>26px</code> Black／<b>白</b>／「大丈夫です。」は白のまま、下に白のマーカー</td></tr>
+  <tr><td>ボタン</td><td>①LINE緑（2行）②<b>白地＋赤文字</b>／縦に並べる</td></tr>
+  <tr><td>PC時</td><td>QRコードを表示（スマホでは非表示）</td></tr>
+</table>
+
+<h2><span class="n">13.5</span>フッター <span class="tag">ここだけ黒</span></h2>
+<table>
+  <tr><th>項目</th><th>値</th></tr>
+  <tr><td>面</td><td><b><code>#231815</code>（黒）</b>／余白 <code>44/22/100</code></td></tr>
+  <tr><td>ロゴ</td><td>白いプレートに通常版ロゴ・高さ <code>17px</code></td></tr>
+  <tr><td>会社情報</td><td><code>11.5px</code>／白55%／上に白14%の罫線</td></tr>
+  <tr><td>リンク</td><td>コーポレートサイト／プライバシーポリシー（下線）</td></tr>
+</table>
+
+<h2><span class="n">14</span>途中のLINE導線 <span class="tag">2箇所</span></h2>
+<p>数字セクションの後と、募集職種の後。高さ <code>308px</code>／余白 <code>38/22</code>。
+地は<b>うすいグレー <code>#f7f4f2</code></b>。「LINE」の小ラベル（緑）＋見出し <code>19px</code> 黒＋説明 <code>12.5px</code>＋幅いっぱいのLINEボタン。</p>
+
+<h2><span class="n">15</span>計測について <span class="tag warn">無料プランの制約</span></h2>
+<p>GA4・Metaピクセル・TikTokピクセルは<b>入りません</b>。代わりに、LINEボタン4箇所それぞれに
+別の短縮URL（Bitly等）を噛ませると、どのボタンが押されたかは分かります。</p>
+<table>
+  <tr><th>場所</th><th>短縮URL</th></tr>
+  <tr><td>ファーストビュー</td><td>未発行</td></tr>
+  <tr><td>途中①（数字の後）</td><td>未発行</td></tr>
+  <tr><td>途中②（職種の後）</td><td>未発行</td></tr>
+  <tr><td>下部の固定バー</td><td>未発行</td></tr>
+  <tr><td>最終CTA</td><td>未発行</td></tr>
+</table>
+
+<h2><span class="n">16</span>公開前に必要なもの</h2>
+<table>
+  <tr><th>もの</th><th>状況</th></tr>
+  <tr><td>LINEの友だち追加URL</td><td><span class="tag warn">必須・未着</span> これが無いと公開できません</td></tr>
+  <tr><td>ロゴ（反転版があるか）</td><td><span class="tag warn">確認中</span> 今は加工した白抜きを使用</td></tr>
+  <tr><td>写真・動画</td><td>未着。間に合わなければ仮素材のまま公開</td></tr>
+  <tr><td>「5名限定」の運用</td><td><span class="tag warn">確認中</span></td></tr>
+  <tr><td>FAQの回答・選考フロー</td><td>下書きで埋めてあります。差し替え前提</td></tr>
+  <tr><td>プライバシーポリシー</td><td>リンク先が未定</td></tr>
+  <tr><td>SNSアカウントのURL</td><td>未着（ヘッダーの3つ）</td></tr>
+</table>
+
+<footer>
+  株式会社TeeenS ／ 数値はモックアップ（7セクション版）から実測<br>
+  モックアップ：<code>https://tratssai71-create.github.io/teeens-form/honda-lp/</code>
+</footer>
+
+</div>
+</body>
+</html>

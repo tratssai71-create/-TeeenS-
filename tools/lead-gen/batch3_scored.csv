@@ -1,0 +1,6 @@
+name,url,industry,contact_form_url,notes,score,findings
+hinokichisho,https://hinokichisho.wixsite.com/index,,,,25,meta descriptionが未設定(SEO弱い); コピーライト表記が2019年で止まっている
+tohbi-tochi,https://www.tohbi-tochi.co.jp/,,,,25,スマホ対応(viewportタグ)なし
+ishii-hyougu,https://ishii-hyougu.com/,,,,25,スマホ対応(viewportタグ)なし
+akaiwa-kaigo-hidamari,https://akaiwa-kaigo-hidamari.jimdofree.com/,,,,5,h1タグなし(SEO構造が弱い)
+mirumidori,https://mirumidori.jimdofree.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)

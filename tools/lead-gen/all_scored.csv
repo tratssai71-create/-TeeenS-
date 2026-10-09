@@ -1,0 +1,76 @@
+name,url,industry,contact_form_url,notes,score,findings
+narakikenzai,http://www.narakikenzai.co.jp/,,,,50,SSL(https)未対応; スマホ対応(viewportタグ)なし
+khkk,https://khkk.net/,,,,30,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Fri, 10 Apr 2026 06:05:00 GMT; h1タグなし(SEO構造が弱い)"
+nitta-kougyo,http://nitta-kougyo.com/,,,,25,SSL(https)未対応
+kurashikitosou,https://kurashikitosou.net/,,,,15,コピーライト表記が2023年で止まっている
+nagase-home,https://www.nagase-home.com/,,,,15,コピーライト表記が2010年で止まっている
+g-tech-okayama,https://g-tech-okayama.com/,,,,10,meta descriptionが未設定(SEO弱い)
+yoshikawa-tosou,https://yoshikawa-tosou.com/,,,,5,h1タグなし(SEO構造が弱い)
+ys-ken,https://ys-ken.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mikihousing,https://www.mikihousing.net/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+hakutou,https://www.hakutou.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+kibikougen,https://kibikougen.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+rokushima2020,https://rokushima2020.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mikien,https://www.mikien.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+taketa-engei,https://www.taketa-engei.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+yamashita-juku,https://www.yamashita-juku.com/,,,,45,スマホ対応(viewportタグ)なし; コピーライト表記が2007年で止まっている; h1タグなし(SEO構造が弱い)
+saki-sola,https://saki-sola.com/access,,,,35,スマホ対応(viewportタグ)なし; meta descriptionが未設定(SEO弱い)
+poodock,https://poodock.racms.jp/,,,,25,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Thu, 10 Sep 2026 00:11:18 GMT"
+ohana-dogsalon,https://ohana-dogsalon.com/,,,,0,"最終更新(サーバー応答): Mon, 27 Jul 2026 00:58:00 GMT"
+dogalldogall,https://dogalldogall.net/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+godai,https://godai.link/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+fujiwara-create,https://fujiwara-create.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+ryukimuscat,https://ryukimuscat.jimdofree.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+hinokichisho,https://hinokichisho.wixsite.com/index,,,,25,meta descriptionが未設定(SEO弱い); コピーライト表記が2019年で止まっている
+tohbi-tochi,https://www.tohbi-tochi.co.jp/,,,,25,スマホ対応(viewportタグ)なし
+ishii-hyougu,https://ishii-hyougu.com/,,,,25,スマホ対応(viewportタグ)なし
+akaiwa-kaigo-hidamari,https://akaiwa-kaigo-hidamari.jimdofree.com/,,,,5,h1タグなし(SEO構造が弱い)
+mirumidori,https://mirumidori.jimdofree.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+hiyokkohouse,https://hiyokkohouse.amebaownd.com/,,,,90,"サイトにアクセスできない可能性あり(<urlopen error [Errno 8] nodename nor servname provided, or not known>)"
+miraizu6,https://miraizu6.jimdofree.com/sitemap/,,,,90,"サイトにアクセスできない可能性あり(<urlopen error [Errno 8] nodename nor servname provided, or not known>)"
+sakuragaokafukusikai,https://sakuragaokafukusikai.jimdofree.com/,,,,90,"サイトにアクセスできない可能性あり(<urlopen error [Errno 8] nodename nor servname provided, or not known>)"
+ertong...,https://ertongfadazhiyuanfangkehoudengdeisabisujunesu8.webnode.jp/,,,,90,"サイトにアクセスできない可能性あり(<urlopen error [Errno 8] nodename nor servname provided, or not known>)"
+happy2,https://happy2.crayonsite.com/,,,,90,"サイトにアクセスできない可能性あり(<urlopen error [Errno 8] nodename nor servname provided, or not known>)"
+minorinoki,https://minorinoki.crayonsite.net/,,,,10,meta descriptionが未設定(SEO弱い)
+goudou-kisaiya,https://goudou-kisaiya.jimdosite.com/,,,,5,h1タグなし(SEO構造が弱い)
+big-advance,https://www.big-advance.site/c/164/1411/service,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+fujinari,https://fujinari.jimdofree.com/%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B-%E6%96%B0%E4%BF%9D/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+オートボデーエム,https://www.autobodym.com/index.html,,,,40,"スマホ対応(viewportタグ)なし; コピーライト表記が2010年で止まっている; 最終更新(サーバー応答): Thu, 09 Apr 2026 10:03:10 GMT"
+ALMOND HOME,https://www.almondhome.co.jp/,,,,25,スマホ対応(viewportタグ)なし
+美濱不動産,https://mihama-f.jp/property/,,,,5,h1タグなし(SEO構造が弱い)
+Deal,https://deal-0502.jp/,,,,5,h1タグなし(SEO構造が弱い)
+スマートハウジング,https://smarthousing.info/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+おおたか不動産,https://www.ootaka-f.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+my-story,http://www.my-story.co.jp/ms/contact.html,,,,50,SSL(https)未対応; meta descriptionが未設定(SEO弱い); コピーライト表記が2020年で止まっている
+kamo-den,http://www.kamo-den.co.jp/,,,,25,SSL(https)未対応
+yamaosangyou,https://www.yamaosangyou.com/,,,,25,スマホ対応(viewportタグ)なし
+kurashiki-sougi,https://kurashiki-sougi.com/,,,,25,meta descriptionが未設定(SEO弱い); コピーライト表記が2020年で止まっている
+hss-gakusyujuku,https://hss-gakusyujuku.com/,,,,5,h1タグなし(SEO構造が弱い)
+cosmos-hall,https://cosmos-hall.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+kennosho,http://kennosho.com/pages/about.html,,,,35,"SSL(https)未対応; meta descriptionが未設定(SEO弱い); 最終更新(サーバー応答): Mon, 07 Sep 2026 16:45:13 GMT"
+uehara-clean,https://rideribuki.wixsite.com/uehara-clean,,,,15,コピーライト表記が2023年で止まっている
+hikarisilk,https://hikarisilk.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+fprint,https://fprint.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+tourist-repeat,https://tourist.repeat-ed.jp/,,,,50,スマホ対応(viewportタグ)なし; meta descriptionが未設定(SEO弱い); コピーライト表記が2013年で止まっている
+kensou8668,https://www.kensou8668.com/pc/index.html,,,,25,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Wed, 02 Dec 2020 06:01:00 GMT"
+yoshimori-photo,https://yoshimori-photo.com/studio/,,,,15,コピーライト表記が2016年で止まっている
+uphoken,https://uphoken.co.jp/toi.html,,,,15,コピーライト表記が2010年で止まっている
+kurashikikanko,https://kurashikikanko.com/,,,,10,meta descriptionが未設定(SEO弱い)
+k-photo,https://k-photo.co.jp/about.html,,,,0,"最終更新(サーバー応答): Wed, 23 Jun 2021 05:23:14 GMT"
+syarumu-photo,https://www.syarumu-photo.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+sri-riseya,https://www.sri-riseya.com/%e4%bc%9a%e7%a4%be%e6%a6%82%e8%a6%81/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+nts-travel,https://nts-travel.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+lifenavi2013,https://lifenavi2013.com/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+hoken-cs,https://hoken-cs.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+gouda-paint,https://www.gouda-paint.com/,,,,0,"最終更新(サーバー応答): Mon, 23 Sep 2019 10:24:00 GMT"
+yoshipen,https://yoshipen.biz/contact/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+asahi-green,https://asahi-green.com/,,,,25,スマホ対応(viewportタグ)なし
+okadazouen,https://28.okadazouen.com/about/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+mskg,https://mskg.co.jp/,,,,0,"最終更新(サーバー応答): Mon, 07 Sep 2026 17:18:47 GMT"
+kk-kk-kk,https://www.kk-kk-kk.co.jp/index.html,,,,25,"スマホ対応(viewportタグ)なし; 最終更新(サーバー応答): Mon, 27 Apr 2026 07:25:42 GMT"
+田乃村,https://www.tanomura.co.jp/index.html,,,,20,"コピーライト表記が2015年で止まっている; 最終更新(サーバー応答): Fri, 13 Mar 2026 03:38:36 GMT; h1タグなし(SEO構造が弱い)"
+山田工業所,https://yamada-g.co.jp/index.html,,,,15,"コピーライト表記が2016年で止まっている; 最終更新(サーバー応答): Mon, 10 Aug 2026 04:18:49 GMT"
+p-w,https://www.p-w.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+OK大心,https://www.ok-daishin.co.jp/,,,,0,目立った技術的な古さは検出されず(デザイン面は目視確認推奨)
+ピーオール,https://www.piall.co.jp/,,,,0,"最終更新(サーバー応答): Mon, 10 Jul 2017 08:01:33 GMT"
+bizentankou,https://www.bizentankou.co.jp/,,,,15,"コピーライト表記が2018年で止まっている; 最終更新(サーバー応答): Thu, 23 Jul 2026 02:41:32 GMT"
