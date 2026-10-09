@@ -1064,3 +1064,4 @@ footer{padding:84px 40px 34px}
 @media (prefers-reduced-motion:reduce){.pthumb{transition:none}.pmode{animation:none}}
 
 .pmode .plan:last-child:nth-child(odd){grid-column:1/-1}
+.price-var{font-size:11.5px;color:#8a8f98;margin:4px 0 0;line-height:1.5;font-weight:500}
