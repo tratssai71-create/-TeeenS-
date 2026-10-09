@@ -1039,3 +1039,26 @@ footer{padding:84px 40px 34px}
 .sinc-lead{margin-bottom:0}
 
 .chero .chero-en.is-long{font-size:clamp(38px,7.1vw,104px)}
+
+/* ===== 料金：月額／買い切りの切り替え ===== */
+.ptabs{position:relative;display:grid;grid-template-columns:1fr 1fr;max-width:640px;margin:0 auto 40px;padding:6px;background:#f1f0ee;border-radius:999px}
+.ptab{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 10px;border:0;background:none;cursor:pointer;color:var(--ink2);font-family:inherit;transition:color .3s}
+.ptab b{font-size:clamp(15px,1.6vw,19px);font-weight:800;letter-spacing:.06em}
+.ptab small{font-size:11.5px;letter-spacing:.06em;opacity:.8}
+.ptab.on{color:#fff}
+.pthumb{position:absolute;top:6px;bottom:6px;left:6px;width:calc(50% - 6px);background:var(--ink);border-radius:999px;transition:transform .45s cubic-bezier(.77,0,.18,1)}
+.ptabs[data-mode="onetime"] .pthumb{transform:translateX(100%)}
+.psum{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(24px,5vw,80px);align-items:center;max-width:1040px;margin:0 auto 36px;padding:34px 40px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.psum[hidden],.pmode[hidden]{display:none}
+.psum-en{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;color:#4f6bff;text-transform:uppercase}
+.psum h3{font-size:clamp(22px,2.4vw,32px);font-weight:800;margin-top:6px}
+.psum-l{font-size:13.5px;line-height:1.9;color:var(--ink2);margin-top:10px}
+.psum ul{list-style:none}
+.psum li{position:relative;padding:10px 0 10px 28px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
+.psum li:last-child{border-bottom:none}
+.psum li::before{content:"";position:absolute;left:4px;top:1.1em;width:10px;height:6px;border-left:2px solid #4f6bff;border-bottom:2px solid #4f6bff;transform:rotate(-45deg)}
+.pmode{animation:pfade .5s ease}
+@keyframes pfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.pnote{max-width:1040px;margin:22px auto 0;font-size:12.5px;color:var(--ink2);line-height:1.8}
+@media (max-width:820px){.psum{grid-template-columns:1fr;padding:24px 22px}.ptab small{display:none}.ptab{padding:14px 6px}}
+@media (prefers-reduced-motion:reduce){.pthumb{transition:none}.pmode{animation:none}}

@@ -369,3 +369,19 @@ document.documentElement.classList.add('js-draw');
   }
   window.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);upd();
 })();
+
+/* 料金：月額プラン／買い切りプランの切り替え */
+(function(){
+  var tabs=document.querySelector('.ptabs');if(!tabs)return;
+  var btns=[].slice.call(tabs.querySelectorAll('.ptab'));
+  function set(mode){
+    tabs.setAttribute('data-mode',mode);
+    btns.forEach(function(b){var on=b.getAttribute('data-mode')===mode;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false')});
+    document.querySelectorAll('[data-panel]').forEach(function(p){
+      var show=p.getAttribute('data-panel')===mode;
+      if(show){p.removeAttribute('hidden')}else{p.setAttribute('hidden','')}
+    });
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){set(b.getAttribute('data-mode'));try{history.replaceState(null,'','#'+b.getAttribute('data-mode'))}catch(e){}})});
+  var h=(location.hash||'').replace('#','');if(h==='onetime'||h==='monthly')set(h);
+})();
