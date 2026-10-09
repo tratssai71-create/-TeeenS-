@@ -229,7 +229,7 @@ document.documentElement.classList.add('js-draw');
   });
 })();
 
-/* ── お問い合わせフォーム（Web3Forms） ── */
+/* ── お問い合わせフォーム（FormSubmit） ── */
 (function(){
   var form=document.getElementById('ct-form'); if(!form)return;
   var btn=document.getElementById('ct-submit');

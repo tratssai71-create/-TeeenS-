@@ -55,10 +55,11 @@
     </div>
   </section>
   <section class="band" style="padding-top:20px"><div class="wrap">
-    <form class="form rv" id="ct-form" action="https://api.web3forms.com/submit" method="POST" data-thanks="../thanks/index.html">
-      <input type="hidden" name="access_key" value="ebe0b2b8-2ef7-46ec-a4b5-e9a24776f517"/>
-      <input type="hidden" name="subject" value="【TeeenS】お問い合わせが届きました"/>
-      <input type="hidden" name="redirect" value="false"/>
+    <form class="form rv" id="ct-form" action="https://formsubmit.co/ajax/teeens.info@gmail.com" method="POST" data-thanks="../thanks/index.html">
+      <input type="hidden" name="_captcha" value="false"/>
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off"/>
+      <input type="hidden" name="_subject" value="【TeeenS】お問い合わせが届きました"/>
+      <input type="hidden" name="_template" value="table"/>
       <div class="row"><label>お名前<span class="req">必須</span></label><input type="text" name="name" placeholder="山田 太郎" required/></div>
       <div class="row"><label>会社名・屋号<span class="opt">任意</span></label><input type="text" name="company" placeholder="株式会社〇〇"/></div>
       <div class="row"><label>メールアドレス<span class="req">必須</span></label><input type="email" name="email" placeholder="example@mail.com" required/></div>
@@ -99,6 +100,6 @@
   </footer>
 </div>
 
-<script src="../assets/app.js?v=20261009152323"></script>
+<script src="../assets/app.js?v=20261009170606"></script>
 </body>
 </html>
