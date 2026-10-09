@@ -59,14 +59,14 @@
       <input type="hidden" name="_captcha" value="false"/>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off"/>
       <input type="hidden" name="_subject" value="【TeeenS】お問い合わせが届きました"/>
-      <input type="hidden" name="_template" value="table"/>
-      <div class="row"><label>お名前<span class="req">必須</span></label><input type="text" name="name" placeholder="山田 太郎" required/></div>
-      <div class="row"><label>会社名・屋号<span class="opt">任意</span></label><input type="text" name="company" placeholder="株式会社〇〇"/></div>
+      <input type="hidden" name="_template" value="box"/>
+      <div class="row"><label>お名前<span class="req">必須</span></label><input type="text" name="お名前" placeholder="山田 太郎" required/></div>
+      <div class="row"><label>会社名・屋号<span class="opt">任意</span></label><input type="text" name="会社名" placeholder="株式会社〇〇"/></div>
       <div class="row"><label>メールアドレス<span class="req">必須</span></label><input type="email" name="email" placeholder="example@mail.com" required/></div>
-      <div class="row"><label>電話番号<span class="opt">任意</span></label><input type="tel" name="phone" placeholder="090-0000-0000"/></div>
+      <div class="row"><label>電話番号<span class="opt">任意</span></label><input type="tel" name="電話番号" placeholder="090-0000-0000"/></div>
       <div class="row"><label>ご相談内容<span class="req">必須</span></label>
-        <select name="service" required><option value="" disabled selected>選択してください</option><option value="ホームページ制作">ホームページ制作</option><option value="LP制作">LP制作</option><option value="サイトリニューアル">サイトリニューアル</option><option value="社内アプリ・AI開発">社内アプリ・AI開発</option><option value="その他">その他</option></select></div>
-      <div class="row"><label>メッセージ<span class="opt">任意</span></label><textarea name="message" placeholder="ご要望・現状の課題など、自由にお書きください。"></textarea></div>
+        <select name="ご希望の内容" required><option value="" disabled selected>選択してください</option><option value="ホームページ制作">ホームページ制作</option><option value="LP制作">LP制作</option><option value="サイトリニューアル">サイトリニューアル</option><option value="社内アプリ・AI開発">社内アプリ・AI開発</option><option value="その他">その他</option></select></div>
+      <div class="row"><label>メッセージ<span class="opt">任意</span></label><textarea name="お問い合わせ内容" placeholder="ご要望・現状の課題など、自由にお書きください。"></textarea></div>
       <div class="row agree"><input type="checkbox" required id="ag"/><label for="ag" style="font-weight:400;margin:0"><a href="../privacy/index.html" target="_blank">プライバシーポリシー</a>に同意の上、送信してください。</label></div>
       <button type="submit" class="btn-red" id="ct-submit">送信する</button>
     </form>
