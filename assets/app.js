@@ -275,9 +275,12 @@ document.documentElement.classList.add('js-draw');
   /* 1. 見出しの英字：1文字ずつ下からせり上がる */
   document.querySelectorAll('.sec-title .en-t,.page-hero .eyebrow,.cta-band .en-t,.cband-title,.swhy2 .swhy-h').forEach(function(el){
     var t=el.textContent; el.setAttribute('aria-label',t); el.textContent='';
-    var i=0; Array.prototype.forEach.call(t,function(c){
-      var s=document.createElement('span'); s.className='ch'; s.setAttribute('aria-hidden','true');
-      s.style.setProperty('--i',i++); s.textContent=(c===' ')?'\u00a0':c; el.appendChild(s);
+    var i=0, w=null;
+    Array.prototype.forEach.call(t,function(c){
+      if(c===' '||c==='\n'){ w=null; el.appendChild(document.createTextNode(' ')); i++; return; }
+      if(!w){ w=document.createElement('span'); w.style.cssText='display:inline-block;white-space:nowrap'; w.setAttribute('aria-hidden','true'); el.appendChild(w); }
+      var s=document.createElement('span'); s.className='ch';
+      s.style.setProperty('--i',i++); s.textContent=c; w.appendChild(s);
     });
   });
 
