@@ -1065,3 +1065,4 @@ footer{padding:84px 40px 34px}
 
 .pmode .plan:last-child:nth-child(odd){grid-column:1/-1}
 .price-var{font-size:11.5px;color:#8a8f98;margin:4px 0 0;line-height:1.5;font-weight:500}
+.page-hero h1.ph1{font-size:inherit;font-weight:inherit;line-height:inherit;letter-spacing:inherit;margin:0;max-width:none}
