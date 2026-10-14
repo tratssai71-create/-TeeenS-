@@ -238,7 +238,11 @@ document.documentElement.classList.add('js-draw');
     btn.disabled=true; btn.textContent='送信中...';
     fetch(form.getAttribute('action'),{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}})
       .then(function(r){
-        if(r.ok){ window.location.href=form.getAttribute('data-thanks'); }
+        if(r.ok){
+          var go=function(){ window.location.href=form.getAttribute('data-thanks'); }, done=false;
+          var once=function(){ if(done)return; done=true; go(); };
+          try{ if(window.gtag){ gtag('event','generate_lead',{form_name:'contact',event_callback:once}); setTimeout(once,1000); } else once(); }catch(e){ once(); }
+        }
         else throw new Error('ng');
       })
       .catch(function(){
