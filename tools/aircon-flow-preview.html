@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>ご依頼の流れ エアコン</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1d2a38;--ink2:#5b6876;--line:#dbe6ef;
+  --blue:#1a8ad6;--blue-d:#0f6fb3;--sky:#eef6fc;--sky2:#dcedf9;
+  --cta:#ff7a1a;--cta-d:#e8650a;--line-g:#06c755;
+  --r:18px;--sh:0 10px 30px rgba(20,70,110,.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:1.8;-webkit-font-smoothing:antialiased}
+ol,ul{list-style:none}
+a{color:inherit;text-decoration:none}
+svg{display:block}
+
+.flow{position:relative;background:var(--sky);padding:88px 0 96px;overflow:hidden}
+/* 背景の大きな文字 */
+.flow::before{content:"FLOW";position:absolute;top:28px;left:50%;transform:translateX(-50%);font:800 clamp(80px,16vw,200px)/1 'Arial Black','Helvetica Neue',Arial,sans-serif;letter-spacing:.04em;color:#fff;opacity:.85;pointer-events:none;white-space:nowrap}
+.wrap{position:relative;max-width:920px;margin:0 auto;padding:0 20px}
+
+/* 見出し */
+.head{text-align:center}
+.eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--blue);background:#fff;border-radius:99px;padding:4px 16px}
+.head h2{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:.06em;line-height:1.4;margin-top:14px}
+.head h2 .nw{white-space:nowrap}
+.head h2 em{font-style:normal;color:var(--blue)}
+.head p{font-size:15px;color:var(--ink2);margin-top:12px}
+.head p b{color:var(--ink);background:linear-gradient(transparent 62%,#ffe08a 62%)}
+
+/* 安心ポイント */
+.promise{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin:34px 0 52px}
+.promise li{display:flex;align-items:center;gap:10px;background:#fff;border-radius:99px;padding:10px 20px 10px 12px;box-shadow:var(--sh);font-size:14.5px;font-weight:700}
+.promise .ck{flex:none;width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center}
+.promise .ck svg{width:16px;height:16px}
+
+/* ステップ */
+.steps{counter-reset:s}
+.step{position:relative;display:grid;grid-template-columns:116px 1fr;gap:28px;align-items:start;background:#fff;border-radius:var(--r);padding:30px 32px;box-shadow:var(--sh)}
+.step + .step{margin-top:44px}
+/* カードの間の下向き矢印 */
+.step + .step::before{content:"";position:absolute;top:-33px;left:50%;width:22px;height:22px;transform:translateX(-50%) rotate(45deg);border-right:5px solid var(--blue);border-bottom:5px solid var(--blue);border-radius:3px;opacity:.55}
+
+.badge{position:relative;width:116px;height:116px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;color:var(--blue)}
+.badge svg{width:54px;height:54px}
+.badge .no{position:absolute;top:-6px;left:-6px;width:48px;height:48px;border-radius:50%;background:var(--blue);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;box-shadow:0 4px 10px rgba(26,138,214,.35)}
+.badge .no small{font:700 8.5px/1 Arial,sans-serif;letter-spacing:.1em}
+.badge .no b{font:700 20px/1 Arial,sans-serif;margin-top:2px}
+
+.body h3{font-size:clamp(19px,2.4vw,22px);font-weight:800;letter-spacing:.04em;line-height:1.5}
+.body h3 .free{display:inline-block;vertical-align:3px;margin-left:8px;font-size:12px;font-weight:700;color:#fff;background:var(--cta);border-radius:6px;padding:1px 9px;letter-spacing:.06em}
+.body > p{font-size:14.5px;color:var(--ink2);margin-top:8px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.you{flex:1 1 260px;display:flex;gap:10px;align-items:flex-start;background:#fff8ec;border:1px solid #ffe2b8;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.7}
+.you span{flex:none;font-size:11.5px;font-weight:800;color:var(--cta-d);background:#fff;border:1px solid #ffd08f;border-radius:6px;padding:1px 7px;margin-top:1px}
+.time{flex:none;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--blue-d);background:var(--sky);border-radius:12px;padding:10px 14px}
+.time svg{width:16px;height:16px}
+
+/* STEP1：連絡方法 */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ways a{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:11px 8px;font-size:14px;font-weight:800;border:2px solid currentColor;transition:background .2s,color .2s}
+.ways svg{width:18px;height:18px;flex:none}
+.ways .tel{color:var(--blue)}
+.ways .line{color:var(--line-g)}
+.ways .mail{color:var(--ink)}
+.ways a:hover{background:currentColor}
+.ways a:hover span,.ways a:hover svg{color:#fff}
+
+/* STEP4：当日の作業の流れ */
+.day{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px}
+.day li{font-size:13px;font-weight:700;background:var(--sky);color:var(--blue-d);border-radius:99px;padding:4px 12px}
+.day li + li::before{content:"›";margin-right:8px;color:var(--blue);font-weight:800}
+.day li{display:flex;align-items:center}
+
+/* 下の相談ボックス */
+.cta{margin-top:56px;background:#fff;border-radius:24px;box-shadow:var(--sh);padding:40px 32px;text-align:center;border:3px solid var(--blue)}
+.cta h3{font-size:clamp(20px,3vw,26px);font-weight:800;letter-spacing:.04em;line-height:1.5}
+.cta > p{font-size:14px;color:var(--ink2);margin-top:6px}
+.cta-btns{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-top:24px}
+.cta-btns a{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;padding:14px 10px;color:#fff;font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.14);transition:transform .15s,box-shadow .15s}
+.cta-btns a:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.14)}
+.cta-btns .row{display:flex;align-items:center;gap:8px;font-size:17px}
+.cta-btns svg{width:22px;height:22px}
+.cta-btns small{font-size:11.5px;font-weight:700;opacity:.9;margin-top:2px}
+.cta-btns .tel{background:var(--cta)}
+.cta-btns .tel .row{font:800 22px/1.3 Arial,sans-serif;letter-spacing:.02em}
+.cta-btns .line{background:var(--line-g)}
+.cta-btns .mail{background:var(--blue)}
+.note{margin-top:14px;font-size:12px;color:var(--ink2)}
+
+/* スマホ */
+@media (max-width:720px){
+  .flow{padding:64px 0 72px}
+  .flow::before{top:18px}
+  .promise{gap:8px;margin:26px 0 40px}
+  .promise li{font-size:13px;padding:8px 14px 8px 8px}
+  .promise .ck{width:24px;height:24px}
+  .step{grid-template-columns:64px 1fr;gap:16px;padding:22px 18px}
+  .step + .step{margin-top:38px}
+  .step + .step::before{top:-29px;width:18px;height:18px;border-width:4px}
+  .badge{width:64px;height:64px}
+  .badge svg{width:30px;height:30px}
+  .badge .no{width:36px;height:36px;top:-10px;left:-10px}
+  .badge .no small{font-size:7px}
+  .badge .no b{font-size:15px}
+  .meta,.ways,.day{grid-column:1/-1}
+  .ways{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .ways a{flex-direction:column;gap:3px;padding:9px 4px;font-size:12.5px}
+  .cta{padding:30px 16px;border-radius:20px}
+  .cta-btns{grid-template-columns:1fr}
+}
+/* スマホではカードの中身を横いっぱいに使う */
+@media (max-width:720px){
+  .step{row-gap:6px}
+  .badge{grid-row:1;grid-column:1}
+  .body{display:contents}
+  .body h3{grid-row:1;grid-column:2;align-self:center}
+  .body > p,.body > .meta,.body > .ways,.body > .day{grid-column:1/-1}
+  .body > p{margin-top:8px}
+}
+
+/* ふわっと出す */
+.rv{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+.pv-note{max-width:920px;margin:0 auto;padding:28px 20px 60px;font-size:12.5px;color:var(--ink2)}
+.pv-note b{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<section class="flow" id="flow">
+  <div class="wrap">
+    <div class="head rv">
+      <span class="eyebrow">ご依頼の流れ</span>
+      <h2>はじめてでも<em>かんたん</em><span class="nw">5ステップ</span></h2>
+      <p>お問い合わせから作業完了まで、<b>お客様は写真を送って、日程を選ぶだけ</b>。</p>
+    </div>
+
+    <ul class="promise rv">
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>お見積もり無料</li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>見積もり後の追加料金なし</li>
+      <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span>作業後も保証つき</li>
+    </ul>
+
+    <ol class="steps">
+      <li class="step rv">
+        <div class="badge"><span class="no"><small>STEP</small><b>1</b></span>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12h32v20H22l-8 7v-7H8z"/><path d="M16 20h16M16 25h10"/></svg>
+        </div>
+        <div class="body">
+          <h3>お問い合わせ</h3>
+          <p>お電話・LINE・フォームから、ご都合のよい方法でご連絡ください。「どれを選べばいいか分からない」というご相談だけでも大丈夫です。</p>
+          <div class="ways">
+            <a class="tel" href="tel:000-0000-0000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span>電話</span></a>
+            <a class="line" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg><span>LINE</span></a>
+            <a class="mail" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg><span>フォーム</span></a>
+          </div>
+        </div>
+      </li>
+
+      <li class="step rv">
+        <div class="badge"><span class="no"><small>STEP</small><b>2</b></span>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="24" height="32" rx="3"/><path d="M19 8v-2h10v2M18 20h12M18 26h12M18 32h7"/></svg>
+        </div>
+        <div class="body">
+          <h3>無料お見積もり<span class="free">0円</span></h3>
+          <p>エアコンや設置場所の写真を送っていただくだけで、おおよその金額をお伝えします。必要な場合はご自宅まで下見にうかがいます。</p>
+          <div class="meta">
+            <p class="you"><span>お客様</span>エアコン本体・室外機・型番シールの写真を送る</p>
+            <p class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>回答の目安：当日〜翌日</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="step rv">
+        <div class="badge"><span class="no"><small>STEP</small><b>3</b></span>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="11" width="34" height="29" rx="3"/><path d="M7 19h34M16 7v8M32 7v8"/><path d="M18 29l4 4 8-8"/></svg>
+        </div>
+        <div class="body">
+          <h3>ご予約・日程の決定</h3>
+          <p>金額にご納得いただいてから、作業の日時を決めます。お見積もりのあとにお断りいただいても、費用はかかりません。</p>
+          <div class="meta">
+            <p class="you"><span>お客様</span>ご希望の日時を選ぶ（土日もご相談ください）</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="step rv">
+        <div class="badge"><span class="no"><small>STEP</small><b>4</b></span>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="10" width="36" height="16" rx="3"/><path d="M11 21h26"/><path d="M14 32c0 3-2 3-2 6M24 32c0 3-2 3-2 6M34 32c0 3-2 3-2 6"/></svg>
+        </div>
+        <div class="body">
+          <h3>作業当日</h3>
+          <p>お部屋や家具が汚れないよう、しっかり養生してから作業します。終わったら一緒に動作を確認し、ていねいにお片付けします。</p>
+          <ol class="day"><li>ごあいさつ</li><li>養生</li><li>作業</li><li>動作確認</li><li>お片付け</li></ol>
+          <div class="meta">
+            <p class="you"><span>お客様</span>作業中は立ち会いのみ。エアコン下の家具を少しだけ動かしてください</p>
+            <p class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>1台あたり約〇〜〇分</p>
+          </div>
+        </div>
+      </li>
+
+      <li class="step rv">
+        <div class="badge"><span class="no"><small>STEP</small><b>5</b></span>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 6l14 5v11c0 9-6 16-14 20-8-4-14-11-14-20V11z"/><path d="M17 24l5 5 9-9"/></svg>
+        </div>
+        <div class="body">
+          <h3>お支払い・アフター保証</h3>
+          <p>作業内容にご納得いただいてからのお支払いです。現金のほか、各種キャッシュレス決済にも対応。作業後に気になることがあれば、いつでもご連絡ください。</p>
+          <div class="meta">
+            <p class="you"><span>お客様</span>作業内容を確認してお支払い</p>
+            <p class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/></svg>保証期間：〇年</p>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <div class="cta rv">
+      <h3>まずはお気軽にご相談ください</h3>
+      <p>お見積もり・ご相談は無料です。しつこい営業はいたしません。</p>
+      <div class="cta-btns">
+        <a class="tel" href="tel:000-0000-0000"><span class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>000-000-0000</span><small>受付 9:00〜18:00（〇曜定休）</small></a>
+        <a class="line" href="#"><span class="row"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>LINEで相談</span><small>写真を送るだけでお見積もり</small></a>
+        <a class="mail" href="#"><span class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg>フォーム</span><small>24時間受付</small></a>
+      </div>
+      <p class="note">※ 対応エリア：〇〇市・〇〇市ほか</p>
+    </div>
+  </div>
+</section>
+
+<p class="pv-note"><b>プレビュー用メモ：</b>電話番号・受付時間・作業時間・保証期間・対応エリアの「〇」は仮です。「追加料金なし」「保証つき」「キャッシュレス対応」なども、実際のサービス内容に合わせて書き換えてください。</p>
+
+<script>
+(function(){
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.15});
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
