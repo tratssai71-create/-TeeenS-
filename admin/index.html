@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>TeeenS Analytics</title>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#0b1220;--mute:#6b7488;--line:#e4e8f0;--blue:#2f6bff;--blue2:#dfe8ff;--up:#12a150;--down:#d93a3a;--r:14px}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1118;--card:#151b26;--ink:#eef1f6;--mute:#8b94a8;--line:#232b3a;--blue:#5b8cff;--blue2:#1e2a48;--up:#3ccf83;--down:#ff6b6b}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:800;letter-spacing:.02em;font-size:17px;display:flex;align-items:center;gap:8px}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--blue);display:inline-block}
+.brand small{font-weight:500;color:var(--mute);font-size:12px;margin-left:2px}
+.sp{flex:1}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;color:var(--mute);font:inherit;font-size:13px;font-weight:700;padding:5px 14px;border-radius:999px;cursor:pointer}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}.btn.pri:hover{color:#fff;opacity:.9}
+main{max-width:1120px;margin:0 auto;padding:22px 20px 70px}
+.banner{background:var(--blue2);color:var(--blue);border-radius:var(--r);padding:11px 16px;font-size:13px;font-weight:700;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner.err{background:#fde9e9;color:var(--down)}
+.rt{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:700;margin-bottom:16px}
+.rt b{font-size:16px}.dot{width:8px;height:8px;border-radius:50%;background:var(--up);box-shadow:0 0 0 0 rgba(18,161,80,.5);animation:pu 1.8s infinite}
+@keyframes pu{70%{box-shadow:0 0 0 8px rgba(18,161,80,0)}100%{box-shadow:0 0 0 0 rgba(18,161,80,0)}}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.kpi .l{font-size:12px;color:var(--mute);font-weight:700}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.01em;line-height:1.2;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;font-weight:700;margin-top:2px}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--mute)}
+.h{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.h small{color:var(--mute);font-weight:500;font-size:12px}
+.legend{margin-left:auto;display:flex;gap:14px;font-size:12px;color:var(--mute);font-weight:700}
+.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.chart{position:relative}
+svg{display:block;width:100%;height:auto}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:7px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .1s}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-top:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;color:var(--mute);text-align:right;font-weight:700;padding:0 0 8px}th:first-child{text-align:left}
+td{padding:9px 0;border-top:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+td:first-child{text-align:left;font-weight:600;max-width:340px}
+td .t{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td .p{display:block;color:var(--mute);font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars .row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:7px 0;font-size:13px;font-weight:600}
+.bars .row b{font-variant-numeric:tabular-nums}
+.bars .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--blue2);overflow:hidden}
+.bars .bar i{display:block;height:100%;background:var(--blue);border-radius:3px}
+.empty{color:var(--mute);font-size:13px;padding:10px 0}
+.foot{margin-top:22px;color:var(--mute);font-size:12px;text-align:center}
+dialog{border:0;border-radius:18px;padding:0;max-width:640px;width:calc(100% - 32px);background:var(--card);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(8,12,20,.55)}
+.dlg{padding:24px 26px 22px}
+.dlg h2{font-size:18px;margin-bottom:4px}.dlg p.s{color:var(--mute);font-size:13px;margin-bottom:14px}
+.dlg label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px}
+.dlg input{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px}
+.dlg input:focus{outline:2px solid var(--blue);border-color:transparent}
+.dlg .acts{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+details{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-size:13px}
+summary{cursor:pointer;font-weight:800}
+ol{padding-left:20px;margin:10px 0}li{margin:6px 0}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:11.5px;overflow:auto;max-height:200px;margin:8px 0;line-height:1.5}
+.skel{background:linear-gradient(90deg,var(--line),transparent,var(--line));background-size:200% 100%;animation:sk 1.2s infinite;border-radius:6px;color:transparent!important}
+@keyframes sk{to{background-position:-200% 0}}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis .kpi:last-child{grid-column:1/-1}.grid,.grid3{grid-template-columns:1fr}.kpi .v{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <div class="brand"><i></i>TeeenS Analytics<small>teeen-s.com</small></div>
+  <div class="sp"></div>
+  <div class="seg" id="seg"><button data-d="7">7日</button><button data-d="28" class="on">28日</button><button data-d="90">90日</button></div>
+  <button class="btn" id="reload">更新</button>
+  <button class="btn" id="cfg">接続設定</button>
+</div></div>
+
+<main>
+  <div id="note"></div>
+  <div class="rt" id="rt" hidden><span class="dot"></span>いま <b id="rtn">0</b> 人が閲覧中</div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <div class="h">アクセスの推移<small id="range"></small>
+      <div class="legend"><span><i style="background:var(--blue)"></i>ユーザー</span><span><i style="background:var(--mute)"></i>セッション</span></div></div>
+    <div class="chart" id="chart"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="h">よく見られているページ</div><div id="pages"></div></div>
+    <div class="card"><div class="h">どこから来たか<small>セッション</small></div><div class="bars" id="channels"></div></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><div class="h">地域<small>ユーザー</small></div><div class="bars" id="cities"></div></div>
+    <div class="card"><div class="h">デバイス<small>ユーザー</small></div><div class="bars" id="devices"></div></div>
+    <div class="card"><div class="h">イベント<small>回数</small></div><div class="bars" id="events"></div></div>
+  </div>
+  <div class="foot" id="foot"></div>
+</main>
+
+<dialog id="dlg"><div class="dlg">
+  <h2>接続設定</h2>
+  <p class="s">GA4のデータを読む、あなた専用の窓口（Apps Script）につなぎます。入力した内容は、このブラウザにだけ保存されます。</p>
+  <label for="url">Apps ScriptのURL（/exec で終わるもの）</label>
+  <input id="url" type="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"/>
+  <label for="key">パスワード</label>
+  <input id="key" type="password" placeholder="Apps Scriptに登録したパスワード" autocomplete="off"/>
+  <div class="acts">
+    <button class="btn pri" id="save">接続する</button>
+    <button class="btn" id="demo">デモ表示（サンプルの数字）</button>
+    <button class="btn" id="clear">保存を消す</button>
+    <button class="btn" id="close">閉じる</button>
+  </div>
+  <details><summary>初回のセットアップ手順（5分）</summary>
+    <ol>
+      <li><a href="https://script.google.com/home/projects/create" target="_blank" rel="noopener">script.google.com</a> で「新しいプロジェクト」を作る。</li>
+      <li>左の「サービス ＋」→「Google Analytics Data API」→「追加」。</li>
+      <li>エディタの中身をすべて消して、下のコードを貼り付ける（GA4のプロパティIDは設定済み）。</li>
+      <li>左の「プロジェクトの設定」→「スクリプト プロパティ」→ プロパティ名 <b>KEY</b>、値に好きなパスワードを入れて保存。</li>
+      <li>右上「デプロイ」→「新しいデプロイ」→ 種類「ウェブアプリ」→ 実行ユーザー<b>自分</b>、アクセスできるユーザー<b>全員</b>。承認の画面が出たら許可。</li>
+      <li>出てきた「ウェブアプリのURL」を、上の欄に貼る。</li>
+    </ol>
+    <button class="btn" id="copy">コードをコピー</button>
+    <pre id="code">読み込み中…</pre>
+  </details>
+</div></dialog>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var LS='teeens_admin_v1', days=28, data=null, demo=false;
+var cfg=load();
+function load(){try{return JSON.parse(localStorage.getItem(LS)||'{}')}catch(e){return {}}}
+function save(o){try{localStorage.setItem(LS,JSON.stringify(o))}catch(e){}}
+var fmt=function(n){return Math.round(n).toLocaleString('ja-JP')};
+var dur=function(s){s=Math.round(s);var m=Math.floor(s/60);return m+':'+String(s%60).padStart(2,'0')};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var NAMES={'Organic Search':'検索','Direct':'直接アクセス','Organic Social':'SNS','Referral':'他サイトから','Paid Search':'検索広告','Email':'メール','Unassigned':'不明','Organic Video':'動画','Display':'ディスプレイ広告','mobile':'スマホ','desktop':'パソコン','tablet':'タブレット','page_view':'ページ表示','session_start':'セッション開始','first_visit':'初回訪問','user_engagement':'滞在','scroll':'スクロール','click':'クリック','generate_lead':'お問い合わせ送信'};
+var nm=function(s){return NAMES[s]||s||'(不明)'};
+
+function demoData(d){
+  var seed=d*7+3,rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280};
+  var daily=[],t=new Date();t.setHours(12);
+  for(var i=d-1;i>=0;i--){var x=new Date(t.getTime()-i*864e5),u=Math.round(1+rnd()*3+(d-i)/d*5);
+    daily.push({date:x.getFullYear()+String(x.getMonth()+1).padStart(2,'0')+String(x.getDate()).padStart(2,'0'),users:u,sessions:u+Math.round(rnd()*3),views:u*2+Math.round(rnd()*5)})}
+  var s=function(k){return daily.reduce(function(a,b){return a+b[k]},0)};
+  var cur={users:Math.round(s('users')*.8),newUsers:Math.round(s('users')*.7),sessions:s('sessions'),views:s('views'),engagementSec:s('users')*35,keyEvents:Math.round(s('users')/14)};
+  var prev={users:Math.round(cur.users*.7),newUsers:Math.round(cur.newUsers*.75),sessions:Math.round(cur.sessions*.72),views:Math.round(cur.views*.8),engagementSec:Math.round(cur.engagementSec*.85),keyEvents:Math.round(cur.keyEvents*.5)};
+  return{ok:true,days:d,generatedAt:new Date().toISOString(),cur:cur,prev:prev,daily:daily,realtime:2,
+    pages:[['/','株式会社TeeenS（ティーンズ）｜岡山のホームページ制作・LP制作',.4],['/pricing/','料金・プラン｜月額プランと買い切りプラン',.2],['/about/','TeeenSとは｜10代代表の想い・ミッション・会社概要',.15],['/service-lp/','岡山のLP制作｜集客・採用・販促',.1],['/contact/','お問い合わせ・無料相談',.08],['/works/','制作実績',.07]].map(function(p){return{path:p[0],title:p[1],views:Math.round(cur.views*p[2]),users:Math.round(cur.users*p[2]*1.1)}}),
+    channels:[['Organic Search',.5],['Direct',.3],['Organic Social',.15],['Referral',.05]].map(function(c){return{name:c[0],value:Math.round(cur.sessions*c[1])}}),
+    cities:[['Okayama',.35],['Tokyo',.25],['Osaka',.12],['Shinjuku City',.1],['Fukuoka',.06]].map(function(c){return{name:c[0],value:Math.round(cur.users*c[1])}}),
+    devices:[['mobile',.62],['desktop',.35],['tablet',.03]].map(function(c){return{name:c[0],value:Math.round(cur.users*c[1])}}),
+    events:[['page_view',1],['user_engagement',.7],['scroll',.5],['session_start',.4],['first_visit',.3],['generate_lead',.02]].map(function(c){return{name:c[0],value:Math.round(cur.views*c[1])}})};
+}
+
+function delta(c,p){if(!p)return c?'<span class="flat">前の期間：なし</span>':'<span class="flat">—</span>';var r=(c-p)/p*100;var cl=r>0.5?'up':r<-0.5?'down':'flat';return '<span class="'+cl+'">'+(r>0?'▲ ':r<0?'▼ ':'')+Math.abs(r).toFixed(0)+'%　<span class="flat">前の期間比</span></span>'}
+function kpis(){
+  var c=data.cur,p=data.prev,avg=function(o){return o.users?o.engagementSec/o.users:0};
+  var L=[['ユーザー',fmt(c.users),delta(c.users,p.users)],['セッション',fmt(c.sessions),delta(c.sessions,p.sessions)],['ページ表示',fmt(c.views),delta(c.views,p.views)],['平均滞在時間',dur(avg(c)),delta(avg(c),avg(p))],['お問い合わせ（成果）',fmt(c.keyEvents),delta(c.keyEvents,p.keyEvents)]];
+  $('#kpis').innerHTML=L.map(function(k){return '<div class="card kpi"><div class="l">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="d">'+k[2]+'</div></div>'}).join('');
+}
+function chart(){
+  var D=data.daily,W=900,H=260,pl=34,pr=10,pt=12,pb=26;
+  if(!D.length){$('#chart').innerHTML='<div class="empty">データがありません</div>';return}
+  var max=Math.max.apply(null,D.map(function(d){return Math.max(d.users,d.sessions)}).concat([4]));
+  var step=Math.pow(10,Math.floor(Math.log10(max)));var top=Math.ceil(max/step)*step;if(top/step<2)top=step*2;
+  var X=function(i){return pl+(D.length>1?i/(D.length-1):.5)*(W-pl-pr)},Y=function(v){return pt+(1-v/top)*(H-pt-pb)};
+  var line=function(k){return D.map(function(d,i){return (i?'L':'M')+X(i).toFixed(1)+' '+Y(d[k]).toFixed(1)}).join('')};
+  var g='',n=4;for(var i=0;i<=n;i++){var v=top/n*i;g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" font-size="11" fill="var(--mute)" text-anchor="end">'+fmt(v)+'</text>'}
+  var xl='',every=Math.ceil(D.length/7);D.forEach(function(d,i){if(i%every===0||i===D.length-1){xl+='<text x="'+X(i)+'" y="'+(H-6)+'" font-size="11" fill="var(--mute)" text-anchor="middle">'+(+d.date.slice(4,6))+'/'+(+d.date.slice(6,8))+'</text>'}});
+  var area=line('users')+'L'+X(D.length-1)+' '+Y(0)+'L'+X(0)+' '+Y(0)+'Z';
+  $('#chart').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" id="svg">'+g+xl+'<path d="'+area+'" fill="var(--blue)" opacity=".08"/><path d="'+line('sessions')+'" fill="none" stroke="var(--mute)" stroke-width="2" opacity=".7"/><path d="'+line('users')+'" fill="none" stroke="var(--blue)" stroke-width="2.6" stroke-linejoin="round"/><line id="vl" y1="'+pt+'" y2="'+(H-pb)+'" stroke="var(--mute)" stroke-dasharray="3 3" opacity="0"/><circle id="cu" r="4.5" fill="var(--blue)" opacity="0"/></svg><div class="tip" id="tip"></div>';
+  var svg=$('#svg'),tip=$('#tip'),vl=$('#vl'),cu=$('#cu');
+  svg.addEventListener('mousemove',function(e){var r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W;var i=Math.max(0,Math.min(D.length-1,Math.round((x-pl)/(W-pl-pr)*(D.length-1))));var d=D[i];
+    vl.setAttribute('x1',X(i));vl.setAttribute('x2',X(i));vl.style.opacity=1;cu.setAttribute('cx',X(i));cu.setAttribute('cy',Y(d.users));cu.style.opacity=1;
+    tip.style.opacity=1;tip.style.left=(X(i)/W*r.width)+'px';tip.style.top=(Y(d.users)/H*r.height)+'px';
+    tip.textContent=(+d.date.slice(4,6))+'/'+(+d.date.slice(6,8))+'　ユーザー '+d.users+'　セッション '+d.sessions+'　表示 '+d.views});
+  svg.addEventListener('mouseleave',function(){tip.style.opacity=0;vl.style.opacity=0;cu.style.opacity=0});
+  var a=D[0].date,b=D[D.length-1].date;$('#range').textContent=a.slice(0,4)+'/'+(+a.slice(4,6))+'/'+(+a.slice(6,8))+' 〜 '+b.slice(0,4)+'/'+(+b.slice(4,6))+'/'+(+b.slice(6,8));
+}
+function bars(id,arr,fn){
+  if(!arr||!arr.length){$(id).innerHTML='<div class="empty">データがありません</div>';return}
+  var m=Math.max.apply(null,arr.map(function(a){return a.value}))||1,tot=arr.reduce(function(a,b){return a+b.value},0)||1;
+  $(id).innerHTML=arr.map(function(a){return '<div class="row"><span>'+esc(fn?fn(a.name):a.name)+'</span><b>'+fmt(a.value)+' <span style="color:var(--mute);font-weight:500;font-size:11px">'+Math.round(a.value/tot*100)+'%</span></b><div class="bar"><i style="width:'+(a.value/m*100)+'%"></i></div></div>'}).join('');
+}
+function pages(){
+  if(!data.pages.length){$('#pages').innerHTML='<div class="empty">データがありません</div>';return}
+  $('#pages').innerHTML='<table><tr><th>ページ</th><th>表示</th><th>ユーザー</th></tr>'+data.pages.map(function(p){return '<tr><td><span class="t">'+esc((p.title||'').replace(/\s*[|｜].*$/,'')||p.path)+'</span><span class="p">'+esc(p.path)+'</span></td><td>'+fmt(p.views)+'</td><td>'+fmt(p.users)+'</td></tr>'}).join('')+'</table>';
+}
+function render(){
+  kpis();chart();pages();bars('#channels',data.channels,nm);bars('#cities',data.cities);bars('#devices',data.devices,nm);bars('#events',data.events,nm);
+  $('#rt').hidden=false;$('#rtn').textContent=data.realtime||0;
+  var g=new Date(data.generatedAt);$('#foot').textContent='最終取得 '+g.toLocaleString('ja-JP')+'（5分ごとに、自動で最新に近づきます。「更新」で再取得）';
+}
+function note(msg,err){$('#note').innerHTML=msg?'<div class="banner'+(err?' err':'')+'">'+msg+'</div>':''}
+function skeleton(){$('#kpis').innerHTML=[1,2,3,4,5].map(function(){return '<div class="card kpi"><div class="l skel">.</div><div class="v skel">000</div><div class="d skel">.</div></div>'}).join('')}
+
+function fetchData(fresh){
+  if(demo){data=demoData(days);note('デモ表示：サンプルの数字です。実際のアクセスではありません。<button class="btn" id="n1">接続設定を開く</button>');$('#n1').onclick=openDlg;render();return}
+  if(!cfg.url||!cfg.key){note('まだ接続していません。<button class="btn pri" id="n1">接続設定を開く</button><button class="btn" id="n2">デモを見る</button>');$('#n1').onclick=openDlg;$('#n2').onclick=function(){demo=true;fetchData()};data=null;$('#kpis').innerHTML='';$('#chart').innerHTML='';return}
+  note('');skeleton();
+  var u=cfg.url+(cfg.url.indexOf('?')>-1?'&':'?')+'days='+days+'&key='+encodeURIComponent(cfg.key)+(fresh?'&fresh=1':'');
+  fetch(u).then(function(r){return r.json()}).then(function(j){
+    if(!j.ok){throw new Error(j.error==='unauthorized'?'パスワードが違います。接続設定を確認してください。':('取得エラー：'+j.error))}
+    data=j;render()
+  }).catch(function(e){note((e&&e.message||'接続できませんでした')+'<button class="btn" id="n1">接続設定を開く</button>',true);$('#n1').onclick=openDlg;$('#kpis').innerHTML=''})
+}
+function openDlg(){$('#url').value=cfg.url||'';$('#key').value=cfg.key||'';$('#dlg').showModal()}
+$('#cfg').onclick=openDlg;$('#close').onclick=function(){$('#dlg').close()};
+$('#save').onclick=function(){var u=$('#url').value.trim(),k=$('#key').value;if(!/^https:\/\/script\.google\.com\/.+\/exec/.test(u)){alert('URLは、https://script.google.com/…/exec の形で入れてください');return}if(!k){alert('パスワードを入れてください');return}cfg={url:u,key:k};save(cfg);demo=false;$('#dlg').close();fetchData(true)};
+$('#clear').onclick=function(){cfg={};try{localStorage.removeItem(LS)}catch(e){}$('#url').value='';$('#key').value='';demo=false;fetchData()};
+$('#demo').onclick=function(){demo=true;$('#dlg').close();fetchData()};
+$('#reload').onclick=function(){fetchData(true)};
+$('#seg').onclick=function(e){var b=e.target.closest('button');if(!b)return;days=+b.dataset.d;[].forEach.call($('#seg').children,function(x){x.classList.toggle('on',x===b)});fetchData()};
+$('#copy').onclick=function(){navigator.clipboard.writeText($('#code').textContent).then(function(){$('#copy').textContent='コピーしました'})};
+fetch('Code.gs').then(function(r){return r.text()}).then(function(t){$('#code').textContent=t}).catch(function(){$('#code').textContent='https://teeen-s.com/admin/Code.gs を開いてコピーしてください'});
+if(/[?&]demo/.test(location.search))demo=true;
+fetchData();
+})();
+</script>
+</body>
+</html>
