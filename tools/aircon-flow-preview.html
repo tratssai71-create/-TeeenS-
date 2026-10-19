@@ -8,91 +8,104 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#1f2a33;--ink2:#5d6670;--line:#d9d4ca;
-  --paper:#f6f4ef;--ac:#0b6aa6;--ac-soft:#e3eef5;
-  --line-g:#06c755;
+  --ink:#1d2a38;--ink2:#56626e;--line:#cfdfeb;
+  --blue:#1a7fc4;--blue-d:#0f639e;--sky:#edf5fb;
+  --cta:#f5721b;--line-g:#06c755;
+  --r:8px;
 }
-body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:1.85;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{font-family:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic','YuGothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:1.8;-webkit-font-smoothing:antialiased}
 ol,ul{list-style:none}
 a{color:inherit;text-decoration:none}
 svg{display:block}
 
-.flow{background:var(--paper);padding:96px 0 104px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.flow{background:var(--sky);padding:84px 0 92px}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
 
-/* 見出し：左寄せ＋右に「はじめての方へ」 */
-.head{display:grid;grid-template-columns:1fr 360px;gap:56px;align-items:end;padding-bottom:40px;border-bottom:2px solid var(--ink)}
-.kicker{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--ac);letter-spacing:.08em}
-.kicker::before{content:"";width:24px;height:2px;background:var(--ac)}
-.head h2{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.45;letter-spacing:.02em;margin-top:14px}
-.head .lead{font-size:15px;color:var(--ink2);margin-top:14px}
-.memo{background:#fff;border-left:4px solid var(--ac);padding:20px 22px;font-size:14px;line-height:1.9}
-.memo b{display:block;font-size:13px;color:var(--ac);margin-bottom:6px}
+/* 見出し */
+.head{text-align:center}
+.eyebrow{font:700 13px/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.24em;color:var(--blue)}
+.head h2{font-size:clamp(28px,4.4vw,38px);font-weight:800;letter-spacing:.06em;line-height:1.4;margin-top:10px}
+.head p{font-size:15px;color:var(--ink2);margin-top:12px}
 
-/* ステップ */
-.step{display:grid;grid-template-columns:96px minmax(0,1fr) 300px;gap:0 40px;padding:44px 0;border-bottom:1px solid var(--line)}
-.step.wide{grid-template-columns:96px minmax(0,1fr)}
-.num{font:700 56px/1 Georgia,'Times New Roman',serif;color:var(--ac)}
-.num small{display:block;font:700 11px/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.16em;color:var(--ink2);margin-bottom:8px}
-.txt h3{font-size:clamp(19px,2.2vw,23px);font-weight:800;letter-spacing:.03em;line-height:1.5}
+/* 安心ポイント：1本の帯にまとめる */
+.promise{display:flex;justify-content:center;margin:30px auto 48px;max-width:720px;background:#fff;border:1px solid var(--line);border-radius:var(--r)}
+.promise li{flex:1;text-align:center;padding:14px 10px;font-size:14.5px;font-weight:700;line-height:1.5}
+.promise li + li{border-left:1px solid var(--line)}
+.promise li::before{content:"✓";color:var(--blue);font-weight:800;margin-right:6px}
+
+/* ステップ：左に番号の帯があるカード */
+.step{position:relative;display:grid;grid-template-columns:92px 1fr;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:visible}
+.step + .step{margin-top:40px}
+/* カードの間の▼ */
+.step + .step::before{content:"";position:absolute;top:-29px;left:50%;transform:translateX(-50%);border-left:14px solid transparent;border-right:14px solid transparent;border-top:14px solid var(--blue)}
+
+.no{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue);color:#fff;border-radius:calc(var(--r) - 1px) 0 0 calc(var(--r) - 1px);line-height:1}
+.no small{font:700 11px/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.14em}
+.no b{font:700 40px/1 'Helvetica Neue',Arial,sans-serif;margin-top:6px}
+
+.body{padding:26px 30px 28px}
+.body h3{font-size:clamp(19px,2.4vw,22px);font-weight:800;letter-spacing:.04em;line-height:1.5}
+.body h3 .free{display:inline-block;vertical-align:3px;margin-left:8px;font-size:12px;font-weight:700;color:var(--cta);border:1.5px solid var(--cta);border-radius:4px;padding:0 7px;letter-spacing:.06em;line-height:1.7}
+.body > p{font-size:14.5px;color:var(--ink2);margin-top:8px}
 .nw{white-space:nowrap}
-.txt > p{font-size:15px;color:var(--ink2);margin-top:10px;max-width:34em}
-.ask{margin-top:18px;font-size:14px;line-height:1.8;padding:4px 0 4px 16px;border-left:3px solid var(--ink)}
-.ask dt{font-size:12px;font-weight:800;color:var(--ink2);letter-spacing:.06em}
-.ask dd + dt{margin-top:8px}
-.ask dd{font-weight:700}
 
-/* STEP1：連絡方法を文字で並べる */
-.ways{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14.5px}
-.ways a{display:flex;align-items:center;gap:6px;font-weight:700;border-bottom:1.5px solid currentColor;padding-bottom:1px}
-.ways svg{width:17px;height:17px}
-.ways .tel{color:var(--ac)}
+.meta{display:grid;grid-template-columns:1fr auto;gap:10px 24px;align-items:start;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+.you{font-size:14px;line-height:1.7}
+.you span{display:block;font-size:12px;font-weight:800;color:var(--blue-d);letter-spacing:.04em}
+.time{font-size:13.5px;line-height:1.7;text-align:right}
+.time span{display:block;font-size:12px;font-weight:800;color:var(--blue-d);letter-spacing:.04em}
+
+/* STEP1：連絡方法 */
+.ways{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ways a{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;padding:11px 8px;font-size:14px;font-weight:800;border:1.5px solid currentColor;background:#fff;transition:background .2s}
+.ways svg{width:18px;height:18px;flex:none}
+.ways .tel{color:var(--blue-d)}
 .ways .line{color:#05a548}
+.ways .mail{color:var(--ink)}
+.ways a:hover{background:var(--sky)}
 
-/* STEP2：LINEのやりとり例 */
-.chat{background:#8cabd8;border-radius:12px;padding:14px 12px 16px;font-size:12.5px;line-height:1.6}
-.chat-top{font-size:11px;color:#fff;text-align:center;margin-bottom:10px;opacity:.9}
-.msg{display:flex;margin-top:8px}
-.msg.me{justify-content:flex-end}
-.msg p{max-width:80%;padding:7px 11px;border-radius:14px;background:#fff}
-.msg.me p{background:#06c755;color:#fff}
-.pics{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
-.pics span{width:72px;height:56px;border-radius:8px;background:#e8ecef;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;font-size:10px;color:#6b7680;border:2px solid #fff}
-.chat-cap{font-size:11.5px;color:var(--ink2);margin-top:8px}
+/* STEP4：当日の作業の流れ */
+.day{margin-top:12px;font-size:14px;font-weight:700;color:var(--blue-d)}
+.day i{font-style:normal;color:var(--ink2);font-weight:400;margin:0 6px}
 
-/* STEP4：写真の場所と当日の流れ */
-.photo{align-self:start;aspect-ratio:4/3;border:1.5px dashed #b9b2a5;background:#efece5;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12.5px;color:#8a8276;padding:16px}
-.day{margin-top:16px;font-size:14px;font-weight:700;color:var(--ink)}
-.day span{color:var(--ac);margin:0 6px;font-weight:400}
+/* 下の相談ボックス */
+.cta{margin-top:52px;background:#fff;border:2px solid var(--blue);border-radius:12px;padding:36px 32px 30px;text-align:center}
+.cta h3{font-size:clamp(20px,3vw,25px);font-weight:800;letter-spacing:.04em;line-height:1.5}
+.cta > p{font-size:14px;color:var(--ink2);margin-top:6px}
+.cta-btns{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-top:22px}
+.cta-btns a{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;padding:13px 10px;color:#fff;font-weight:800;transition:opacity .2s}
+.cta-btns a:hover{opacity:.88}
+.cta-btns .row{display:flex;align-items:center;gap:8px;font-size:17px}
+.cta-btns svg{width:22px;height:22px}
+.cta-btns small{font-size:11.5px;font-weight:700;opacity:.92;margin-top:2px}
+.cta-btns .tel{background:var(--cta)}
+.cta-btns .tel .row{font:800 22px/1.3 'Helvetica Neue',Arial,sans-serif;letter-spacing:.02em}
+.cta-btns .line{background:var(--line-g)}
+.cta-btns .mail{background:var(--blue)}
+.note{margin-top:14px;font-size:12.5px;color:var(--ink2)}
 
-/* 相談 */
-.cta{margin-top:64px;display:grid;grid-template-columns:1.2fr 1fr;background:#fff;border:2px solid var(--ink)}
-.cta-tel{padding:34px 36px;border-right:1px solid var(--line)}
-.cta-tel p{font-size:14px;font-weight:700}
-.cta-tel a{display:inline-flex;align-items:center;gap:10px;margin-top:6px;font:700 clamp(30px,4vw,42px)/1.2 'Helvetica Neue',Arial,sans-serif;color:var(--ac);letter-spacing:.01em}
-.cta-tel a svg{width:30px;height:30px}
-.cta-tel small{display:block;font-size:13px;color:var(--ink2);margin-top:6px}
-.cta-sub{padding:30px 36px;display:flex;flex-direction:column;justify-content:center;gap:12px}
-.btn-line{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--line-g);color:#fff;font-weight:800;font-size:16px;padding:15px 16px;border-radius:6px}
-.btn-line svg{width:22px;height:22px}
-.btn-form{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--ink);font-weight:700;font-size:15px;padding:13px 16px;border-radius:6px}
-.cta-sub small{font-size:12px;color:var(--ink2);text-align:center}
-.area{margin-top:14px;font-size:13px;color:var(--ink2)}
-
-@media (max-width:860px){
-  .flow{padding:64px 0 72px}
-  .wrap{padding:0 20px}
-  .head{grid-template-columns:1fr;gap:28px;padding-bottom:32px}
-  .step,.step.wide{grid-template-columns:52px minmax(0,1fr);gap:0 14px;padding:34px 0}
-  .num{font-size:38px}
-  .num small{font-size:9.5px;letter-spacing:.1em}
-  .side{grid-column:2;margin-top:20px}
-  .cta{grid-template-columns:1fr}
-  .cta-tel{border-right:0;border-bottom:1px solid var(--line);padding:26px 22px}
-  .cta-sub{padding:22px}
+/* スマホ */
+@media (max-width:720px){
+  .flow{padding:60px 0 68px}
+  .promise{flex-direction:column;margin:24px 0 36px}
+  .promise li{padding:10px 14px;text-align:left}
+  .promise li + li{border-left:0;border-top:1px solid var(--line)}
+  .step{grid-template-columns:1fr}
+  .step + .step{margin-top:36px}
+  .step + .step::before{top:-26px;border-width:12px 12px 0}
+  .no{flex-direction:row;justify-content:flex-start;gap:8px;padding:9px 18px;border-radius:calc(var(--r) - 1px) calc(var(--r) - 1px) 0 0}
+  .no b{font-size:22px;margin-top:0}
+  .body{padding:18px 18px 20px}
+  .meta{grid-template-columns:1fr}
+  .time{text-align:left}
+  .ways{gap:6px}
+  .ways a{flex-direction:column;gap:3px;padding:9px 4px;font-size:12.5px}
+  .cta{padding:28px 16px 24px}
+  .cta-btns{grid-template-columns:1fr}
 }
 
-.pv-note{max-width:1040px;margin:0 auto;padding:28px 24px 60px;font-size:12.5px;color:var(--ink2)}
+.pv-note{max-width:920px;margin:0 auto;padding:28px 20px 60px;font-size:12.5px;color:var(--ink2)}
 .pv-note b{color:var(--ink)}
 </style>
 </head>
@@ -101,104 +114,94 @@ svg{display:block}
 <section class="flow" id="flow">
   <div class="wrap">
     <div class="head">
-      <div>
-        <p class="kicker">ご依頼の流れ</p>
-        <h2>お電話1本から、<br>作業が終わるまで。</h2>
-        <p class="lead">はじめての方でも迷わないよう、実際の流れをそのまま載せています。</p>
-      </div>
-      <p class="memo"><b>はじめての方へ</b>「型番が分からない」「クリーニングと修理、どっちを頼めばいい？」というご相談がいちばん多いです。分からないままで大丈夫なので、まずはお気軽にご連絡ください。</p>
+      <p class="eyebrow">FLOW</p>
+      <h2>ご依頼の流れ</h2>
+      <p>お電話1本から、作業が終わるまでの流れです。<br>見積もりだけのご相談でも大丈夫です。</p>
     </div>
 
+    <ul class="promise">
+      <li>お見積もり無料</li>
+      <li>見積もり後の追加料金なし</li>
+      <li>作業後も保証つき</li>
+    </ul>
+
     <ol class="steps">
-      <li class="step wide">
-        <div class="num"><small>STEP</small>1</div>
-        <div class="txt">
+      <li class="step">
+        <div class="no"><small>STEP</small><b>1</b></div>
+        <div class="body">
           <h3>お問い合わせ</h3>
-          <p>お電話・LINE・フォームのどれでも大丈夫です。作業中で電話に出られないときは、こちらから折り返します。</p>
+          <p>お電話・LINE・フォームのどれでも大丈夫です。作業中で電話に出られないときは、こちらから折り返します。「型番が分からない」「クリーニングと修理、どっちを頼めばいい？」といったご相談もお気軽にどうぞ。</p>
           <div class="ways">
-            <a class="tel" href="tel:000-0000-0000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>電話する</a>
-            <a class="line" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>LINEで送る</a>
-            <a href="#">フォームから送る</a>
+            <a class="tel" href="tel:000-0000-0000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span>電話</span></a>
+            <a class="line" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg><span>LINE</span></a>
+            <a class="mail" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg><span>フォーム</span></a>
           </div>
         </div>
       </li>
 
       <li class="step">
-        <div class="num"><small>STEP</small>2</div>
-        <div class="txt">
-          <h3>写真を送って、<span class="nw">無料でお見積もり</span></h3>
-          <p>エアコン本体と、横に貼ってある型番シールの写真を送ってください。それだけで、ほとんどの場合おおよその金額をお伝えできます。写真で分からないときは、ご自宅まで見にうかがいます（無料）。</p>
-          <dl class="ask">
-            <dt>お願いすること</dt><dd>本体・型番シール・室外機の写真を送る</dd>
-            <dt>お返事の目安</dt><dd>当日〜翌日</dd>
-          </dl>
-        </div>
-        <div class="side">
-          <div class="chat" aria-label="LINEでのやりとりの例">
-            <p class="chat-top">LINEでのやりとり例</p>
-            <div class="msg me"><p>リビングのエアコンのクリーニングをお願いしたいです</p></div>
-            <div class="pics"><span>本体</span><span>型番シール</span></div>
-            <div class="msg"><p>写真ありがとうございます！お掃除機能なしの壁掛けタイプなので、〇〇円です。</p></div>
-            <div class="msg me"><p>来週の土曜は空いてますか？</p></div>
+        <div class="no"><small>STEP</small><b>2</b></div>
+        <div class="body">
+          <h3>写真を送って、<span class="nw">お見積もり<span class="free">無料</span></span></h3>
+          <p>エアコン本体と、横に貼ってある型番シールの写真を送ってください。ほとんどの場合、それだけでおおよその金額をお伝えできます。写真で分からないときは、ご自宅まで見にうかがいます。</p>
+          <div class="meta">
+            <p class="you"><span>お客様にお願いすること</span>本体・型番シール・室外機の写真を送る</p>
+            <p class="time"><span>お返事の目安</span>当日〜翌日</p>
           </div>
-          <p class="chat-cap">※ やりとりはイメージです</p>
         </div>
       </li>
 
-      <li class="step wide">
-        <div class="num"><small>STEP</small>3</div>
-        <div class="txt">
+      <li class="step">
+        <div class="no"><small>STEP</small><b>3</b></div>
+        <div class="body">
           <h3>日にちを決める</h3>
           <p>金額に納得していただいてから、作業の日を決めます。見積もりのあとでお断りいただいても、費用は一切かかりません。気をつかわなくて大丈夫です。</p>
-          <dl class="ask">
-            <dt>お願いすること</dt><dd>都合のよい日と時間を伝える</dd>
-          </dl>
+          <div class="meta">
+            <p class="you"><span>お客様にお願いすること</span>都合のよい日と時間を伝える（土日もご相談ください）</p>
+          </div>
         </div>
       </li>
 
       <li class="step">
-        <div class="num"><small>STEP</small>4</div>
-        <div class="txt">
+        <div class="no"><small>STEP</small><b>4</b></div>
+        <div class="body">
           <h3>作業の日</h3>
           <p>床や壁、家具が汚れないように、まわりをしっかり覆ってから作業します。終わったらお客様と一緒に、冷房・暖房がきちんと動くかを確認します。</p>
-          <p class="day">ごあいさつ<span>→</span>養生<span>→</span>作業<span>→</span>動作確認<span>→</span>お片付け</p>
-          <dl class="ask">
-            <dt>お願いすること</dt><dd>エアコンの下の物を少しだけ動かしておく</dd>
-            <dt>かかる時間</dt><dd>1台あたり 約〇〜〇分</dd>
-          </dl>
+          <p class="day"><span class="nw">ごあいさつ</span><i>→</i><span class="nw">養生</span><i>→</i><span class="nw">作業</span><i>→</i><span class="nw">動作確認</span><i>→</i><span class="nw">お片付け</span></p>
+          <div class="meta">
+            <p class="you"><span>お客様にお願いすること</span>エアコンの下の物を少しだけ動かしておく</p>
+            <p class="time"><span>かかる時間</span>1台あたり約〇〜〇分</p>
+          </div>
         </div>
-        <div class="side photo">ここに実際の作業写真<br>（スタッフが写っているもの）</div>
       </li>
 
-      <li class="step wide">
-        <div class="num"><small>STEP</small>5</div>
-        <div class="txt">
+      <li class="step">
+        <div class="no"><small>STEP</small><b>5</b></div>
+        <div class="body">
           <h3>お支払い・その後のこと</h3>
-          <p>作業を確認していただいてからのお支払いです。作業のあとで「水が垂れてきた」「においが気になる」など、何かあれば遠慮なくご連絡ください。保証期間（〇年）内は無料で対応します。</p>
-          <dl class="ask">
-            <dt>お支払い方法</dt><dd>現金・〇〇Pay・クレジットカード</dd>
-          </dl>
+          <p>作業を確認していただいてからのお支払いです。あとから「水が垂れてきた」「においが気になる」など、何かあれば遠慮なくご連絡ください。保証期間内は無料で対応します。</p>
+          <div class="meta">
+            <p class="you"><span>お支払い方法</span>現金・〇〇Pay・クレジットカード</p>
+            <p class="time"><span>保証期間</span>〇年</p>
+          </div>
         </div>
       </li>
     </ol>
 
     <div class="cta">
-      <div class="cta-tel">
-        <p>いちばん早いのはお電話です</p>
-        <a href="tel:000-0000-0000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>000-000-0000</a>
-        <small>受付 9:00〜18:00（〇曜日休み）／作業中は折り返します</small>
+      <h3>まずはお気軽にご相談ください</h3>
+      <p>見積もりだけでも大丈夫です。いちばん早いのはお電話です。</p>
+      <div class="cta-btns">
+        <a class="tel" href="tel:000-0000-0000"><span class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>000-000-0000</span><small>受付 9:00〜18:00（〇曜日休み）</small></a>
+        <a class="line" href="#"><span class="row"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>LINEで相談</span><small>写真を送るだけでお見積もり</small></a>
+        <a class="mail" href="#"><span class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg>フォーム</span><small>夜間・休日は翌営業日にお返事</small></a>
       </div>
-      <div class="cta-sub">
-        <a class="btn-line" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>LINEで写真を送る</a>
-        <a class="btn-form" href="#">フォームで問い合わせる</a>
-        <small>夜間・休日のご連絡は、翌営業日にお返事します</small>
-      </div>
+      <p class="note">対応エリア：〇〇市・〇〇市・〇〇町（その他の地域もご相談ください）</p>
     </div>
-    <p class="area">対応エリア：〇〇市・〇〇市・〇〇町（その他の地域もご相談ください）</p>
   </div>
 </section>
 
-<p class="pv-note"><b>プレビュー用メモ：</b>電話番号・受付時間・金額・作業時間・保証期間・支払い方法・対応エリアの「〇」は仮です。点線の枠には、スタッフが写っている実際の作業写真を入れてください（写真があるかどうかで、印象がいちばん変わります）。</p>
+<p class="pv-note"><b>プレビュー用メモ：</b>電話番号・受付時間・作業時間・保証期間・支払い方法・対応エリアの「〇」は仮です。「追加料金なし」「保証つき」なども、実際のサービス内容に合わせて書き換えてください。</p>
 
 </body>
 </html>
