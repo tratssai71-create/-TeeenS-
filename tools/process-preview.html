@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>制作の流れ デザイン比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&text=0123456789.%2C%25%2B%3A%2F&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#222;--ink2:#666;--panel:#f4f3f1;--line:#dcdcdc;--jp:'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;--num:'Poppins','Inter',sans-serif;--ease:cubic-bezier(.22,1,.36,1)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',var(--jp);color:var(--ink);background:#fff;line-height:1.9;-webkit-font-smoothing:antialiased}
+ol{list-style:none}
+.wrap{position:relative;max-width:1120px;margin:0 auto;padding:0 40px}
+@media (max-width:900px){.wrap{padding:0 22px}}
+
+/* 比較用のナビ */
+.pv-nav{position:sticky;top:0;z-index:50;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.pv-nav a{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--ink);text-decoration:none;padding:6px 16px;border:1px solid var(--line);border-radius:99px;transition:background .2s,color .2s}
+@media (max-width:600px){.pv-nav{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}.pv-nav::-webkit-scrollbar{display:none}.pv-nav a{flex:none;font-size:12px;padding:5px 12px}}
+.pv-nav a:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pv-label{max-width:1120px;margin:0 auto;padding:72px 40px 0;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.pv-label b{font-family:var(--num);font-size:12px;letter-spacing:.2em;background:var(--ink);color:#fff;padding:3px 12px;border-radius:99px}
+.pv-label span{font-size:14px;color:var(--ink2)}
+@media (max-width:900px){.pv-label{padding:56px 22px 0}}
+
+/* 共通：見出し */
+.sec-title{margin-bottom:40px}
+.sec-title .en-t{display:block;font-family:'Poppins','Inter',sans-serif;font-weight:500;font-size:clamp(36px,5.4vw,64px);letter-spacing:.06em;line-height:1.2}
+.sec-title .jp-t{display:block;font-size:15px;font-weight:700;letter-spacing:.1em;margin-top:8px}
+.sec-title::after{content:'';display:block;width:104px;height:1px;background:currentColor;margin-top:28px}
+.lead{font-size:14.5px;color:var(--ink2);max-width:640px}
+
+/* ふわっと出す */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+/* ══ 現在のデザイン ══ */
+.now{padding:60px 0 90px}
+.now .lead{margin:-8px 0 54px}
+.stl{display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.stl::before{content:"";position:absolute;left:0;right:0;top:6px;height:1px;background:var(--ink)}
+.stl li{position:relative;padding:36px 22px 0 0}
+.stl li::before{content:"";position:absolute;left:0;top:0;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+.stl .tn{display:block;font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--ink2)}
+.stl .td{display:block;font-family:var(--num);font-size:clamp(40px,4.4vw,68px);font-weight:300;letter-spacing:-.02em;line-height:1.1;margin-top:6px}
+.stl h4{font-size:17px;font-weight:800;letter-spacing:.04em;margin-top:16px;line-height:1.5}
+.stl p{font-size:13px;line-height:1.9;color:var(--ink2);margin-top:8px}
+@media (max-width:900px){
+  .stl{grid-template-columns:1fr;padding-left:26px}
+  .stl::before{left:6px;right:auto;top:0;bottom:0;width:1px;height:auto}
+  .stl li{padding:0 0 38px 24px}
+  .stl li::before{left:-26px;top:3px}
+}
+
+/* ══ 案1：黒背景＋白抜きの大きな番号 ══ */
+.pa{background:#141414;color:#fff;padding:110px 0 120px;margin-top:28px}
+.pa-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:72px}
+.pa-head .sec-title{margin-bottom:0}
+.pa .lead{color:rgba(255,255,255,.62)}
+.pa-list{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid rgba(255,255,255,.18)}
+.pa-list li{position:relative;padding:34px 24px 10px;border-left:1px solid rgba(255,255,255,.18);transition:background .4s}
+.pa-list li:first-child{border-left:0;padding-left:0}
+.pa-list li:hover{background:rgba(255,255,255,.04)}
+.pa-list li:first-child:hover{background:none}
+.pa-n{display:block;font-family:var(--num);font-weight:500;font-size:clamp(64px,7.4vw,112px);line-height:1;letter-spacing:-.03em;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.55);transition:color .5s,-webkit-text-stroke-color .5s}
+.pa-list li:hover .pa-n,.pa-list li.in .pa-n{color:#fff;-webkit-text-stroke-color:#fff}
+.pa-list li .pa-n{transition-delay:var(--d,0s)}
+.pa-tag{display:inline-block;margin-top:26px;font-size:10.5px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.5)}
+.pa-list h4{font-size:17px;font-weight:800;letter-spacing:.04em;line-height:1.5;margin-top:6px}
+.pa-list p{font-size:13px;line-height:1.9;color:rgba(255,255,255,.6);margin-top:10px}
+.pa-arrow{position:absolute;top:44px;right:-9px;z-index:1;width:18px;height:18px;border-radius:50%;background:#141414;color:rgba(255,255,255,.55)}
+.pa-arrow svg{display:block;width:18px;height:18px}
+.pa-list li:last-child .pa-arrow{display:none}
+.pa-foot{margin-top:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-top:32px;border-top:1px solid rgba(255,255,255,.18)}
+.pa-foot p{font-size:14px;color:rgba(255,255,255,.7)}
+.pa-btn{display:inline-flex;align-items:center;gap:12px;background:#fff;color:#141414;font-weight:700;font-size:14px;letter-spacing:.06em;padding:14px 28px;border-radius:8px;text-decoration:none}
+@media (max-width:900px){
+  .pa{padding:80px 0 90px}
+  .pa-head{grid-template-columns:1fr;gap:24px;margin-bottom:44px}
+  .pa-list{grid-template-columns:1fr}
+  .pa-list li,.pa-list li:first-child{display:grid;grid-template-columns:84px 1fr;column-gap:18px;padding:26px 0;border-left:0;border-bottom:1px solid rgba(255,255,255,.18)}
+  .pa-n{grid-row:1/4;font-size:64px}
+  .pa-tag{margin-top:0}
+  .pa-arrow{display:none}
+}
+
+/* ══ 案2：左に見出しを固定＋スクロールで伸びる縦線 ══ */
+.pb{padding:100px 0 120px}
+.pb-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,6vw,96px);align-items:start}
+.pb-side{position:sticky;top:120px}
+.pb-count{margin-top:48px;display:flex;align-items:baseline;gap:10px;font-family:var(--num)}
+.pb-count .cur{font-size:clamp(72px,8vw,120px);font-weight:300;line-height:1;letter-spacing:-.04em;display:inline-block;min-width:1.3em}
+.pb-count .tot{font-size:18px;color:var(--ink2);letter-spacing:.06em}
+.pb-cur-t{margin-top:10px;font-size:15px;font-weight:700;letter-spacing:.06em;min-height:1.9em}
+.pb-list{position:relative;padding-left:48px}
+.pb-rail,.pb-fill{position:absolute;left:7px;top:10px;width:1px}
+.pb-rail{bottom:10px;background:var(--line)}
+.pb-fill{height:0;background:var(--ink)}
+.pb-list li{position:relative;padding-bottom:72px;opacity:.28;transition:opacity .6s var(--ease)}
+.pb-list li:last-child{padding-bottom:0}
+.pb-list li.on{opacity:1}
+.pb-list li::before{content:"";position:absolute;left:-48px;top:6px;width:15px;height:15px;border-radius:50%;background:#fff;border:1px solid var(--line);transition:background .4s,border-color .4s,transform .4s var(--ease)}
+.pb-list li.on::before{background:var(--ink);border-color:var(--ink);transform:scale(1.15)}
+.pb-k{font-family:var(--num);font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--ink2)}
+.pb-list h4{font-size:clamp(20px,2.2vw,26px);font-weight:800;letter-spacing:.04em;line-height:1.5;margin-top:4px}
+.pb-list p{font-size:14px;line-height:2;color:var(--ink2);margin-top:12px;max-width:460px}
+.pb-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.pb-chips span{font-size:12px;letter-spacing:.04em;border:1px solid var(--line);border-radius:99px;padding:3px 12px;color:var(--ink2);background:#fff}
+@media (max-width:900px){
+  .pb{padding:70px 0 90px}
+  .pb-grid{grid-template-columns:1fr}
+  .pb-side{position:static}
+  .pb-count{display:none}
+  .pb-cur-t{display:none}
+  .pb-list{padding-left:38px}
+  .pb-list li::before{left:-38px}
+  .pb-list li{padding-bottom:52px}
+}
+
+/* ══ 案3：横にスライドするカード ══ */
+.pc{position:relative;background:var(--panel)}
+.pc-pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:70px 0 40px}
+.pc-head{width:100%;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;margin-bottom:36px}
+.pc-head .sec-title{margin-bottom:0}
+.pc-head .lead{max-width:420px}
+.pc-track{display:flex;gap:24px;padding:0 max(40px,calc((100vw - 1120px)/2 + 40px));will-change:transform}
+.pc-card{flex:none;width:clamp(300px,30vw,400px);height:min(52vh,420px);min-height:330px;background:#fff;border-radius:18px;padding:34px 32px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 18px 50px rgba(0,0,0,.06)}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start}
+.pc-n{font-family:var(--num);font-size:clamp(72px,7vw,104px);font-weight:200;line-height:.9;letter-spacing:-.04em}
+.pc-step{font-family:var(--num);font-size:11px;font-weight:600;letter-spacing:.22em;color:var(--ink2);border:1px solid var(--line);border-radius:99px;padding:3px 12px}
+.pc-card h4{font-size:21px;font-weight:800;letter-spacing:.04em;line-height:1.5}
+.pc-card p{font-size:13.5px;line-height:1.95;color:var(--ink2);margin-top:10px}
+.pc-card.cta{background:var(--ink);color:#fff;text-decoration:none;justify-content:space-between}
+.pc-card.cta p{color:rgba(255,255,255,.65)}
+.pc-card.cta .pc-go{width:64px;height:64px;border:1.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .3s,color .3s}
+.pc-card.cta:hover .pc-go{background:#fff;color:var(--ink)}
+.pc-go svg{width:26px;height:26px}
+.pc-bar{margin:40px auto 0;width:min(1040px,calc(100% - 80px));height:2px;background:rgba(0,0,0,.1);position:relative}
+.pc-bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink)}
+/* スマホ・動きを減らす設定：指で横にスワイプする形に切り替え */
+.pc.native .pc-pin{position:static;height:auto;padding:80px 0}
+.pc.native .pc-track{overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;scrollbar-width:none;transform:none!important}
+.pc.native .pc-track::-webkit-scrollbar{display:none}
+.pc.native .pc-card{scroll-snap-align:center;width:min(82vw,360px);height:auto;min-height:340px}
+.pc.native .pc-bar{display:none}
+@media (max-width:900px){
+  .pc-head{flex-direction:column;align-items:flex-start;gap:22px}
+  .pc-track{padding:0 22px;gap:14px}
+}
+
+.pv-end{padding:60px 22px 90px;text-align:center;font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<nav class="pv-nav" aria-label="案の切り替え">
+  <a href="#now">現在</a><a href="#a">案1 黒背景</a><a href="#b">案2 縦に伸びる線</a><a href="#c">案3 横スライド</a>
+</nav>
+
+<!-- ══ 現在 ══ -->
+<div class="pv-label" id="now"><b>NOW</b><span>現在のデザイン（比較用）</span></div>
+<section class="now"><div class="wrap">
+  <div class="sec-title"><span class="en-t">Process</span><span class="jp-t">制作の流れ</span></div>
+  <p class="lead">制作期間は、ボリュームや内容によって変わります。具体的なスケジュールは、無料相談で、プロモーションの時期やご都合に合わせてご提案します。</p>
+  <ol class="stl">
+    <li><span class="tn">STEP</span><span class="td">1</span><h4>無料ヒアリング</h4><p>目的・ターゲット・訴求ポイント・参考LPをお伺いします</p></li>
+    <li><span class="tn">STEP</span><span class="td">2</span><h4>構成・コピー提案</h4><p>ワイヤーフレームとコピー案を提示してご確認</p></li>
+    <li><span class="tn">STEP</span><span class="td">3</span><h4>デザイン制作</h4><p>デザインカンプを作成しご確認・修正対応</p></li>
+    <li><span class="tn">STEP</span><span class="td">4</span><h4>実装・フォーム・計測設定</h4><p>コーディング・フォーム設置・GA4・GTM設定</p></li>
+    <li><span class="tn">STEP</span><span class="td">5</span><h4>公開・引き渡し</h4><p>最終確認・公開処理・レポート設定</p></li>
+  </ol>
+</div></section>
+
+<!-- ══ 案1 ══ -->
+<div class="pv-label" id="a"><b>案 1</b><span>黒背景＋白抜きの大きな番号。画面に入ると番号が左から順に白く塗られます（PCはマウスを乗せても反応）</span></div>
+<section class="pa"><div class="wrap">
+  <div class="pa-head">
+    <div class="sec-title rv"><span class="en-t">Process</span><span class="jp-t">制作の流れ</span></div>
+    <p class="lead rv">制作期間は、ボリュームや内容によって変わります。具体的なスケジュールは、無料相談で、プロモーションの時期やご都合に合わせてご提案します。</p>
+  </div>
+  <ol class="pa-list" data-seq>
+    <li style="--d:0s"><span class="pa-n">01</span><span class="pa-tag">HEARING</span><h4>無料ヒアリング</h4><p>目的・ターゲット・訴求ポイント・参考LPをお伺いします</p><span class="pa-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 5.5L11 9l-3.5 3.5"/></svg></span></li>
+    <li style="--d:.15s"><span class="pa-n">02</span><span class="pa-tag">PLANNING</span><h4>構成・コピー提案</h4><p>ワイヤーフレームとコピー案を提示してご確認</p><span class="pa-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 5.5L11 9l-3.5 3.5"/></svg></span></li>
+    <li style="--d:.3s"><span class="pa-n">03</span><span class="pa-tag">DESIGN</span><h4>デザイン制作</h4><p>デザインカンプを作成しご確認・修正対応</p><span class="pa-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 5.5L11 9l-3.5 3.5"/></svg></span></li>
+    <li style="--d:.45s"><span class="pa-n">04</span><span class="pa-tag">DEVELOP</span><h4>実装・フォーム・計測設定</h4><p>コーディング・フォーム設置・GA4・GTM設定</p><span class="pa-arrow"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 5.5L11 9l-3.5 3.5"/></svg></span></li>
+    <li style="--d:.6s"><span class="pa-n">05</span><span class="pa-tag">LAUNCH</span><h4>公開・引き渡し</h4><p>最終確認・公開処理・レポート設定</p><span class="pa-arrow"></span></li>
+  </ol>
+  <div class="pa-foot rv">
+    <p>まずはSTEP 1の無料ヒアリングから。「何から決めればいいか分からない」段階でも大丈夫です。</p>
+    <a class="pa-btn" href="../contact/index.html">無料で相談する <span aria-hidden="true">→</span></a>
+  </div>
+</div></section>
+
+<!-- ══ 案2 ══ -->
+<div class="pv-label" id="b"><b>案 2</b><span>左の見出しは止まったまま、右の縦線がスクロールに合わせて黒く伸びます。今どのSTEPかが左に大きく出ます</span></div>
+<section class="pb"><div class="wrap">
+  <div class="pb-grid">
+    <div class="pb-side">
+      <div class="sec-title"><span class="en-t">Process</span><span class="jp-t">制作の流れ</span></div>
+      <p class="lead">制作期間は、ボリュームや内容によって変わります。具体的なスケジュールは、無料相談で、プロモーションの時期やご都合に合わせてご提案します。</p>
+      <div class="pb-count" aria-hidden="true"><span class="cur">01</span><span class="tot">/ 05</span></div>
+      <p class="pb-cur-t" aria-hidden="true">無料ヒアリング</p>
+    </div>
+    <div class="pb-list">
+      <span class="pb-rail" aria-hidden="true"></span><span class="pb-fill" aria-hidden="true"></span>
+      <ol>
+      <li><span class="pb-k">STEP 01</span><h4>無料ヒアリング</h4><p>目的・ターゲット・訴求ポイント・参考LPをお伺いします。オンライン・対面どちらでも対応します。</p><div class="pb-chips"><span>目的</span><span>ターゲット</span><span>参考LP</span></div></li>
+      <li><span class="pb-k">STEP 02</span><h4>構成・コピー提案</h4><p>ワイヤーフレームとコピー案を提示してご確認いただきます。文章はTeeenSが無料で作成します。</p><div class="pb-chips"><span>ワイヤーフレーム</span><span>コピー案</span></div></li>
+      <li><span class="pb-k">STEP 03</span><h4>デザイン制作</h4><p>デザインカンプを作成し、ご確認・修正に対応します。</p><div class="pb-chips"><span>デザインカンプ</span><span>修正対応</span></div></li>
+      <li><span class="pb-k">STEP 04</span><h4>実装・フォーム・計測設定</h4><p>コーディング、フォーム設置、GA4・GTMの設定まで行います。</p><div class="pb-chips"><span>STUDIO</span><span>フォーム</span><span>GA4・GTM</span></div></li>
+      <li><span class="pb-k">STEP 05</span><h4>公開・引き渡し</h4><p>最終確認のうえ公開。アクセスのレポートが見られる状態でお渡しします。</p><div class="pb-chips"><span>公開</span><span>レポート設定</span></div></li>
+      </ol>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══ 案3 ══ -->
+<div class="pv-label" id="c"><b>案 3</b><span>縦にスクロールすると、カードが横に流れます（スマホでは指で横にスワイプする形になります）</span></div>
+<section class="pc" id="pc">
+  <div class="pc-pin">
+    <div class="wrap pc-head">
+      <div class="sec-title"><span class="en-t">Process</span><span class="jp-t">制作の流れ</span></div>
+      <p class="lead">制作期間は、ボリュームや内容によって変わります。具体的なスケジュールは、無料相談で、プロモーションの時期やご都合に合わせてご提案します。</p>
+    </div>
+    <ol class="pc-track">
+      <li class="pc-card"><div class="pc-top"><span class="pc-n">01</span><span class="pc-step">STEP</span></div><div><h4>無料ヒアリング</h4><p>目的・ターゲット・訴求ポイント・参考LPをお伺いします</p></div></li>
+      <li class="pc-card"><div class="pc-top"><span class="pc-n">02</span><span class="pc-step">STEP</span></div><div><h4>構成・コピー提案</h4><p>ワイヤーフレームとコピー案を提示してご確認</p></div></li>
+      <li class="pc-card"><div class="pc-top"><span class="pc-n">03</span><span class="pc-step">STEP</span></div><div><h4>デザイン制作</h4><p>デザインカンプを作成しご確認・修正対応</p></div></li>
+      <li class="pc-card"><div class="pc-top"><span class="pc-n">04</span><span class="pc-step">STEP</span></div><div><h4>実装・フォーム・計測設定</h4><p>コーディング・フォーム設置・GA4・GTM設定</p></div></li>
+      <li class="pc-card"><div class="pc-top"><span class="pc-n">05</span><span class="pc-step">STEP</span></div><div><h4>公開・引き渡し</h4><p>最終確認・公開処理・レポート設定</p></div></li>
+      <li><a class="pc-card cta" href="../contact/index.html"><span class="pc-go"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 35L35 13M18 13h17v17"/></svg></span><div><h4>まずは無料相談から</h4><p>「どんなLPが必要か分からない」段階でも大丈夫です。</p></div></a></li>
+    </ol>
+    <div class="pc-bar" aria-hidden="true"><i></i></div>
+  </div>
+</section>
+
+<p class="pv-end">比較用のプレビューページです（検索には出ません）。</p>
+
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ふわっと出す／案1の番号を順に塗る
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      if(e.target.hasAttribute('data-seq')){
+        e.target.querySelectorAll('li').forEach(function(li){ li.classList.add('in'); });
+      } else e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  },{threshold:.25});
+  document.querySelectorAll('.rv,[data-seq]').forEach(function(el){ io.observe(el); });
+
+  // 案2：縦線と今のSTEP
+  var list = document.querySelector('.pb-list'), fill = list.querySelector('.pb-fill'),
+      items = [].slice.call(list.querySelectorAll('li')),
+      cur = document.querySelector('.pb-count .cur'), curT = document.querySelector('.pb-cur-t');
+  function updB(){
+    var mid = innerHeight * .55, r = list.getBoundingClientRect(), active = -1;
+    items.forEach(function(li, i){
+      var on = li.getBoundingClientRect().top + 10 < mid;
+      li.classList.toggle('on', on);
+      if(on) active = i;
+    });
+    var h = Math.max(0, Math.min(mid - r.top - 10, r.height - 20));
+    fill.style.height = h + 'px';
+    var i = Math.max(active, 0);
+    cur.textContent = ('0' + (i + 1)).slice(-2);
+    curT.textContent = items[i].querySelector('h4').textContent;
+  }
+
+  // 案3：縦スクロールを横の動きに変える
+  var pc = document.getElementById('pc'), track = pc.querySelector('.pc-track'), bar = pc.querySelector('.pc-bar i'), dist = 0;
+  function layoutC(){
+    var native = reduce || innerWidth <= 900;
+    pc.classList.toggle('native', native);
+    if(native){ pc.style.height = ''; track.style.transform = ''; return; }
+    dist = Math.max(0, track.scrollWidth - innerWidth);
+    pc.style.height = (innerHeight + dist) + 'px';
+  }
+  function updC(){
+    if(pc.classList.contains('native')) return;
+    var p = Math.min(1, Math.max(0, -pc.getBoundingClientRect().top / (dist || 1)));
+    track.style.transform = 'translate3d(' + (-p * dist) + 'px,0,0)';
+    bar.style.width = (p * 100) + '%';
+  }
+
+  var tick = false;
+  function onScroll(){
+    if(tick) return; tick = true;
+    requestAnimationFrame(function(){ updB(); updC(); tick = false; });
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', function(){ layoutC(); onScroll(); });
+  layoutC(); updB(); updC();
+})();
+</script>
+</body>
+</html>
