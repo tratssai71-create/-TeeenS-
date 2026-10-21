@@ -16,7 +16,7 @@
   --line-g:#06c755;
   --en:'Outfit','Helvetica Neue',Arial,sans-serif;
 }
-body{font-family:'Zen Kaku Gothic New','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:2;font-feature-settings:"palt" 0;-webkit-font-smoothing:antialiased}
+body{font-family:'Zen Kaku Gothic New','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:2;-webkit-font-smoothing:antialiased}
 ul,ol{list-style:none}
 a{color:inherit;text-decoration:none}
 svg{display:block}
@@ -46,81 +46,43 @@ svg{display:block}
 .cat::before{content:"";width:18px;height:1.5px;background:var(--blue)}
 .area{font-size:12.5px;color:var(--ink2)}
 .ahead h1{font-size:clamp(24px,3.8vw,34px);font-weight:700;line-height:1.55;letter-spacing:.02em;margin-top:18px}
-.lead{font-size:16px;color:var(--ink2);margin-top:16px}
 
-/* 作業前・作業後（本文より広く） */
+/* 作業前・作業後（写真2枚を入れるだけ。文字は固定） */
 .ba{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .ba figure{position:relative}
 .ba .ph{aspect-ratio:4/3}
 .ba figure:first-child .ph{border-radius:6px 0 0 6px}
 .ba figure:last-child .ph{border-radius:0 6px 6px 0}
-.ba .tag{position:absolute;left:0;bottom:0;right:0;padding:28px 20px 16px;background:linear-gradient(transparent,rgba(10,22,34,.6));color:#fff;border-radius:0 0 0 6px}
-.ba figure:last-child .tag{border-radius:0 0 6px 0}
-.ba .tag b{display:block;font-size:15px;font-weight:700}
-.ba .tag span{font-size:13px;opacity:.9}
-.ba .tag small{display:block;font:500 11px/1 var(--en);letter-spacing:.2em;opacity:.75;margin-bottom:6px}
+.ba .tag{position:absolute;left:16px;bottom:14px;color:#fff;background:rgba(10,22,34,.55);padding:6px 14px 6px 12px;border-radius:4px;display:flex;align-items:baseline;gap:8px}
+.ba .after .tag{background:var(--blue)}
+.ba .tag small{font:500 10.5px/1 var(--en);letter-spacing:.2em;opacity:.8}
+.ba .tag b{font-size:14px;font-weight:700;line-height:1.4}
 .ba-mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:#fff;color:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .ba-mid svg{width:22px;height:22px}
 
-/* 本文 */
-.post{margin-top:56px}
-.post > p,.post .col > p{font-size:16px}
-.col > p + p{margin-top:1.1em}
-.sh{display:flex;align-items:baseline;gap:14px;margin:72px 0 20px}
-.sh .no{font:300 40px/1 var(--en);color:var(--blue);letter-spacing:-.02em}
-.sh h2{font-size:21px;font-weight:700;line-height:1.5;letter-spacing:.03em}
+/* 本文（STUDIOのリッチテキスト1つ。見出し・引用・写真の見た目をここで決めておく） */
+.rt{margin-top:56px}
+.rt p{font-size:16px}
+.rt p + p{margin-top:1.1em}
+.rt h2{font-size:21px;font-weight:700;line-height:1.5;letter-spacing:.03em;margin:64px 0 18px}
+.rt h2::before{content:"";display:block;width:28px;height:3px;background:var(--blue);margin-bottom:14px}
+.rt blockquote{position:relative;margin:26px 0;padding:30px 30px 26px;background:var(--sky);border-radius:6px;font-size:18px;font-weight:700;line-height:1.85}
+.rt blockquote::before{content:"“";position:absolute;top:-6px;left:18px;font:500 72px/1 Georgia,serif;color:var(--blue);opacity:.35}
+.rt .img{margin:28px 0 10px;aspect-ratio:16/9;border-radius:5px}
+.rt .img + p{font-size:13.5px;color:var(--ink2);margin-top:0}
+.rt .img + p + p{margin-top:1.4em}
 
-.quote{position:relative;margin:28px 0 26px;padding:30px 30px 26px 30px;background:var(--sky);border-radius:6px}
-.quote::before{content:"“";position:absolute;top:-6px;left:18px;font:500 72px/1 Georgia,serif;color:var(--blue);opacity:.35}
-.quote p{font-size:18px;font-weight:700;line-height:1.85;position:relative}
-.quote small{display:block;font-size:12.5px;color:var(--ink2);margin-top:10px}
-
-/* 写真：大1＋小2（本文より広く） */
-.gal{display:grid;grid-template-columns:1.5fr 1fr;grid-template-rows:auto auto;gap:10px;margin:32px auto 8px}
-.gal figure:first-child{grid-row:1/3}
-.gal .ph{height:100%;min-height:150px;border-radius:5px}
-.gal figure:first-child .ph{min-height:320px}
-.gal figure{position:relative;display:flex;flex-direction:column}
-.gal figure .ph{flex:1}
-.gal figcaption{font-size:12.5px;color:var(--ink2);margin-top:6px;line-height:1.6}
-.gal figcaption b{font:600 11px/1 var(--en);color:var(--blue);letter-spacing:.1em;margin-right:6px}
-.one{margin:32px auto 10px}
-.one .ph{aspect-ratio:16/8;border-radius:5px}
-.one figcaption{font-size:13px;color:var(--ink2);margin-top:8px}
-
-/* 今回の作業（明細書風） */
-.spec{margin-top:64px;border:1px solid var(--ink);border-radius:6px;overflow:hidden}
-.spec-h{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:var(--ink);color:#fff}
-.spec-h b{font-size:15px;font-weight:700;letter-spacing:.06em}
-.spec-h span{font:500 11px/1 var(--en);letter-spacing:.2em;opacity:.7}
-.spec dl{padding:8px 22px 4px}
-.spec dl div{display:flex;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px dotted #c3cad1;font-size:14.5px}
-.spec dl div:last-child{border-bottom:0}
-.spec dt{color:var(--ink2);flex:none;width:72px}
-.spec dd{font-weight:700}
-.spec .total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 22px;background:var(--sky);border-top:1px solid var(--ink)}
-.spec .total span{font-size:14px;font-weight:700}
-.spec .total b{font:500 30px/1 var(--en);color:var(--blue-d);letter-spacing:.01em}
-.spec .total b small{font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;font-weight:700;margin-left:4px;color:var(--ink)}
-.spec .note{font-size:12px;color:var(--ink2);padding:0 22px 14px;background:var(--sky);line-height:1.7}
-
-/* 書いた人 */
-.by{margin-top:48px;display:flex;gap:18px;align-items:center}
-.by .ph{flex:none;width:72px;height:72px;border-radius:50%;font-size:10px}
+/* 書いた人（全記事共通。STUDIOで一度作れば終わり） */
+.by{margin-top:56px;display:flex;gap:18px;align-items:center;padding:22px 24px;border:1px solid var(--line);border-radius:6px}
+.by .ph{flex:none;width:64px;height:64px;border-radius:50%;font-size:10px}
 .by small{display:block;font:500 11px/1 var(--en);letter-spacing:.2em;color:var(--blue);margin-bottom:6px}
-.by b{font-size:16px}
-.by p{font-size:13.5px;color:var(--ink2);line-height:1.7;margin-top:4px}
+.by b{font-size:15px}
+.by p{font-size:13.5px;color:var(--ink2);line-height:1.7;margin-top:2px}
 
-/* 前後・一覧 */
-.pager{display:grid;grid-template-columns:1fr 1fr;margin-top:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.pager a{padding:20px 4px;font-size:13.5px;line-height:1.6;transition:color .2s}
-.pager a + a{text-align:right;border-left:1px solid var(--line)}
-.pager a small{display:block;font:500 11px/1 var(--en);letter-spacing:.18em;color:var(--blue);margin-bottom:6px}
-.pager a:hover{color:var(--blue-d)}
-.back{display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;margin:32px auto 0;font-size:14px;font-weight:700;border:1.5px solid var(--ink);border-radius:99px;padding:11px 28px;transition:background .2s,color .2s}
+.back{display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;margin:48px auto 0;font-size:14px;font-weight:700;border:1.5px solid var(--ink);border-radius:99px;padding:11px 28px;transition:background .2s,color .2s}
 .back:hover{background:var(--ink);color:#fff}
 
-/* 相談（紺の帯） */
+/* 相談（全記事共通の紺の帯） */
 .ask{margin-top:96px;background:var(--navy);color:#fff}
 .ask .in{max-width:1000px;margin:0 auto;padding:56px 20px;display:grid;grid-template-columns:1fr auto;gap:28px 48px;align-items:center}
 .ask small{font:500 11px/1 var(--en);letter-spacing:.24em;color:#8cc4ec}
@@ -134,15 +96,15 @@ svg{display:block}
 .ask .line:hover{opacity:.9}
 .ask .line svg{width:20px;height:20px}
 
-/* ほかの事例 */
+/* ほかの事例（CMSから自動で並ぶ） */
 .rel{padding-top:72px;padding-bottom:88px}
 .rel-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .rel-h small{font:500 11px/1 var(--en);letter-spacing:.24em;color:var(--blue)}
 .rel-h h2{font-size:22px;font-weight:700;margin-top:8px}
 .rel-h a{font-size:13.5px;font-weight:700;border-bottom:1.5px solid currentColor}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:28px}
-.card .ph{aspect-ratio:4/3;border-radius:5px;transition:transform .5s ease}
 .card .img{overflow:hidden;border-radius:5px}
+.card .ph{aspect-ratio:4/3;transition:transform .5s ease}
 .card:hover .ph{transform:scale(1.04)}
 .card .m{display:flex;gap:10px;align-items:center;margin-top:14px;font-size:12px;color:var(--ink2)}
 .card .m b{color:var(--blue-d)}
@@ -150,41 +112,24 @@ svg{display:block}
 .card h3{font-size:15px;font-weight:700;line-height:1.65;margin-top:6px;transition:color .2s}
 .card:hover h3{color:var(--blue-d)}
 
-/* ふわっと出す */
-.rv{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease}
-.rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
-
 @media (max-width:760px){
   .phero{height:150px}
   .phero b{font-size:28px}
   .ahead{padding-top:40px;padding-bottom:28px}
   .ahead h1{margin-top:14px}
-  .lead{font-size:15px}
-  .wide.ba-wrap{padding:0}
-  .ba figure:first-child .ph,.ba figure:last-child .ph,.ba .tag,.ba figure:last-child .tag{border-radius:0}
-  .ba .tag{padding:22px 12px 10px}
-  .ba .tag b{font-size:13px}
-  .ba .tag span{display:none}
+  .ba-wrap{padding:0!important}
+  .ba figure:first-child .ph,.ba figure:last-child .ph{border-radius:0}
+  .ba .tag{left:10px;bottom:10px;padding:4px 10px}
+  .ba .tag small{display:none}
+  .ba .tag b{font-size:12.5px}
   .ba-mid{width:40px;height:40px}
   .ba-mid svg{width:18px;height:18px}
-  .ba-cap{display:grid!important}
-  .post{margin-top:36px}
-  .post .col > p{font-size:15.5px}
-  .sh{margin:56px 0 16px;gap:12px}
-  .sh .no{font-size:32px}
-  .sh h2{font-size:19px}
-  .quote{padding:26px 20px 22px}
-  .quote p{font-size:16.5px}
-  .gal{grid-template-columns:1fr 1fr;gap:8px}
-  .gal figure:first-child{grid-row:auto;grid-column:1/-1}
-  .gal figure:first-child .ph{min-height:0;height:auto;aspect-ratio:16/10}
-  .gal .ph{min-height:0;height:auto;flex:none;aspect-ratio:4/3}
-  .gal figure{min-width:0}
-  .one .ph{aspect-ratio:16/10}
-  .spec dl,.spec-h,.spec .total{padding-left:16px;padding-right:16px}
-  .spec .note{padding:0 16px 12px}
-  .spec .total b{font-size:26px}
+  .rt{margin-top:36px}
+  .rt p{font-size:15.5px}
+  .rt h2{font-size:19px;margin-top:52px}
+  .rt blockquote{padding:26px 20px 22px;font-size:16.5px}
+  .rt .img{aspect-ratio:4/3}
+  .by{padding:18px}
   .ask .in{grid-template-columns:1fr;padding:44px 20px}
   .ask-act{min-width:0}
   .ask .tel{font-size:28px}
@@ -193,16 +138,23 @@ svg{display:block}
   .card .m{margin-top:0;flex-wrap:wrap;gap:4px 8px}
   .card h3{font-size:14px}
 }
-/* スマホでは作業前・後の説明を写真の下に */
-.ba-cap{display:none;grid-template-columns:1fr 1fr;gap:12px;padding:8px 20px 0;font-size:12.5px;color:var(--ink2);line-height:1.6}
 
-.pv-note{max-width:720px;margin:0 auto;padding:40px 20px 64px;font-size:13px;color:var(--ink2);border-top:1px solid var(--line)}
-.pv-note h2{font-size:15px;color:var(--ink);margin-bottom:10px}
-.pv-note table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px;line-height:1.7}
-.pv-note th,.pv-note td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
-.pv-note th{background:var(--sky);color:var(--ink);white-space:nowrap}
-.pv-note td:nth-child(2){white-space:nowrap}
-.pv-note ul{margin-top:10px;padding-left:1.2em;list-style:disc}
+/* 入力する場所の目印（プレビュー用） */
+.pin{position:relative}
+.pin::after{content:attr(data-pin);position:absolute;top:-10px;right:-10px;z-index:5;font:700 11px/1 var(--en);color:#fff;background:#e5484d;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #fff}
+@media (max-width:760px){.pin::after{right:4px}}
+.pv-pins .pin::after{display:none}
+.pv-toggle{position:fixed;right:16px;bottom:16px;z-index:50;font-size:13px;font-weight:700;background:#fff;border:1.5px solid var(--ink);border-radius:99px;padding:9px 16px;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+
+.pv-note{max-width:720px;margin:0 auto;padding:44px 20px 72px;font-size:13.5px;color:var(--ink2);border-top:1px solid var(--line);line-height:1.9}
+.pv-note h2{font-size:16px;color:var(--ink);margin:0 0 10px}
+.pv-note h3{font-size:14px;color:var(--ink);margin:28px 0 8px}
+.pv-note ol{list-style:none;counter-reset:n}
+.pv-note ol li{counter-increment:n;display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.pv-note ol li::before{content:counter(n);flex:none;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;font:700 11px/22px var(--en);text-align:center;margin-top:3px}
+.pv-note ol li b{color:var(--ink)}
+.pv-note pre{white-space:pre-wrap;background:#f6f7f8;border:1px solid var(--line);border-radius:6px;padding:14px 16px;font:13px/1.9 'Zen Kaku Gothic New',sans-serif;color:var(--ink)}
+.pv-note ul{padding-left:1.2em;list-style:disc}
 </style>
 </head>
 <body>
@@ -212,86 +164,55 @@ svg{display:block}
 
 <main>
   <header class="ahead col">
-    <div class="meta"><time class="date" datetime="2026-10-12">2026.10.12</time><span class="cat">エアコンクリーニング</span><span class="area">総社市</span></div>
-    <h1>「つけるとカビくさい」<br>お掃除機能付きエアコンを<span class="nw">分解洗浄しました</span></h1>
-    <p class="lead">10年ほど使っている、リビングのお掃除機能付きエアコン。「お掃除機能があるから大丈夫」と思われていたそうです。</p>
+    <div class="meta"><time class="date" datetime="2026-10-12">2026.10.12</time><span class="cat pin" data-pin="2">エアコンクリーニング</span><span class="area pin" data-pin="3">総社市</span></div>
+    <h1 class="pin" data-pin="1">「つけるとカビくさい」<br>お掃除機能付きエアコンを<span class="nw">分解洗浄しました</span></h1>
   </header>
 
-  <div class="wide ba-wrap rv">
+  <div class="wide ba-wrap">
     <div class="ba">
-      <figure><div class="ph dark" data-label="作業前の写真"></div><figcaption class="tag"><small>BEFORE</small><b>作業前</b><span>送風ファンに黒いカビがびっしり</span></figcaption></figure>
-      <figure><div class="ph" data-label="作業後の写真"></div><figcaption class="tag"><small>AFTER</small><b>作業後</b><span>ファンの奥まで、ここまで落ちました</span></figcaption></figure>
+      <figure class="pin" data-pin="4"><div class="ph dark" data-label="作業前の写真"></div><figcaption class="tag"><small>BEFORE</small><b>作業前</b></figcaption></figure>
+      <figure class="after pin" data-pin="5"><div class="ph" data-label="作業後の写真"></div><figcaption class="tag"><small>AFTER</small><b>作業後</b></figcaption></figure>
       <span class="ba-mid" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </div>
-    <div class="ba-cap" aria-hidden="true"><span>送風ファンに黒いカビがびっしり</span><span>ファンの奥まで、ここまで落ちました</span></div>
   </div>
 
-  <article class="post">
-    <div class="col">
-      <p>総社市のお客様から、リビングのエアコンのクリーニングのご依頼をいただきました。</p>
+  <article class="col">
+    <div class="rt pin" data-pin="6">
+      <p>総社市のお客様から、リビングのエアコンのクリーニングのご依頼をいただきました。10年ほど使っている、お掃除機能付きのエアコンです。</p>
 
-      <div class="sh rv"><span class="no">01</span><h2>ご相談の内容</h2></div>
+      <h2>ご相談の内容</h2>
       <p>お電話でうかがったのは、こんなお悩みでした。</p>
-      <div class="quote rv">
-        <p>去年あたりから、冷房をつけるたびにカビっぽいにおいがして…。お掃除機能付きだから大丈夫だと思ってたんですけど。</p>
-        <small>お客様のお電話より</small>
-      </div>
+      <blockquote>去年あたりから、冷房をつけるたびにカビっぽいにおいがして…。お掃除機能付きだから大丈夫だと思ってたんですけど。</blockquote>
       <p>実はこれ、とても多いご相談です。お掃除機能が掃除してくれるのはフィルターだけで、その奥にあるファンや熱交換器には、少しずつ汚れがたまっていきます。</p>
 
-      <div class="sh rv"><span class="no">02</span><h2>作業の様子</h2></div>
-      <p>まずは壁と床をビニールでしっかり覆います。お掃除機能付きの機種はお掃除ユニットという部品が付いているので、それを外してから、ファンと熱交換器を高圧洗浄機で洗っていきます。</p>
-    </div>
-
-    <div class="wide rv">
-      <div class="gal">
-        <figure><div class="ph" data-label="写真（大）"></div><figcaption><b>01</b>高圧洗浄機で、ファンの奥まで洗います</figcaption></figure>
-        <figure><div class="ph" data-label="写真"></div><figcaption><b>02</b>壁と床をしっかり養生</figcaption></figure>
-        <figure><div class="ph" data-label="写真"></div><figcaption><b>03</b>お掃除ユニットを外したところ</figcaption></figure>
-      </div>
-    </div>
-
-    <div class="col">
-      <figure class="one rv"><div class="ph dark" data-label="洗ったあとの水の写真"></div><figcaption>洗ったあとの水。最初はこれくらい真っ黒でした。</figcaption></figure>
+      <h2>作業の様子</h2>
+      <p>壁と床をビニールでしっかり覆ってから、お掃除ユニットを外し、ファンと熱交換器を高圧洗浄機で洗っていきます。</p>
+      <div class="img ph dark" data-label="途中の写真（本文に貼るだけ）"></div>
+      <p>洗ったあとの水。最初はこれくらい真っ黒でした。</p>
       <p>お客様にも、この水を見てもらいました。「こんなに汚れてたんですね…」と驚かれていました。</p>
 
-      <div class="sh rv"><span class="no">03</span><h2>作業のあと</h2></div>
+      <h2>作業のあと</h2>
       <p>部品を元に戻して、お客様と一緒に冷房と暖房を動かし、においを確認。「全然においがしない」とのことで、ひと安心です。</p>
       <p>お掃除機能付きのエアコンでも、においや黒い点々が気になってきたら、クリーニングのタイミングです。2〜3年に1回を目安にしてもらうと、きれいな状態を保ちやすいですよ。</p>
-
-      <section class="spec rv" aria-label="今回の作業">
-        <div class="spec-h"><b>今回の作業</b><span>DETAILS</span></div>
-        <dl>
-          <div><dt>場所</dt><dd>総社市・戸建て（リビング）</dd></div>
-          <div><dt>機種</dt><dd>〇〇製 お掃除機能付き（20〇〇年製）</dd></div>
-          <div><dt>作業</dt><dd>分解クリーニング</dd></div>
-          <div><dt>時間</dt><dd>約〇時間</dd></div>
-        </dl>
-        <div class="total"><span>料金</span><b>〇〇,〇〇〇<small>円（税込）</small></b></div>
-        <p class="note">※ 料金は機種やお部屋の状況によって変わります。</p>
-      </section>
-
-      <div class="by rv">
-        <div class="ph" data-label="顔写真"></div>
-        <div>
-          <small>WRITTEN BY</small>
-          <b>〇〇〇〇</b>
-          <p>Bright air スタッフ。エアコンのことなら、なんでも聞いてください。</p>
-        </div>
-      </div>
-
-      <nav class="pager" aria-label="前後の事例">
-        <a href="#"><small>PREV</small>冷えが悪くなったリビングのエアコン</a>
-        <a href="#"><small>NEXT</small>室内機からの水漏れ、原因はドレンホース</a>
-      </nav>
-      <a class="back" href="#">施工事例の一覧へ <span aria-hidden="true">→</span></a>
     </div>
+
+    <div class="by">
+      <div class="ph" data-label="写真"></div>
+      <div>
+        <small>WRITTEN BY</small>
+        <b>Bright air スタッフ</b>
+        <p>岡山県総社市を中心に、エアコンの取り付け・クリーニング・修理をしています。</p>
+      </div>
+    </div>
+
+    <a class="back" href="#">施工事例の一覧へ <span aria-hidden="true">→</span></a>
   </article>
 
   <aside class="ask">
     <div class="in">
       <div>
         <small>CONTACT</small>
-        <h2>うちのエアコンもにおうかも…と思ったら</h2>
+        <h2>エアコンのことで気になることがあれば</h2>
         <p>本体と型番シールの写真を送ってもらえれば、おおよその金額をお伝えします。見積もりだけでも大丈夫です。</p>
       </div>
       <div class="ask-act">
@@ -308,42 +229,51 @@ svg{display:block}
       <a href="#">一覧を見る</a>
     </div>
     <div class="cards">
-      <a class="card" href="#"><div class="img"><div class="ph" data-label="写真"></div></div><div><p class="m"><time>2026.10.05</time><b>クリーニング</b>岡山市</p><h3>冷えが悪くなったリビングのエアコン。原因はフィンの汚れでした</h3></div></a>
-      <a class="card" href="#"><div class="img"><div class="ph" data-label="写真"></div></div><div><p class="m"><time>2026.09.28</time><b>取り付け</b>倉敷市</p><h3>新築のお家に、エアコン3台をまとめて取り付けました</h3></div></a>
-      <a class="card" href="#"><div class="img"><div class="ph" data-label="写真"></div></div><div><p class="m"><time>2026.09.20</time><b>修理</b>総社市</p><h3>室内機からの水漏れ。ドレンホースのつまりが原因でした</h3></div></a>
+      <a class="card" href="#"><div class="img"><div class="ph" data-label="作業後の写真"></div></div><div><p class="m"><time>2026.10.05</time><b>クリーニング</b>岡山市</p><h3>冷えが悪くなったリビングのエアコン。原因はフィンの汚れでした</h3></div></a>
+      <a class="card" href="#"><div class="img"><div class="ph" data-label="作業後の写真"></div></div><div><p class="m"><time>2026.09.28</time><b>取り付け</b>倉敷市</p><h3>新築のお家に、エアコン3台をまとめて取り付けました</h3></div></a>
+      <a class="card" href="#"><div class="img"><div class="ph" data-label="作業後の写真"></div></div><div><p class="m"><time>2026.09.20</time><b>修理</b>総社市</p><h3>室内機からの水漏れ。ドレンホースのつまりが原因でした</h3></div></a>
     </div>
   </section>
 </main>
 
 <div class="pv-note">
-  <h2>STUDIOで作るときのメモ</h2>
+  <h2>クライアントさんが記事ごとに入れるのは、この6つだけです</h2>
+  <p>ページ上の赤い番号の場所に入ります。それ以外（書いた人・相談の帯・ほかの事例）は全記事共通なので、最初に一度作れば終わりです。</p>
+  <ol>
+    <li><span><b>タイトル</b>　お客様の悩みから書くと読まれやすいです</span></li>
+    <li><span><b>作業の種類</b>　クリーニング／取り付け／修理 から選ぶだけ</span></li>
+    <li><span><b>エリア</b>　総社市／岡山市／倉敷市… から選ぶだけ</span></li>
+    <li><span><b>作業前の写真</b>　1枚</span></li>
+    <li><span><b>作業後の写真</b>　1枚（一覧ページのサムネイルにも使います）</span></li>
+    <li><span><b>本文</b>　下のひな形をコピーして、【 】の中を書きかえるだけ。途中の写真も本文に貼れます</span></li>
+  </ol>
+
+  <h3>本文のひな形（コピーして使う）</h3>
+<pre>【地域】のお客様から、【どこの・どんなエアコン】の【作業】のご依頼をいただきました。
+
+■ ご相談の内容（見出し）
+【お客様が言っていたこと】　← 引用にする
+
+■ 作業の様子（見出し）
+【どんな作業をしたか】
+【途中の写真を1〜2枚】
+
+■ 作業のあと（見出し）
+【お客様の反応・ひとことアドバイス】</pre>
+
+  <h3>STUDIOで作るときのメモ</h3>
   <ul>
     <li>フォント：日本語は「Zen Kaku Gothic New」、日付や英字は「Outfit」（どちらもSTUDIOのGoogleフォントで選べます）</li>
-    <li>本文の幅は720px、作業前・作業後と写真3枚の部分だけ1000pxに広げています</li>
-    <li>写真のグレーの部分と「〇」は仮です</li>
+    <li>本文のリッチテキストで、見出し（H2）・引用・画像の見た目を一度決めておけば、クライアントさんは書くだけで自動でこの見た目になります</li>
+    <li>「作業前」「作業後」の文字や矢印の丸はデザイン側で固定なので、写真を入れるだけです</li>
   </ul>
-  <p style="margin-top:14px">施工事例のCMSに、次の項目を追加すると、記事ごとに入れ替えられます。</p>
-  <table>
-    <tr><th>CMSの項目</th><th>種類</th><th>入れる内容の例</th></tr>
-    <tr><td>タイトル</td><td>テキスト</td><td>「つけるとカビくさい」お掃除機能付きエアコンを分解洗浄しました</td></tr>
-    <tr><td>リード文</td><td>テキスト</td><td>10年ほど使っている、リビングの…</td></tr>
-    <tr><td>作業の種類／エリア</td><td>タグ</td><td>エアコンクリーニング／総社市</td></tr>
-    <tr><td>作業前の写真・ひとこと</td><td>画像・テキスト</td><td>送風ファンに黒いカビがびっしり</td></tr>
-    <tr><td>作業後の写真・ひとこと</td><td>画像・テキスト</td><td>ファンの奥まで、ここまで落ちました</td></tr>
-    <tr><td>お客様の言葉</td><td>テキスト</td><td>去年あたりから、冷房をつけるたびに…</td></tr>
-    <tr><td>本文</td><td>リッチテキスト</td><td>ご相談の内容・作業の様子・作業のあと</td></tr>
-    <tr><td>作業写真（大1・小2）と説明</td><td>画像・テキスト</td><td>高圧洗浄機で、ファンの奥まで洗います</td></tr>
-    <tr><td>場所・機種・作業・時間・料金</td><td>テキスト</td><td>総社市・戸建て（リビング）／〇〇製…</td></tr>
-    <tr><td>書いた人</td><td>テキスト・画像</td><td>スタッフの名前・ひとこと・顔写真</td></tr>
-  </table>
-  <p style="margin-top:10px">本文は「お客様の言葉」「作業中に気づいたこと」「お客様の反応」を、スタッフが話すような言葉で書くと、AIっぽさが出にくくなります。</p>
 </div>
 
+<button class="pv-toggle" type="button" id="pvt">赤い番号を隠す</button>
 <script>
 (function(){
-  if(!('IntersectionObserver' in window)){document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in')});return}
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
-  document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+  var b=document.getElementById('pvt');
+  b.addEventListener('click',function(){var on=document.body.classList.toggle('pv-pins');b.textContent=on?'赤い番号を表示':'赤い番号を隠す'});
 })();
 </script>
 </body>
