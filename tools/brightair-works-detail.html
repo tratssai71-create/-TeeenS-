@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>「つけるとカビくさい」お掃除機能付きエアコンを分解洗浄しました｜施工事例｜Bright air</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#16232f;--ink2:#5b6672;--line:#e1e5e9;
+  --blue:#1a7fc4;--blue-d:#0f639e;--sky:#eef5fa;--navy:#12263a;
+  --line-g:#06c755;
+  --en:'Outfit','Helvetica Neue',Arial,sans-serif;
+}
+body{font-family:'Zen Kaku Gothic New','Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif;color:var(--ink);background:#fff;line-height:2;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img,svg{display:block;max-width:100%}
+img{height:auto}
+.nw{white-space:nowrap}
+.col{max-width:720px;margin:0 auto;padding:0 20px}
+.wide{max-width:1000px;margin-left:auto;margin-right:auto;padding:0 20px}
+
+/* ページ上部 */
+.phero{height:200px;background:linear-gradient(rgba(15,30,45,.55),rgba(15,30,45,.55)),url(works-hero.jpg) center/cover,#2c3740;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.phero b{font:600 34px/1.1 var(--en);letter-spacing:.08em}
+.phero span{font-size:13px;margin-top:6px;letter-spacing:.1em}
+.crumb{background:var(--blue);color:#fff;font-size:12px}
+.crumb .in{max-width:1080px;margin:0 auto;padding:9px 20px}
+.crumb a{opacity:.85}
+.crumb i{font-style:normal;margin:0 8px;opacity:.6}
+
+/* 記事の見出し */
+.ahead{padding-top:64px;padding-bottom:40px}
+.meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.date{font:500 13px/1 var(--en);letter-spacing:.12em;color:var(--ink2)}
+.cat{font-size:12.5px;font-weight:700;color:var(--blue-d);display:flex;align-items:center;gap:8px}
+.cat::before{content:"";width:18px;height:1.5px;background:var(--blue)}
+.area{font-size:12.5px;color:var(--ink2)}
+.ahead h1{font-size:clamp(24px,3.8vw,34px);font-weight:700;line-height:1.55;letter-spacing:.02em;margin-top:18px}
+
+/* 作業前・作業後 */
+.ba{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.ba figure{position:relative;min-width:0}
+.ba img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#d6dbe0}
+.ba figure:first-child img{border-radius:6px 0 0 6px}
+.ba figure:last-child img{border-radius:0 6px 6px 0}
+.ba .tag{position:absolute;left:16px;bottom:14px;color:#fff;background:rgba(10,22,34,.55);padding:6px 14px 6px 12px;border-radius:4px;display:flex;align-items:baseline;gap:8px}
+.ba .after .tag{background:var(--blue)}
+.ba .tag small{font:500 10.5px/1 var(--en);letter-spacing:.2em;opacity:.8}
+.ba .tag b{font-size:14px;font-weight:700;line-height:1.4}
+.ba-mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;background:#fff;color:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.ba-mid svg{width:22px;height:22px}
+
+/* 本文 */
+.rt{margin-top:56px}
+.rt p{font-size:16px}
+.rt p + p{margin-top:1.1em}
+.rt h2{font-size:21px;font-weight:700;line-height:1.5;letter-spacing:.03em;margin:64px 0 18px}
+.rt h2::before{content:"";display:block;width:28px;height:3px;background:var(--blue);margin-bottom:14px}
+.rt blockquote{position:relative;margin:26px 0;padding:30px 30px 26px;background:var(--sky);border-radius:6px;font-size:18px;font-weight:700;line-height:1.85}
+.rt blockquote::before{content:"“";position:absolute;top:-6px;left:18px;font:500 72px/1 Georgia,serif;color:var(--blue);opacity:.35}
+.rt img{width:100%;margin:28px 0 10px;aspect-ratio:16/9;object-fit:cover;border-radius:5px;background:#d6dbe0}
+.rt img + p{font-size:13.5px;color:var(--ink2);margin-top:0}
+.rt img + p + p{margin-top:1.4em}
+
+/* 書いた人 */
+.by{margin-top:56px;display:flex;gap:18px;align-items:center;padding:22px 24px;border:1px solid var(--line);border-radius:6px}
+.by img{flex:none;width:64px;height:64px!important;border-radius:50%;object-fit:cover;background:#d6dbe0}
+.by small{display:block;font:500 11px/1 var(--en);letter-spacing:.2em;color:var(--blue);margin-bottom:6px}
+.by b{font-size:15px}
+.by p{font-size:13.5px;color:var(--ink2);line-height:1.7;margin-top:2px}
+
+.back{display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;margin:48px auto 0;font-size:14px;font-weight:700;border:1.5px solid var(--ink);border-radius:99px;padding:11px 28px;transition:background .2s,color .2s}
+.back:hover{background:var(--ink);color:#fff}
+
+/* 相談 */
+.ask{margin-top:96px;background:var(--navy);color:#fff}
+.ask .in{max-width:1000px;margin:0 auto;padding:56px 20px;display:grid;grid-template-columns:1fr auto;gap:28px 48px;align-items:center}
+.ask small{font:500 11px/1 var(--en);letter-spacing:.24em;color:#8cc4ec}
+.ask h2{font-size:clamp(20px,2.8vw,26px);font-weight:700;line-height:1.6;margin-top:10px}
+.ask p{font-size:14px;opacity:.8;margin-top:8px}
+.ask-act{display:flex;flex-direction:column;gap:10px;min-width:280px}
+.ask .tel{display:flex;align-items:center;gap:10px;font:500 32px/1.1 var(--en);letter-spacing:.02em}
+.ask .tel svg{width:26px;height:26px;color:#8cc4ec}
+.ask .hours{font-size:12px;opacity:.7;margin-top:-4px}
+.ask .line{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--line-g);color:#fff;font-size:15px;font-weight:700;padding:13px 18px;border-radius:6px;transition:opacity .2s}
+.ask .line:hover{opacity:.9}
+.ask .line svg{width:20px;height:20px}
+
+/* ほかの事例 */
+.rel{padding-top:72px;padding-bottom:88px}
+.rel-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.rel-h small{font:500 11px/1 var(--en);letter-spacing:.24em;color:var(--blue)}
+.rel-h h2{font-size:22px;font-weight:700;margin-top:8px}
+.rel-h a{font-size:13.5px;font-weight:700;border-bottom:1.5px solid currentColor}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:28px}
+.card .img{overflow:hidden;border-radius:5px}
+.card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#d6dbe0;transition:transform .5s ease}
+.card:hover img{transform:scale(1.04)}
+.card .m{display:flex;gap:10px;align-items:center;margin-top:14px;font-size:12px;color:var(--ink2)}
+.card .m b{color:var(--blue-d)}
+.card .m time{font-family:var(--en);letter-spacing:.08em}
+.card h3{font-size:15px;font-weight:700;line-height:1.65;margin-top:6px;transition:color .2s}
+.card:hover h3{color:var(--blue-d)}
+
+@media (max-width:760px){
+  .phero{height:150px}
+  .phero b{font-size:28px}
+  .ahead{padding-top:40px;padding-bottom:28px}
+  .ahead h1{margin-top:14px}
+  .ba-wrap{padding:0}
+  .ba figure:first-child img,.ba figure:last-child img{border-radius:0}
+  .ba .tag{left:10px;bottom:10px;padding:4px 10px}
+  .ba .tag small{display:none}
+  .ba .tag b{font-size:12.5px}
+  .ba-mid{width:40px;height:40px}
+  .ba-mid svg{width:18px;height:18px}
+  .rt{margin-top:36px}
+  .rt p{font-size:15.5px}
+  .rt h2{font-size:19px;margin-top:52px}
+  .rt blockquote{padding:26px 20px 22px;font-size:16.5px}
+  .rt img{aspect-ratio:4/3}
+  .by{padding:18px}
+  .ask .in{grid-template-columns:1fr;padding:44px 20px}
+  .ask-act{min-width:0}
+  .ask .tel{font-size:28px}
+  .cards{grid-template-columns:1fr;gap:20px}
+  .card{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:start}
+  .card .m{margin-top:0;flex-wrap:wrap;gap:4px 8px}
+  .card h3{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="phero"><b>WORKS</b><span>施工事例</span></div>
+<nav class="crumb" aria-label="パンくず"><div class="in"><a href="/">ホーム</a><i>/</i><a href="/works">施工事例</a><i>/</i>お掃除機能付きエアコンのクリーニング</div></nav>
+
+<main>
+  <!-- ① タイトル ② 作業の種類 ③ エリア -->
+  <header class="ahead col">
+    <div class="meta"><time class="date" datetime="2026-10-12">2026.10.12</time><span class="cat">エアコンクリーニング</span><span class="area">総社市</span></div>
+    <h1>「つけるとカビくさい」<br>お掃除機能付きエアコンを<span class="nw">分解洗浄しました</span></h1>
+  </header>
+
+  <!-- ④ 作業前の写真 ⑤ 作業後の写真 -->
+  <div class="wide ba-wrap">
+    <div class="ba">
+      <figure><img src="before.jpg" alt="作業前のエアコン" width="800" height="600"/><figcaption class="tag"><small>BEFORE</small><b>作業前</b></figcaption></figure>
+      <figure class="after"><img src="after.jpg" alt="作業後のエアコン" width="800" height="600"/><figcaption class="tag"><small>AFTER</small><b>作業後</b></figcaption></figure>
+      <span class="ba-mid" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>
+  </div>
+
+  <article class="col">
+    <!-- ⑥ 本文 -->
+    <div class="rt">
+      <p>総社市のお客様から、リビングのエアコンのクリーニングのご依頼をいただきました。10年ほど使っている、お掃除機能付きのエアコンです。</p>
+
+      <h2>ご相談の内容</h2>
+      <p>お電話でうかがったのは、こんなお悩みでした。</p>
+      <blockquote>去年あたりから、冷房をつけるたびにカビっぽいにおいがして…。お掃除機能付きだから大丈夫だと思ってたんですけど。</blockquote>
+      <p>実はこれ、とても多いご相談です。お掃除機能が掃除してくれるのはフィルターだけで、その奥にあるファンや熱交換器には、少しずつ汚れがたまっていきます。</p>
+
+      <h2>作業の様子</h2>
+      <p>壁と床をビニールでしっかり覆ってから、お掃除ユニットを外し、ファンと熱交換器を高圧洗浄機で洗っていきます。</p>
+      <img src="work-1.jpg" alt="洗ったあとの真っ黒な水" width="1280" height="720"/>
+      <p>洗ったあとの水。最初はこれくらい真っ黒でした。</p>
+      <p>お客様にも、この水を見てもらいました。「こんなに汚れてたんですね…」と驚かれていました。</p>
+
+      <h2>作業のあと</h2>
+      <p>部品を元に戻して、お客様と一緒に冷房と暖房を動かし、においを確認。「全然においがしない」とのことで、ひと安心です。</p>
+      <p>お掃除機能付きのエアコンでも、においや黒い点々が気になってきたら、クリーニングのタイミングです。2〜3年に1回を目安にしてもらうと、きれいな状態を保ちやすいですよ。</p>
+    </div>
+
+    <!-- ここから下は全記事共通 -->
+    <div class="by">
+      <img src="staff.jpg" alt="" width="128" height="128"/>
+      <div>
+        <small>WRITTEN BY</small>
+        <b>Bright air スタッフ</b>
+        <p>岡山県総社市を中心に、エアコンの取り付け・クリーニング・修理をしています。</p>
+      </div>
+    </div>
+
+    <a class="back" href="/works">施工事例の一覧へ <span aria-hidden="true">→</span></a>
+  </article>
+
+  <aside class="ask">
+    <div class="in">
+      <div>
+        <small>CONTACT</small>
+        <h2>エアコンのことで気になることがあれば</h2>
+        <p>本体と型番シールの写真を送ってもらえれば、おおよその金額をお伝えします。見積もりだけでも大丈夫です。</p>
+      </div>
+      <div class="ask-act">
+        <a class="tel" href="tel:000-0000-0000"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>000-000-0000</a>
+        <p class="hours">受付 9:00〜18:00（〇曜日休み）</p>
+        <a class="line" href="#"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5 1.1-.5 5.9-3.5 8.1-6C21.6 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8z"/></svg>LINEで写真を送る</a>
+      </div>
+    </div>
+  </aside>
+
+  <section class="rel wide">
+    <div class="rel-h">
+      <div><small>OTHER WORKS</small><h2>ほかの施工事例</h2></div>
+      <a href="/works">一覧を見る</a>
+    </div>
+    <div class="cards">
+      <a class="card" href="#"><div class="img"><img src="works-a.jpg" alt="" width="800" height="600" loading="lazy"/></div><div><p class="m"><time>2026.10.05</time><b>クリーニング</b>岡山市</p><h3>冷えが悪くなったリビングのエアコン。原因はフィンの汚れでした</h3></div></a>
+      <a class="card" href="#"><div class="img"><img src="works-b.jpg" alt="" width="800" height="600" loading="lazy"/></div><div><p class="m"><time>2026.09.28</time><b>取り付け</b>倉敷市</p><h3>新築のお家に、エアコン3台をまとめて取り付けました</h3></div></a>
+      <a class="card" href="#"><div class="img"><img src="works-c.jpg" alt="" width="800" height="600" loading="lazy"/></div><div><p class="m"><time>2026.09.20</time><b>修理</b>総社市</p><h3>室内機からの水漏れ。ドレンホースのつまりが原因でした</h3></div></a>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>
