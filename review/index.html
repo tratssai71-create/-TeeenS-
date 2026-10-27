@@ -317,7 +317,7 @@ button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
       .then(function(res){
         if(res.success){
           try{ localStorage.removeItem(KEY); }catch(e){}
-          window.location.href = '/thanks.html';
+          window.location.href = '/review/thanks/';
         } else {
           throw new Error(res.message || '送信できませんでした');
         }
