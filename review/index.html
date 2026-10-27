@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>今月のふりかえりシート | 株式会社TeeenS（ティーンズ）岡山</title>
+<meta name="robots" content="noindex,nofollow"/>
+<meta name="description" content="毎月のふりかえりシート。株式会社TeeenS（岡山）"/>
+<link rel="icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:rgba(9,9,11,.55);--ink3:rgba(9,9,11,.32);
+  --bd:rgba(9,9,11,.1);--bd2:rgba(9,9,11,.18);
+  --bg2:#f5f5f7;--bg3:#fafafa;--ac:#09090b;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','Noto Sans JP',sans-serif;color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.75}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+
+.hd{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--bd)}
+.hd-in{max-width:820px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.hd-in img{height:28px}
+.hd-prog{flex:1;height:2px;background:var(--bd);position:relative;max-width:260px}
+.hd-prog i{position:absolute;inset:0 auto 0 0;width:0;background:var(--ac);transition:width .35s cubic-bezier(.22,1,.36,1)}
+.hd-n{font-size:11.5px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.wrap{max-width:820px;margin:0 auto;padding:56px 24px 0}
+.eyebrow{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-size:clamp(26px,4.4vw,36px);font-weight:700;letter-spacing:-.02em;margin:14px 0 18px;line-height:1.35}
+.lead{color:var(--ink2);font-size:14.5px;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.meta span{font-size:11.5px;color:var(--ink2);border:1px solid var(--bd);padding:4px 10px;background:var(--bg3)}
+
+form{max-width:820px;margin:0 auto;padding:36px 24px 100px;display:flex;flex-direction:column;gap:12px}
+section{border:1px solid var(--bd);background:var(--bg3);padding:24px}
+section h2{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-bottom:4px}
+section .sub{font-size:12.5px;color:var(--ink2);margin-bottom:20px}
+.f{display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.f:last-child{margin-bottom:0}
+label.l{font-size:13.5px;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.req{font-size:9.5px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--ac);padding:1px 6px}
+.opt{font-size:10px;letter-spacing:.08em;color:var(--ink3);border:1px solid var(--bd);padding:0 5px}
+.hint{font-size:12.5px;color:var(--ink2);line-height:1.65}
+input[type=text],input[type=email],input[type=tel],input[type=date],textarea{
+  width:100%;background:#fff;border:1px solid var(--bd2);padding:11px 13px;font:inherit;font-size:14px;border-radius:0;
+  transition:border-color .15s,box-shadow .15s;color:var(--ink)}
+textarea{resize:vertical;min-height:96px;line-height:1.7}
+input:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(9,9,11,.07)}
+::placeholder{color:var(--ink3)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;width:0;height:0}
+.chip span{display:block;border:1px solid var(--bd2);padding:8px 14px;font-size:13px;cursor:pointer;background:#fff;transition:.15s;user-select:none}
+.chip span:hover{border-color:var(--ink3)}
+.chip input:checked+span{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:500}
+.chip input:focus-visible+span{outline:2px solid var(--ac);outline-offset:2px}
+
+.send{border:1px solid var(--bd);background:var(--bg2);padding:30px 24px;display:flex;flex-direction:column;gap:16px}
+.send h2{font-size:16px;font-weight:700}
+.send p{font-size:13px;color:var(--ink2);max-width:60ch}
+button{border:1px solid var(--ac);background:var(--ac);color:#fff;padding:13px 30px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;align-self:flex-start}
+button:hover{opacity:.85}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.msg{font-size:13px;min-height:20px}
+.msg.ok{color:#1c6b4a}
+.msg.ng{color:#9b2c2c}
+
+.ft{border-top:1px solid var(--bd);background:#fff}
+.ft-in{max-width:820px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11.5px;color:var(--ink3)}
+.ft-in img{height:22px;opacity:.75}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <a href="/"><img src="/logo-side-trans.png" alt="株式会社TeeenS"/></a>
+    <div class="hd-prog"><i id="pf"></i></div>
+    <div class="hd-n" id="pn">必須 0 / 3</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="eyebrow">Monthly · Review Sheet</div>
+  <h1>今月のふりかえりシート</h1>
+  <p class="lead">毎月1回、サイトの状況と進め方について率直なご意見をお聞かせください。<strong>よかった点より、気になった点のほうが助かります。</strong>言いにくいことほど、早めにいただけると直せます。全部埋めなくても送信できます。</p>
+  <div class="meta">
+    <span>所要 3分</span>
+    <span>必須は3問だけ</span>
+    <span>入力内容は自動保存されます</span>
+    <span>途中で閉じても再開できます</span>
+  </div>
+</div>
+
+<form id="hf" action="https://api.web3forms.com/submit" method="POST">
+  <input type="hidden" name="access_key" value="ebe0b2b8-2ef7-46ec-a4b5-e9a24776f517"/>
+  <input type="hidden" name="subject" value="【TeeenS】今月のふりかえりシートが届きました"/>
+  <input type="hidden" name="redirect" value="false"/>
+  <input type="text" name="botcheck" style="display:none" tabindex="-1" autocomplete="off"/>
+
+  <section>
+    <h2>1. 今回のご記入について</h2>
+    <p class="sub">どの月のふりかえりか分かるようにお願いします。</p>
+    <div class="f">
+      <label class="l" for="q1">会社名・屋号 <span class="req">必須</span></label>
+      <input type="text" id="q1" name="会社名・屋号" required/>
+    </div>
+    <div class="f">
+      <label class="l" for="q2">ご記入者のお名前 <span class="req">必須</span></label>
+      <input type="text" id="q2" name="ご記入者のお名前" required/>
+    </div>
+    <div class="f">
+      <label class="l" for="q3">対象の月 <span class="req">必須</span></label>
+      <p class="hint">例：2026年10月分</p>
+      <input type="text" id="q3" name="対象の月" placeholder="2026年10月分" required/>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 今月、よかったこと</h2>
+    <p class="sub">小さなことで構いません。続けたほうがいいことを知りたいです。</p>
+    <div class="f">
+      <label class="l">よかったと感じたこと</label>
+      <p class="hint">当てはまるものをすべて選んでください。</p>
+      <div class="chips"><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="問い合わせが増えた"/><span>問い合わせが増えた</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="お客様から褒められた"/><span>お客様から褒められた</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="更新が早かった"/><span>更新が早かった</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="相談しやすかった"/><span>相談しやすかった</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="説明が分かりやすかった"/><span>説明が分かりやすかった</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="デザインが気に入った"/><span>デザインが気に入った</span></label><label class="chip"><input type="checkbox" name="よかったと感じたこと" value="特になし"/><span>特になし</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l" for="q5">具体的にどんなことでしたか <span class="opt">任意</span></label>
+      <textarea id="q5" name="よかったことの詳細" placeholder="「お客様から『サイト見ました』と言われることが増えた」など、場面が分かると助かります。"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 今月、気になったこと</h2>
+    <p class="sub">ここが一番知りたいところです。遠慮なくお書きください。</p>
+    <div class="f">
+      <label class="l">気になったこと</label>
+      <p class="hint">当てはまるものをすべて選んでください。</p>
+      <div class="chips"><label class="chip"><input type="checkbox" name="気になったこと" value="連絡が遅いと感じた"/><span>連絡が遅いと感じた</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="説明が分かりにくかった"/><span>説明が分かりにくかった</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="思っていたものと違った"/><span>思っていたものと違った</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="修正に時間がかかった"/><span>修正に時間がかかった</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="何が進んでいるか見えなかった"/><span>何が進んでいるか見えなかった</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="費用が分かりにくい"/><span>費用が分かりにくい</span></label><label class="chip"><input type="checkbox" name="気になったこと" value="特になし"/><span>特になし</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l" for="q7">どの場面でそう感じましたか <span class="opt">任意</span></label>
+      <textarea id="q7" name="気になったことの詳細" placeholder="いつ・どのやりとりで感じたかが分かると、具体的に直せます。"></textarea>
+    </div>
+    <div class="f">
+      <label class="l" for="q8">サイトで直したい箇所 <span class="opt">任意</span></label>
+      <textarea id="q8" name="サイトで直したい箇所" placeholder="ページ名や、だいたいの場所でも構いません。"></textarea>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 進め方の評価</h2>
+    <p class="sub">5段階でお願いします。低い点は「改善の要望」として受け取ります。</p>
+    <div class="f">
+      <label class="l">連絡の速さ</label>
+      <p class="hint">1 = 遅い　／　5 = 十分早い</p>
+      <div class="chips"><label class="chip"><input type="radio" name="評価：連絡の速さ" value="1"/><span>1</span></label><label class="chip"><input type="radio" name="評価：連絡の速さ" value="2"/><span>2</span></label><label class="chip"><input type="radio" name="評価：連絡の速さ" value="3"/><span>3</span></label><label class="chip"><input type="radio" name="評価：連絡の速さ" value="4"/><span>4</span></label><label class="chip"><input type="radio" name="評価：連絡の速さ" value="5"/><span>5</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l">説明の分かりやすさ</label>
+      <p class="hint">1 = 分かりにくい　／　5 = よく分かる</p>
+      <div class="chips"><label class="chip"><input type="radio" name="評価：説明の分かりやすさ" value="1"/><span>1</span></label><label class="chip"><input type="radio" name="評価：説明の分かりやすさ" value="2"/><span>2</span></label><label class="chip"><input type="radio" name="評価：説明の分かりやすさ" value="3"/><span>3</span></label><label class="chip"><input type="radio" name="評価：説明の分かりやすさ" value="4"/><span>4</span></label><label class="chip"><input type="radio" name="評価：説明の分かりやすさ" value="5"/><span>5</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l">仕上がりの満足度</label>
+      <p class="hint">1 = 物足りない　／　5 = 満足</p>
+      <div class="chips"><label class="chip"><input type="radio" name="評価：仕上がりの満足度" value="1"/><span>1</span></label><label class="chip"><input type="radio" name="評価：仕上がりの満足度" value="2"/><span>2</span></label><label class="chip"><input type="radio" name="評価：仕上がりの満足度" value="3"/><span>3</span></label><label class="chip"><input type="radio" name="評価：仕上がりの満足度" value="4"/><span>4</span></label><label class="chip"><input type="radio" name="評価：仕上がりの満足度" value="5"/><span>5</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l">相談のしやすさ</label>
+      <p class="hint">1 = 相談しづらい　／　5 = 相談しやすい</p>
+      <div class="chips"><label class="chip"><input type="radio" name="評価：相談のしやすさ" value="1"/><span>1</span></label><label class="chip"><input type="radio" name="評価：相談のしやすさ" value="2"/><span>2</span></label><label class="chip"><input type="radio" name="評価：相談のしやすさ" value="3"/><span>3</span></label><label class="chip"><input type="radio" name="評価：相談のしやすさ" value="4"/><span>4</span></label><label class="chip"><input type="radio" name="評価：相談のしやすさ" value="5"/><span>5</span></label></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. 来月について</h2>
+    <p class="sub">優先して取りかかることを決めるために使います。</p>
+    <div class="f">
+      <label class="l" for="q13">来月いちばん進めたいこと <span class="opt">任意</span></label>
+      <textarea id="q13" name="来月いちばん進めたいこと" placeholder="新しいページ、写真の差し替え、ブログ、広告など。"></textarea>
+    </div>
+    <div class="f">
+      <label class="l">来月の希望</label>
+      
+      <div class="chips"><label class="chip"><input type="checkbox" name="来月の希望" value="新しいページを作りたい"/><span>新しいページを作りたい</span></label><label class="chip"><input type="checkbox" name="来月の希望" value="写真を差し替えたい"/><span>写真を差し替えたい</span></label><label class="chip"><input type="checkbox" name="来月の希望" value="文章を見直したい"/><span>文章を見直したい</span></label><label class="chip"><input type="checkbox" name="来月の希望" value="スマホ表示を直したい"/><span>スマホ表示を直したい</span></label><label class="chip"><input type="checkbox" name="来月の希望" value="アクセス数を知りたい"/><span>アクセス数を知りたい</span></label><label class="chip"><input type="checkbox" name="来月の希望" value="いまは現状維持でいい"/><span>いまは現状維持でいい</span></label></div>
+    </div>
+    <div class="f">
+      <label class="l" for="q15">その他、伝えておきたいこと <span class="opt">任意</span></label>
+      <textarea id="q15" name="その他" placeholder="業務のご予定、繁忙期、人の入れ替わりなど、共有いただけると助かります。"></textarea>
+    </div>
+  </section>
+
+  <div class="send">
+    <h2>送信する</h2>
+    <p>いただいた内容は、翌月の作業の優先順位を決めるために使います。厳しいご意見ほど助かります。</p>
+    <button type="submit" id="sb">送信する</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</form>
+
+<footer class="ft">
+  <div class="ft-in">
+    <img src="/logo-side-trans.png" alt="株式会社TeeenS"/>
+    <div>© 株式会社TeeenS</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var form = document.getElementById('hf');
+  var KEY = 'teeens_monthly_review_v1';
+
+  var SKIP = ['access_key', 'subject', 'redirect', 'botcheck'];
+  function buildPayload(){
+    var lines = [];
+    var picked = {};
+    var order = [];
+    var grouped = {};
+    new FormData(form).forEach(function(v, k){
+      if(SKIP.indexOf(k) >= 0) return;
+      if(!grouped.hasOwnProperty(k)){ grouped[k] = []; order.push(k); }
+      grouped[k].push(String(v));
+      picked[k] = v;
+    });
+    order.forEach(function(k){
+      var joined = grouped[k].filter(function(x){ return x.trim() !== ''; }).join('、');
+      lines.push('【' + k + '】\n' + (joined === '' ? '（未記入）' : joined));
+    });
+    return {
+      access_key: form.querySelector('[name=access_key]').value,
+      subject: form.querySelector('[name=subject]').value,
+      from_name: '株式会社TeeenS サイト',
+      name: picked['ご記入者のお名前'] || picked['お名前'] || '',
+      company: picked['会社名・屋号'] || picked['会社名'] || '',
+      email: picked['メールアドレス'] || '',
+      message: lines.join('\n\n')
+    };
+  }
+
+  // 自動保存
+  function save(){
+    try{
+      var d = {};
+      new FormData(form).forEach(function(v,k){
+        if(k === 'access_key' || k === 'subject' || k === 'redirect' || k === 'botcheck') return;
+        if(d.hasOwnProperty(k)){
+          if(!Array.isArray(d[k])) d[k] = [d[k]];
+          d[k].push(v);
+        } else {
+          d[k] = v;
+        }
+      });
+      localStorage.setItem(KEY, JSON.stringify(d));
+    }catch(e){}
+  }
+  function restore(){
+    try{
+      var d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if(!d) return;
+      Object.keys(d).forEach(function(k){
+        var els = form.querySelectorAll('[name="' + CSS.escape(k) + '"]');
+        if(!els.length) return;
+        var t = els[0].type;
+        if(t === 'radio'){
+          els.forEach(function(el){ if(el.value === d[k]) el.checked = true; });
+        } else if(t === 'checkbox'){
+          var vals = Array.isArray(d[k]) ? d[k] : [d[k]];
+          els.forEach(function(el){ el.checked = vals.indexOf(el.value) >= 0; });
+        } else {
+          els[0].value = d[k];
+        }
+      });
+    }catch(e){}
+  }
+
+  // 進捗
+  var reqEls = Array.prototype.slice.call(form.querySelectorAll('[required]'));
+  var names = [];
+  reqEls.forEach(function(el){ if(names.indexOf(el.name) < 0) names.push(el.name); });
+  function prog(){
+    var done = names.filter(function(n){
+      var els = form.querySelectorAll('[name="' + CSS.escape(n) + '"]');
+      if(els[0].type === 'radio'){
+        return Array.prototype.some.call(els, function(el){ return el.checked; });
+      }
+      return els[0].value.trim() !== '';
+    }).length;
+    document.getElementById('pf').style.width = Math.round(done / names.length * 100) + '%';
+    document.getElementById('pn').textContent = '必須 ' + done + ' / ' + names.length;
+  }
+
+  form.addEventListener('input', function(){ save(); prog(); });
+  form.addEventListener('change', function(){ save(); prog(); });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = document.getElementById('sb');
+    var msg = document.getElementById('msg');
+    btn.disabled = true;
+    btn.textContent = '送信中…';
+    msg.className = 'msg';
+    msg.textContent = '';
+    fetch(form.action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(buildPayload())
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if(res.success){
+          try{ localStorage.removeItem(KEY); }catch(e){}
+          window.location.href = '/thanks.html';
+        } else {
+          throw new Error(res.message || '送信できませんでした');
+        }
+      })
+      .catch(function(){
+        btn.disabled = false;
+        btn.textContent = '送信する';
+        msg.className = 'msg ng';
+        msg.textContent = '送信できませんでした。お手数ですが、時間をおいて再度お試しいただくか、お電話・LINEでご連絡ください。';
+      });
+  });
+
+  restore();
+  prog();
+})();
+</script>
+</body>
+</html>
