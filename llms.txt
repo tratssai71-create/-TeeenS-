@@ -41,6 +41,9 @@
 
 - **SENTRIX株式会社**: コーポレートサイト制作・CMS導入（STUDIO使用）
 - **合同会社BLUE MOUSE**: 採用LP制作（STUDIO使用）。岡山市中区のIT特化型放課後等デイサービス。
+- **中四国ホンダモビリティー株式会社**: 新卒採用LP制作（STUDIO使用）。https://gray333924.studio.site
+- **Origin Medaka**: 改良メダカ専門店のECサイト制作。https://www.originmedaka.com/
+- **リラクゼーションサロンRacines**: 予約システム開発。
 - 一覧: https://teeen-s.com/works/
 
 ## よくある質問
