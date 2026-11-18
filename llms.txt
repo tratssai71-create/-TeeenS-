@@ -60,6 +60,12 @@
 - 公開後も「専属Web部門」として伴走する（月額プランに含む）。
 - 実績・料金・対応範囲は、サイトの各ページに記載。内容は随時更新する。
 
+## コラム
+
+- [岡山でLP（ランディングページ）制作を頼むと、いくらかかる？費用の決まり方と選び方](https://teeen-s.com/news/2026-11-17-lp-cost/)
+- [ホームページ制作は「月額」と「買い切り」どっちがいい？違いと選び方](https://teeen-s.com/news/2026-11-17-monthly-vs-onetime/)
+- [WordPressからSTUDIOへ移行するメリットと注意点。サーバー代がいらなくなる？](https://teeen-s.com/news/2026-11-17-wordpress-to-studio/)
+
 ## Optional
 
 - [会社・代表紹介](https://teeen-s.com/about/)
