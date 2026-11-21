@@ -21,8 +21,8 @@ const { APPROVAL_SECRET } = process.env;
 function env_flag(v) { return v === "1" || v === "true"; }
 const ALLOWED = new Set(list(process.env.ALLOWED_USER_IDS));
 
-if (!DISCORD_TOKEN || !CHANNELS.size || !ALLOWED.size) {
-  console.error("DISCORD_TOKEN / CHANNEL_IDS / ALLOWED_USER_IDS を .env に設定してください");
+if (!DISCORD_TOKEN || (!CHANNELS.size && !TASKS_CHANNEL_ID) || !ALLOWED.size) {
+  console.error("DISCORD_TOKEN / ALLOWED_USER_IDS と、CHANNEL_IDS か TASKS_CHANNEL_ID を .env に設定してください");
   process.exit(1);
 }
 
