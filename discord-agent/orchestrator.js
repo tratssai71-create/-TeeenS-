@@ -61,13 +61,16 @@ function runPlanner(prompt) {
   });
 }
 
+const ROLE_DESC = {
+  designer: "STUDIOエディタ(ブラウザ操作)での編集。文言・素材の用意や、完成後の見た目の確認(スクリーンショット)も兼ねる。同時に1タスクのみ。",
+  writer: "文言・記事・SEO文・素材の用意(STUDIOは触らない)。",
+  qa: "完成したページのスクリーンショット確認、リンク切れ、レスポンシブ、文言チェック(読み取りのみ)。",
+};
 const plannerPrompt = (request) => `あなたはWebサイト制作チームの司令塔です。次の依頼を、担当ロールごとのタスクに分解してください。
 
-ロール: ${ROLES.join(", ")}
-- designer: STUDIOエディタ(ブラウザ操作)でのレイアウト・見た目の編集。同時に1タスクのみ。
-- writer: 文言・記事・SEO文・素材の用意(STUDIOは触らない)。
-- qa: 完成したページのスクリーンショット確認、リンク切れ、レスポンシブ、文言チェック(読み取りのみ)。
-制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
+使えるロール(これ以外の名前は絶対に使わない): ${ROLES.join(", ")}
+${ROLES.map((r) => `- ${r}: ${ROLE_DESC[r] ?? "担当作業"}`).join("\n")}
+制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。小さな依頼は1〜2タスクで足りる。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
 出力は次の形式のJSONのみ(説明文は不要):
 {"tasks":[{"key":"短い英数字ID","to":"ロール","title":"件名","instructions":"具体的な作業指示","acceptance":["受け入れ基準"],"deps":["先行タスクのkey"]}]}
 
