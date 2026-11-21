@@ -35,6 +35,9 @@ let state = { seq: 0, halted: false, day: "", jobsToday: 0, jobs: {} };
 if (existsSync(STATE_FILE)) state = JSON.parse(await readFile(STATE_FILE, "utf8"));
 const save = () => writeFile(STATE_FILE, JSON.stringify(state, null, 2));
 
+process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
+process.on("uncaughtException", (e) => console.error("[uncaughtException]", e?.message ?? e));
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
@@ -110,7 +113,16 @@ async function dispatch(job) {
     t.attempt++;
     t.sentId = `${job.id}-${t.key}-a${t.attempt}`;
     t.status = "sent"; t.sentAt = Date.now();
-    await tc.send(buildTaskMessage(job, t, TASK_TIMEOUT_MIN));
+    try {
+      await tc.send(buildTaskMessage(job, t, TASK_TIMEOUT_MIN));
+    } catch (e) {
+      t.attempt--; t.status = "pending"; t.sentId = null;
+      await save();
+      const hint = e.code === 50001 || e.code === 50013 ? "権限がありません。#tasks で、ディレクターに「チャンネルを見る」「メッセージを送信」を許可してください" : e.message;
+      await log(`[${job.id}] ${t.to} への送信に失敗: ${hint}。直したら \`!resume\` で再開`);
+      state.halted = true; await save();
+      return;
+    }
     await log(`[${job.id}] → ${t.to}: ${t.key} (${t.title})`);
   }
   await save();

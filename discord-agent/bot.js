@@ -26,6 +26,8 @@ if (!DISCORD_TOKEN || (!CHANNELS.size && !TASKS_CHANNEL_ID) || !ALLOWED.size) {
   process.exit(1);
 }
 
+process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
