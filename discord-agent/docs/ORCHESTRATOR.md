@@ -110,8 +110,18 @@ received → planned → running → verifying → awaiting_approval → publish
 
 ## 10. 未決事項(要判断)
 
-1. STUDIOの操作方式: MCP / ブラウザ操作(designerの作りが変わる)
+1. ~~STUDIOの操作方式~~ → **決定: 当面はブラウザ操作**(MCPは後で再検討。designerの作りは下記§11)
 2. 同一サイトの同時編集: designer 1人固定でよいか
 3. 公開の自動承認ポリシー(どの変更なら自動で公開してよいか)
 4. 司令塔の分解に使うモデルと費用上限
 5. 端末台数・ロール割り当て(何台で何を担当させるか)
+
+## 11. designer のブラウザ操作方針(決定事項)
+
+- Codex に Playwright MCP を登録し、STUDIOエディタをブラウザで操作させる(例: `codex mcp add playwright -- npx @playwright/mcp@latest --user-data-dir <専用プロファイル>`。オプション名は導入時に `--help` で確認)。
+- **専用プロファイルでSTUDIOに手動ログイン済みにしておく**(ログイン情報をエージェントに渡さない)。
+- designer は**1台・直列実行**に固定(同一アカウントの同時操作を避ける)。
+- 各タスクの最後に必ずスクリーンショットを撮って `artifacts` に添付させる(qaの入力にもなる)。
+- 画面が想定と違う・ログイン切れ・確認ダイアログ等は `status:"blocked"` で返し、推測で進めない。
+- UI変更で壊れやすいので、操作手順を `docs/studio-playbook.md` に蓄積し、指示文に含める。
+- MCPが使えるようになったら、designerのツールだけ差し替える(プロトコルは不変)。

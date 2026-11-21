@@ -11,6 +11,9 @@ const {
   TIMEOUT_MIN = "30",
 } = process.env;
 const CHANNELS = new Set(list(process.env.CHANNEL_IDS));
+// ワーカーモード(司令塔からのタスク受信)。未設定なら無効
+const { TASKS_CHANNEL_ID, LOG_CHANNEL_ID, ORCHESTRATOR_BOT_ID } = process.env;
+const seenTasks = new Set(); // 二重実行防止
 const ALLOWED = new Set(list(process.env.ALLOWED_USER_IDS));
 
 if (!DISCORD_TOKEN || !CHANNELS.size || !ALLOWED.size) {
@@ -63,7 +66,45 @@ function chunks(s, n = 1900) {
   return out;
 }
 
+// --- ワーカーモード: #tasks のJSONタスクを処理 ---
+function buildPrompt(t) {
+  const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
+  return [
+    `タスク: ${t.title ?? t.id}`,
+    t.instructions ?? "",
+    t.inputs ? `入力: ${JSON.stringify(t.inputs)}` : "",
+    acc ? `受け入れ基準:\n${acc}` : "",
+    "完了したら、何をしたかと確認結果を簡潔に報告してください。",
+  ].filter(Boolean).join("\n\n");
+}
+
+async function handleTask(msg, t) {
+  if (seenTasks.has(t.id)) return;
+  seenTasks.add(t.id);
+  const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
+  await logCh?.send(`[${AGENT_NAME}] ${t.id} 開始: ${t.title ?? ""}`);
+  chain = chain.then(async () => {
+    const r = await runCodex(buildPrompt(t));
+    const result = {
+      v: 1, type: "result", id: t.id, from: AGENT_NAME,
+      status: r.code === 0 ? "done" : "failed",
+      summary: r.text.slice(0, 1500),
+      error: r.code === 0 ? null : `code=${r.code}${r.sig ? " " + r.sig : ""}`,
+    };
+    await msg.channel.send(JSON.stringify(result));
+    await logCh?.send(`[${AGENT_NAME}] ${t.id} ${result.status}`);
+  }).catch((e) => console.error(e));
+}
+
 client.on("messageCreate", async (msg) => {
+  if (TASKS_CHANNEL_ID && msg.channelId === TASKS_CHANNEL_ID) {
+    // 司令塔Botの発言のみ受け付ける
+    if (!msg.author.bot || msg.author.id !== ORCHESTRATOR_BOT_ID) return;
+    let t;
+    try { t = JSON.parse(msg.content); } catch { return; }
+    if (t?.type === "task" && t.to === AGENT_NAME && t.id) await handleTask(msg, t);
+    return;
+  }
   if (msg.author.bot) return;
   if (!CHANNELS.has(msg.channelId)) return;
   if (!ALLOWED.has(msg.author.id)) return; // 許可ユーザー以外は無視
