@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { verifyApproval } from "./core.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -14,6 +15,10 @@ const CHANNELS = new Set(list(process.env.CHANNEL_IDS));
 // ワーカーモード(司令塔からのタスク受信)。未設定なら無効
 const { TASKS_CHANNEL_ID, LOG_CHANNEL_ID, ORCHESTRATOR_BOT_ID } = process.env;
 const seenTasks = new Set(); // 二重実行防止
+// publisherなど「承認必須」のワーカー: 司令塔が署名した公開承認がなければ実行しない
+const REQUIRE_APPROVAL = env_flag(process.env.REQUIRE_APPROVAL);
+const { APPROVAL_SECRET } = process.env;
+function env_flag(v) { return v === "1" || v === "true"; }
 const ALLOWED = new Set(list(process.env.ALLOWED_USER_IDS));
 
 if (!DISCORD_TOKEN || !CHANNELS.size || !ALLOWED.size) {
@@ -81,6 +86,13 @@ function buildPrompt(t) {
 async function handleTask(msg, t) {
   if (seenTasks.has(t.id)) return;
   seenTasks.add(t.id);
+  if (REQUIRE_APPROVAL && !verifyApproval(APPROVAL_SECRET, t.inputs?.approval, t.job)) {
+    await msg.channel.send(JSON.stringify({
+      v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "blocked",
+      summary: "有効な公開承認がないため実行しません", error: "approval_invalid",
+    }));
+    return;
+  }
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
   await logCh?.send(`[${AGENT_NAME}] ${t.id} 開始: ${t.title ?? ""}`);
   chain = chain.then(async () => {

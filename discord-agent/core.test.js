@@ -52,3 +52,28 @@ test("jobFinished", () => {
   assert.equal(jobFinished({ tasks: [{ status: "done" }, { status: "failed" }] }), true);
   assert.equal(jobFinished({ tasks: [{ status: "done" }, { status: "sent" }] }), false);
 });
+
+import { signApproval, verifyApproval } from "./core.js";
+
+test("公開承認トークン: 署名・ジョブ・期限", () => {
+  const a = signApproval("secret", "j1", "u1", 1000);
+  assert.equal(verifyApproval("secret", a, "j1", 60_000, 2000), true);
+  assert.equal(verifyApproval("other", a, "j1", 60_000, 2000), false);        // 鍵違い
+  assert.equal(verifyApproval("secret", a, "j2", 60_000, 2000), false);       // 別ジョブ
+  assert.equal(verifyApproval("secret", a, "j1", 60_000, 1000 + 60_001), false); // 期限切れ
+  assert.equal(verifyApproval("secret", { ...a, by: "evil" }, "j1", 60_000, 2000), false); // 改ざん
+  assert.equal(verifyApproval("secret", undefined, "j1"), false);
+  assert.equal(verifyApproval("", a, "j1", 60_000, 2000), false);
+});
+
+test("公開タスクにだけ承認トークンが付く", () => {
+  const tasks = validatePlan({ tasks: [mk({ key: "a" })] }, opt);
+  tasks.push({ key: "publish", to: "publisher", title: "p", instructions: "i", acceptance: [], deps: ["a"],
+    requiresApproval: true, status: "pending", attempt: 1, sentId: "j1-publish-a1", summary: null });
+  tasks[0].status = "done";
+  const job = { id: "j1", tasks, approval: signApproval("s", "j1", "u1") };
+  const msg = JSON.parse(buildTaskMessage(job, tasks[1], 30));
+  assert.equal(msg.inputs.approval.sig, job.approval.sig);
+  tasks[0].sentId = "j1-a-a1";
+  assert.equal(JSON.parse(buildTaskMessage(job, tasks[0], 30)).inputs?.approval, undefined);
+});

@@ -6,7 +6,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished } from "./core.js";
+import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval } from "./core.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const env = process.env;
@@ -20,9 +20,12 @@ const MAX_JOBS_PER_DAY = Number(env.MAX_JOBS_PER_DAY ?? 20);
 const STATE_FILE = env.STATE_FILE ?? "state.json";
 const WORKDIR = env.WORKDIR ?? process.cwd();
 const PLANNER_ARGS = (env.PLANNER_ARGS ?? "--sandbox read-only --skip-git-repo-check").split(/\s+/).filter(Boolean);
-const { DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID } = env;
+const { DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET } = env;
+const PUBLISHER_ROLE = env.PUBLISHER_ROLE ?? "publisher";
+const PUBLISH_INSTRUCTIONS = env.PUBLISH_INSTRUCTIONS ??
+  "STUDIOエディタで、承認済みの変更を本番に公開する操作だけを行う。公開後に公開URLを開いて表示を確認し、URLを報告する。公開以外の編集は一切しない。想定外の画面や確認ダイアログが出たら公開せず blocked として報告する。";
 
-for (const [k, v] of Object.entries({ DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID })) {
+for (const [k, v] of Object.entries({ DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET })) {
   if (!v) { console.error(`${k} が未設定です`); process.exit(1); }
 }
 if (!ALLOWED.size || !WORKERS.size) { console.error("ALLOWED_USER_IDS / WORKER_BOT_IDS を設定してください"); process.exit(1); }
@@ -119,11 +122,25 @@ async function maybeFinish(job) {
   }
   if (!jobFinished(job)) return;
   const failed = job.tasks.filter((t) => t.status !== "done");
-  job.status = failed.length ? "failed" : "completed"; // P4で awaiting_approval を挟む
+  if (!failed.length && !job.approval) return awaitApproval(job); // 公開前に必ず人の承認
+  job.status = failed.length ? "failed" : "completed";
   await save();
   const body = job.tasks.map((t) => `• \`${t.key}\` ${t.status}: ${(t.summary ?? "").slice(0, 150)}`).join("\n");
   const c = await ch(COMMAND_CHANNEL_ID);
-  await c.send(`[${job.id}] ${failed.length ? "一部失敗で終了" : "完了"}\n${body}`.slice(0, 1900));
+  await c.send(`[${job.id}] ${failed.length ? "一部失敗で終了(公開は未実施または要確認)" : "完了・公開済み"}\n${body}`.slice(0, 1900));
+}
+
+async function awaitApproval(job) {
+  job.status = "awaiting_approval";
+  await save();
+  const body = job.tasks.map((t) => `• \`${t.key}\` [${t.to}] ${(t.summary ?? "").slice(0, 200)}`).join("\n");
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId(`pub:ok:${job.id}`).setLabel("公開する").setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId(`pub:ng:${job.id}`).setLabel("公開しない").setStyle(ButtonStyle.Danger),
+  );
+  const c = await ch(APPROVE_CHANNEL_ID);
+  await c.send({ content: `[${job.id}] 公開の承認待ち\n依頼: ${job.request.slice(0, 200)}\n${body}`.slice(0, 1900), components: [row] });
+  await log(`[${job.id}] 作業完了。#approve で公開の承認待ち`);
 }
 
 async function onResult(r) {
@@ -173,6 +190,7 @@ client.on("messageCreate", async (msg) => {
 });
 
 client.on("interactionCreate", async (i) => {
+  if (i.isButton() && i.customId.startsWith("pub:")) return onPublishButton(i);
   if (!i.isButton() || !i.customId.startsWith("plan:")) return;
   if (!ALLOWED.has(i.user.id)) return void i.reply({ content: "権限がありません", ephemeral: true });
   const [, act, id] = i.customId.split(":");
@@ -187,6 +205,30 @@ client.on("interactionCreate", async (i) => {
     await i.update({ content: `${i.message.content}\n\n❌ 却下`, components: [] });
   }
 });
+
+async function onPublishButton(i) {
+  if (!ALLOWED.has(i.user.id)) return void i.reply({ content: "権限がありません", ephemeral: true });
+  const [, act, id] = i.customId.split(":");
+  const job = state.jobs[id];
+  if (!job || job.status !== "awaiting_approval") return void i.reply({ content: "この承認は処理済みです", ephemeral: true });
+  if (act === "ng") {
+    job.status = "rejected"; await save();
+    await i.update({ content: `${i.message.content}\n\n❌ 公開しない(${i.user.username})`, components: [] });
+    return void log(`[${id}] 公開見送り。修正する場合は #command に新しい依頼として書いてください(例: 「${id} のヒーロー画像をやり直して」)`);
+  }
+  // 承認 → 署名付きトークンを発行し、publisherタスクを追加
+  job.approval = signApproval(APPROVAL_SECRET, job.id, i.user.id);
+  job.tasks.push({
+    key: "publish", to: PUBLISHER_ROLE, title: "本番公開", instructions: PUBLISH_INSTRUCTIONS,
+    acceptance: ["公開URLが開け、変更が反映されている"],
+    deps: job.tasks.map((t) => t.key), requiresApproval: true,
+    status: "pending", attempt: 0, sentId: null, sentAt: null, summary: null,
+  });
+  job.status = "running"; await save();
+  await i.update({ content: `${i.message.content}\n\n✅ 公開を承認(${i.user.username})`, components: [] });
+  await log(`[${id}] 公開承認 by ${i.user.username}`);
+  await dispatch(job);
+}
 
 client.once("ready", async () => {
   console.log(`orchestrator logged in as ${client.user.tag}`);

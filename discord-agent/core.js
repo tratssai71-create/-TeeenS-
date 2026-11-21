@@ -1,4 +1,5 @@
 // 司令塔の純粋ロジック(Discord/Codexに依存しない。テスト可能)
+import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const MAX_MSG = 1900; // Discord 2000文字制限に余裕を持たせる
 
@@ -73,7 +74,10 @@ export function buildTaskMessage(job, task, timeoutMin) {
   const make = (p) => JSON.stringify({
     v: 1, type: "task", id: task.sentId, job: job.id, to: task.to,
     title: task.title, instructions: task.instructions, acceptance: task.acceptance,
-    inputs: p.length ? { previous: p } : undefined, timeoutMin, attempt: task.attempt,
+    inputs: (p.length || task.requiresApproval)
+      ? { previous: p.length ? p : undefined, approval: task.requiresApproval ? job.approval : undefined }
+      : undefined,
+    timeoutMin, attempt: task.attempt,
   });
   let msg = make(prev);
   for (const n of [150, 60, 0]) {
@@ -86,3 +90,21 @@ export function buildTaskMessage(job, task, timeoutMin) {
 
 export const jobFinished = (job) =>
   job.tasks.every((t) => t.status === "done" || t.status === "failed" || t.status === "skipped");
+
+// ---------- 公開承認トークン(司令塔が署名、publisherが検証) ----------
+const mac = (secret, job, by, at) =>
+  createHmac("sha256", secret).update(`${job}|${by}|${at}`).digest("hex");
+
+export function signApproval(secret, job, by, at = Date.now()) {
+  return { job, by, at, sig: mac(secret, job, by, at) };
+}
+
+/** 署名・ジョブ一致・有効期限(ttlMs)を検証。OKなら true */
+export function verifyApproval(secret, a, expectedJob, ttlMs = 60 * 60_000, now = Date.now()) {
+  if (!secret || !a || typeof a.sig !== "string") return false;
+  if (a.job !== expectedJob) return false;
+  if (!(now - a.at >= 0 && now - a.at <= ttlMs)) return false;
+  const want = Buffer.from(mac(secret, a.job, a.by, a.at));
+  const got = Buffer.from(a.sig);
+  return want.length === got.length && timingSafeEqual(want, got);
+}

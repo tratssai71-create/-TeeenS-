@@ -125,3 +125,8 @@ received → planned → running → verifying → awaiting_approval → publish
 - 画面が想定と違う・ログイン切れ・確認ダイアログ等は `status:"blocked"` で返し、推測で進めない。
 - UI変更で壊れやすいので、操作手順を `docs/studio-playbook.md` に蓄積し、指示文に含める。
 - MCPが使えるようになったら、designerのツールだけ差し替える(プロトコルは不変)。
+
+## 12. P4 実装メモ(公開ゲート)
+- 状態: `running → awaiting_approval →(承認)→ running(publishタスク) → completed`。却下は `rejected`。
+- 承認は司令塔がHMAC署名(`APPROVAL_SECRET`)したトークンで表現。publisherワーカーが検証するため、`#tasks` に偽のタスクを書かれても公開されない。
+- 自動承認(低リスク変更のみ)は P5 で追加。
