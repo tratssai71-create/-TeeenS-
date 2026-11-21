@@ -42,8 +42,10 @@ function runCodex(prompt) {
     const dir = await mkdtemp(join(tmpdir(), "codex-"));
     const outFile = join(dir, "last.txt");
     const args = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean),
-      "-C", WORKDIR, "--output-last-message", outFile, prompt];
-    const child = spawn("codex", args, { stdio: ["ignore", "pipe", "pipe"] });
+      "-C", WORKDIR, "--output-last-message", outFile, "-"]; // "-" = 指示文はstdinから読む
+    // Windowsでは codex が .cmd のため shell 経由。指示文は引数に載せずstdinで渡す(コマンド注入を避ける)
+    const child = spawn("codex", args, { stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" });
+    child.stdin.end(prompt);
     current = child;
     let log = "";
     child.stdout.on("data", (d) => (log += d));

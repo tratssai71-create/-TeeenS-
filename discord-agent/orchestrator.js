@@ -46,8 +46,9 @@ function runPlanner(prompt) {
   return new Promise(async (resolve, reject) => {
     const dir = await mkdtemp(join(tmpdir(), "plan-"));
     const out = join(dir, "last.txt");
-    const child = spawn("codex", ["exec", ...PLANNER_ARGS, "-C", WORKDIR, "--output-last-message", out, prompt],
-      { stdio: ["ignore", "ignore", "pipe"] });
+    const child = spawn("codex", ["exec", ...PLANNER_ARGS, "-C", WORKDIR, "--output-last-message", out, "-"],
+      { stdio: ["pipe", "ignore", "pipe"], shell: process.platform === "win32" });
+    child.stdin.end(prompt);
     let err = "";
     child.stderr.on("data", (d) => (err += d));
     const timer = setTimeout(() => child.kill("SIGTERM"), 5 * 60_000);
@@ -66,7 +67,7 @@ const plannerPrompt = (request) => `あなたはWebサイト制作チームの�
 - designer: STUDIOエディタ(ブラウザ操作)でのレイアウト・見た目の編集。同時に1タスクのみ。
 - writer: 文言・記事・SEO文・素材の用意(STUDIOは触らない)。
 - qa: 完成したページのスクリーンショット確認、リンク切れ、レスポンシブ、文言チェック(読み取りのみ)。
-制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。最後に必ずqaの検証タスクを置く。
+制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
 出力は次の形式のJSONのみ(説明文は不要):
 {"tasks":[{"key":"短い英数字ID","to":"ロール","title":"件名","instructions":"具体的な作業指示","acceptance":["受け入れ基準"],"deps":["先行タスクのkey"]}]}
 
