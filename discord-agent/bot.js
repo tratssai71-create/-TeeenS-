@@ -40,7 +40,33 @@ const client = new Client({
 let current = null;      // 実行中の子プロセス
 let chain = Promise.resolve(); // タスクは1件ずつ直列実行
 
-function runCodex(prompt) {
+// 受け取った文字列を、1行ずつコールバックに渡す
+function lineSplitter(cb) {
+  let buf = "";
+  return (d) => {
+    buf += d;
+    const parts = buf.split("\n");
+    buf = parts.pop();
+    for (const p of parts) cb(p.replace(/\r$/, ""));
+  };
+}
+
+// codex exec の出力から、人が見て分かる進捗(使っている道具、Codexの発言、セッションID)だけを取り出す
+function makeProgress(push) {
+  let mode = null;
+  return (line) => {
+    const s = line.trim();
+    const sid = s.match(/^session id:\s*(\S+)/);
+    if (sid) return push(`🧾 セッション: \`${sid[1]}\`(あとで \`codex resume ${sid[1]}\` で、やり取りを見られます)`);
+    if (s === "codex") { mode = "codex"; return; }
+    const tool = s.match(/^mcp:\s*(\S+)\s+started/);
+    if (tool) { mode = null; return push(`🔧 ${tool[1]}`); }
+    if (/^(user|exec|tokens used)$/.test(s) || s.startsWith("mcp:")) { mode = null; return; }
+    if (mode === "codex" && s && !/^-+$/.test(s)) push(`💬 ${s.slice(0, 300)}`);
+  };
+}
+
+function runCodex(prompt, onLine) {
   return new Promise(async (resolve) => {
     const dir = await mkdtemp(join(tmpdir(), "codex-"));
     const outFile = join(dir, "last.txt");
@@ -54,8 +80,10 @@ function runCodex(prompt) {
     child.stdin.end(prompt);
     current = child;
     let log = "";
-    child.stdout.on("data", (d) => (log += d));
-    child.stderr.on("data", (d) => (log += d));
+    const feedOut = onLine ? lineSplitter(onLine) : null;
+    const feedErr = onLine ? lineSplitter(onLine) : null;
+    child.stdout.on("data", (d) => { log += d; feedOut?.(d); });
+    child.stderr.on("data", (d) => { log += d; feedErr?.(d); });
     const timer = setTimeout(() => child.kill("SIGTERM"), Number(TIMEOUT_MIN) * 60_000);
     child.on("close", async (code, sig) => {
       clearTimeout(timer);
@@ -117,7 +145,17 @@ async function handleTask(msg, t) {
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
   await logCh?.send(`[${AGENT_NAME}] ${t.id} 開始: ${t.title ?? ""}`);
   chain = chain.then(async () => {
-    const r = await runCodex(buildPrompt(t));
+    // 作業の様子を、数秒ごとに #log へ流す(裏で動いていても、何をしているか分かるように)
+    const buf = []; let sentN = 0;
+    const flush = async () => {
+      if (!buf.length || !logCh) return;
+      const text = buf.splice(0).join("\n").slice(0, 1900);
+      if (sentN++ < 40) await logCh.send(text).catch(() => {});
+    };
+    const timer = setInterval(flush, 4000);
+    const r = await runCodex(buildPrompt(t), makeProgress((x) => buf.push(x)));
+    clearInterval(timer);
+    await flush();
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME,
       status: r.code === 0 ? "done" : "failed",
