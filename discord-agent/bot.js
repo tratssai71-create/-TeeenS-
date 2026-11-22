@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval } from "./core.js";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -52,12 +52,12 @@ function lineSplitter(cb) {
 }
 
 // codex exec の出力から、人が見て分かる進捗(使っている道具、Codexの発言、セッションID)だけを取り出す
-function makeProgress(push) {
+function makeProgress(push, { session = true } = {}) {
   let mode = null;
   return (line) => {
     const s = line.trim();
     const sid = s.match(/^session id:\s*(\S+)/);
-    if (sid) return push(`🧾 セッション: \`${sid[1]}\`(あとで \`codex resume ${sid[1]}\` で、やり取りを見られます)`);
+    if (sid) return session && push(`🧾 セッション: \`${sid[1]}\`(あとで \`codex resume ${sid[1]}\` で、やり取りを見られます)`);
     if (s === "codex") { mode = "codex"; return; }
     const tool = s.match(/^mcp:\s*(\S+)\s+started/);
     if (tool) { mode = null; return push(`🔧 ${tool[1]}`); }
@@ -66,18 +66,21 @@ function makeProgress(push) {
   };
 }
 
-function runCodex(prompt, onLine) {
+function runCodex(prompt, onLine, resumeId) {
   return new Promise(async (resolve) => {
     const dir = await mkdtemp(join(tmpdir(), "codex-"));
     const outFile = join(dir, "last.txt");
     // ブラウザ操作などのMCPを、確認なし(無人)で使えるようにする。MCP_AUTO_APPROVE=名前,名前 で変更(空で無効)
     const approve = list(process.env.MCP_AUTO_APPROVE ?? "playwright")
       .flatMap((s) => ["-c", `mcp_servers.${s}.default_tools_approval_mode="approve"`]);
-    const args = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve,
-      "-C", WORKDIR, "--output-last-message", outFile, "-"]; // "-" = 指示文はstdinから読む
-    // Windowsでは codex が .cmd のため shell 経由。指示文は引数に載せずstdinで渡す(コマンド注入を避ける)
-    const child = spawn("codex", args, { stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" });
-    child.stdin.end(prompt);
+    const win = process.platform === "win32";
+    const base = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve,
+      "-C", WORKDIR, "--output-last-message", outFile];
+    // 通常: 指示文は stdin("-")。会話の続き(resume): 前のセッションに続けて実行する
+    const args = resumeId ? [...base, "resume", resumeId, win ? "-" : (prompt.startsWith("-") ? " " + prompt : prompt)] : [...base, "-"];
+    // Windowsでは codex が .cmd のため shell 経由。その場合は、指示文を引数に載せずstdinで渡す(コマンド注入を避ける)
+    const child = spawn("codex", args, { stdio: ["pipe", "pipe", "pipe"], shell: win });
+    if (!resumeId || win) child.stdin.end(prompt); else child.stdin.end();
     current = child;
     let log = "";
     const feedOut = onLine ? lineSplitter(onLine) : null;
@@ -91,7 +94,7 @@ function runCodex(prompt, onLine) {
       let last = "";
       try { last = (await readFile(outFile, "utf8")).trim(); } catch {}
       await rm(dir, { recursive: true, force: true });
-      resolve({ code, sig, text: last || log.trim().slice(-1500) || "(出力なし)" });
+      resolve({ code, sig, text: last || log.trim().slice(-1500) || "(出力なし)", sessionId: log.match(/session id:\s*(\S+)/)?.[1] });
     });
     child.on("error", async (e) => {
       clearTimeout(timer); current = null;
@@ -116,6 +119,22 @@ try {
   const pj = JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}");
   PROJECTS = Object.entries(pj).map(([n, u]) => `- ${n}: ${u}`).join("\n");
 } catch {}
+
+// チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
+const CHAT_PREAMBLE = [
+  "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。返答は、短く、分かりやすい日本語で。",
+  PROJECTS ? `STUDIOプロジェクトの編集画面URL(名前で探さず、直接開く):\n${PROJECTS}` : "",
+  PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
+  "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
+  "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
+  "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
+].filter(Boolean).join("\n\n");
+
+// チャンネルごとの会話セッションを覚えておく(再起動しても続けられる)
+const SESSIONS_FILE = process.env.CHAT_SESSIONS_FILE ?? "chat-sessions.json";
+let sessions = {};
+try { sessions = JSON.parse(readIf(SESSIONS_FILE) || "{}"); } catch {}
+const saveSessions = () => { try { writeFileSync(SESSIONS_FILE, JSON.stringify(sessions)); } catch {} };
 
 function buildPrompt(t) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
@@ -208,13 +227,38 @@ client.on("messageCreate", async (msg) => {
   }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
-  await msg.reply(`[${AGENT_NAME}] 受付: キューに追加しました`);
+  if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
+  if (text === "!session") return void msg.reply(sessions[msg.channelId] ? `セッション: \`${sessions[msg.channelId]}\`(\`codex resume ${sessions[msg.channelId]}\` で、Codexで続きを見られます)` : "まだ会話が始まっていません");
+
+  // ---- チャットモード: 同じチャンネルの会話は、同じCodexセッションで続ける ----
+  msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
-    await msg.channel.send(`[${AGENT_NAME}] 作業開始`);
-    const r = await runCodex(text);
-    const status = r.code === 0 ? "完了" : `終了(code=${r.code}${r.sig ? ", " + r.sig : ""})`;
-    const parts = chunks(`[${AGENT_NAME}] ${status}\n${r.text}`);
-    for (const p of parts) await msg.channel.send(p);
+    if (!(await browserUp())) {
+      return void msg.channel.send(`専用Chromeが起動していません。ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いておいてください`);
+    }
+    const buf = []; let sentN = 0;
+    const flush = async () => {
+      if (!buf.length) return;
+      const t = buf.splice(0).join("\n").slice(0, 1900);
+      if (sentN++ < 40) await msg.channel.send(t).catch(() => {});
+    };
+    const timer = setInterval(flush, 4000);
+    const typing = setInterval(() => msg.channel.sendTyping().catch(() => {}), 8000);
+    msg.channel.sendTyping().catch(() => {});
+    const fresh = (t) => `${CHAT_PREAMBLE}\n\nユーザー: ${t}`;
+    const sid = sessions[msg.channelId];
+    const mkProg = () => makeProgress((x) => buf.push(x), { session: false });
+    let r = await runCodex(sid ? text : fresh(text), mkProg(), sid);
+    if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
+      buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
+      delete sessions[msg.channelId];
+      r = await runCodex(fresh(text), mkProg());
+    }
+    clearInterval(timer); clearInterval(typing);
+    if (r.sessionId) { sessions[msg.channelId] = r.sessionId; saveSessions(); }
+    await flush();
+    const body = r.code === 0 ? r.text : `うまくいきませんでした(code=${r.code}${r.sig ? ", " + r.sig : ""})\n${r.text}`;
+    for (const p of chunks(body)) await msg.channel.send(p);
   }).catch((e) => console.error(e));
 });
 
