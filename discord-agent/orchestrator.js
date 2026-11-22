@@ -6,7 +6,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval } from "./core.js";
+import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan } from "./core.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const env = process.env;
@@ -89,10 +89,17 @@ async function createJob(request, replyTo) {
   if (state.halted) return replyTo.reply("停止中です(`!resume` で再開)");
   state.jobsToday++;
   const id = `j${++state.seq}`;
-  await replyTo.reply(`[${id}] 受付。計画を作成中…`);
+  const quick = /^!quick(\s|$)/.test(request);
+  await replyTo.reply(quick ? `[${id}] 受付(クイック: 計画を省いて、すぐ作業します)` : `[${id}] 受付。計画を作成中…`);
   try {
-    const plan = extractJson(await runPlanner(plannerPrompt(request)));
-    const tasks = validatePlan(plan, { roles: ROLES, maxTasks: MAX_TASKS });
+    const tasks = quick
+      ? quickPlan(request, ROLES[0])
+      : validatePlan(extractJson(await runPlanner(plannerPrompt(request))), { roles: ROLES, maxTasks: MAX_TASKS });
+    if (quick) {
+      state.jobs[id] = { id, request: request.replace(/^!quick\s*/, ""), status: "running", tasks, createdAt: Date.now() };
+      await save();
+      return void dispatch(state.jobs[id]);
+    }
     state.jobs[id] = { id, request, status: "awaiting_plan_approval", tasks, createdAt: Date.now() };
     await save();
     const lines = tasks.map((t) => `• \`${t.key}\` [${t.to}] ${t.title}${t.deps.length ? ` (← ${t.deps.join(", ")})` : ""}`);

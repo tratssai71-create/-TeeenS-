@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval } from "./core.js";
+import { readFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -79,6 +80,15 @@ function chunks(s, n = 1900) {
 }
 
 // --- ワーカーモード: #tasks のJSONタスクを処理 ---
+// 手順書(playbook)とプロジェクトURL一覧を、作業指示に添える(試行錯誤を減らして速くする)
+const readIf = (p) => { try { return existsSync(p) ? readFileSync(p, "utf8").trim() : ""; } catch { return ""; } };
+const PLAYBOOK = readIf(process.env.PLAYBOOK_FILE ?? "docs/studio-playbook.md");
+let PROJECTS = "";
+try {
+  const pj = JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}");
+  PROJECTS = Object.entries(pj).map(([n, u]) => `- ${n}: ${u}`).join("\n");
+} catch {}
+
 function buildPrompt(t) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
@@ -86,6 +96,8 @@ function buildPrompt(t) {
     t.instructions ?? "",
     t.inputs ? `入力: ${JSON.stringify(t.inputs)}` : "",
     acc ? `受け入れ基準:\n${acc}` : "",
+    PROJECTS ? `STUDIOプロジェクトの編集画面URL(名前で探さず、直接開く):\n${PROJECTS}` : "",
+    PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
     "完了したら、何をしたかと確認結果を簡潔に報告してください。",
   ].filter(Boolean).join("\n\n");
 }

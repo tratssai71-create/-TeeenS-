@@ -108,3 +108,13 @@ export function verifyApproval(secret, a, expectedJob, ttlMs = 60 * 60_000, now 
   const got = Buffer.from(a.sig);
   return want.length === got.length && timingSafeEqual(want, got);
 }
+
+/** !quick: 計画づくりを省いて、依頼文をそのまま1タスクにする */
+export function quickPlan(request, role) {
+  const text = request.replace(/^!quick\s*/, "").trim();
+  if (!text) throw new Error("!quick のあとに依頼を書いてください");
+  return validatePlan({ tasks: [{
+    key: "t1", to: role, title: text.slice(0, 40), instructions: text.slice(0, 1000),
+    acceptance: ["依頼どおりに完了している"], deps: [],
+  }] }, { roles: [role], maxTasks: 1 });
+}

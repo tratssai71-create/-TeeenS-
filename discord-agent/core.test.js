@@ -77,3 +77,12 @@ test("公開タスクにだけ承認トークンが付く", () => {
   tasks[0].sentId = "j1-a-a1";
   assert.equal(JSON.parse(buildTaskMessage(job, tasks[0], 30)).inputs?.approval, undefined);
 });
+
+import { quickPlan } from "./core.js";
+test("quickPlan: 計画を省いて1タスクにする", () => {
+  const p = quickPlan("!quick 見出しを「テスト」に変えて", "designer");
+  assert.equal(p.length, 1);
+  assert.equal(p[0].to, "designer");
+  assert.equal(p[0].instructions, "見出しを「テスト」に変えて");
+  assert.throws(() => quickPlan("!quick   ", "designer"));
+});

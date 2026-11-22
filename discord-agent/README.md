@@ -48,3 +48,7 @@ Discordのチャンネルに書いた指示を `codex exec` で実行し、結�
 5. 「公開しない」→ ジョブは `rejected`。修正は `#command` に新しい依頼として書く
 
 publisherのCodex権限は「公開操作だけ」になるよう指示を絞る(`PUBLISH_INSTRUCTIONS` で上書き可)。
+
+## 速く動かすコツ
+- `#command` に **`!quick 依頼`** と書くと、計画づくりを省いて、すぐデザイナーが作業する(小さな依頼向け)。公開は、これまでどおり承認が必要。
+- `docs/studio-playbook.md`(STUDIOの操作手順)と `projects.json`(プロジェクトの編集画面URL)は、デザイナーへの指示に自動で添えられる。プロジェクトを増やすときは、`projects.json` に追記する。
