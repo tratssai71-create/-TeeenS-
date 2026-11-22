@@ -43,7 +43,10 @@ function runCodex(prompt) {
   return new Promise(async (resolve) => {
     const dir = await mkdtemp(join(tmpdir(), "codex-"));
     const outFile = join(dir, "last.txt");
-    const args = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean),
+    // ブラウザ操作などのMCPを、確認なし(無人)で使えるようにする。MCP_AUTO_APPROVE=名前,名前 で変更(空で無効)
+    const approve = list(process.env.MCP_AUTO_APPROVE ?? "playwright")
+      .flatMap((s) => ["-c", `mcp_servers.${s}.default_tools_approval_mode="approve"`]);
+    const args = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve,
       "-C", WORKDIR, "--output-last-message", outFile, "-"]; // "-" = 指示文はstdinから読む
     // Windowsでは codex が .cmd のため shell 経由。指示文は引数に載せずstdinで渡す(コマンド注入を避ける)
     const child = spawn("codex", args, { stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" });

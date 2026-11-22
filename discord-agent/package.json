@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "test": "node --test core.test.js",
-    "start": "node run.js"
+    "start": "node run.js",
+    "setup-browser": "bash scripts/setup-browser.sh",
+    "browser": "bash scripts/browser.sh"
   },
   "dependencies": {
     "discord.js": "^14.16.0"
