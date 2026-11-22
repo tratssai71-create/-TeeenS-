@@ -126,8 +126,16 @@ function buildPrompt(t) {
     acc ? `受け入れ基準:\n${acc}` : "",
     PROJECTS ? `STUDIOプロジェクトの編集画面URL(名前で探さず、直接開く):\n${PROJECTS}` : "",
     PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
-    "完了したら、何をしたかと確認結果を簡潔に報告してください。",
+    "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
+    "最後に、何をしたかと確認結果を簡潔に報告し、**最終行**に次のどれか1つだけを書く: 依頼どおり完了したなら `RESULT: OK` / 一部でも未実施・失敗なら `RESULT: FAILED` / 人の対応が必要なら `RESULT: BLOCKED`。",
   ].filter(Boolean).join("\n\n");
+}
+
+// 専用Chrome(ブラウザ操作の接続先)が起動しているか確認する。BROWSER_CHECK=0 で無効
+const BROWSER_CDP = process.env.BROWSER_CDP ?? "http://localhost:9222";
+async function browserUp() {
+  if (process.env.BROWSER_CHECK === "0") return true;
+  try { return (await fetch(`${BROWSER_CDP}/json/version`, { signal: AbortSignal.timeout(2500) })).ok; } catch { return false; }
 }
 
 async function handleTask(msg, t) {
@@ -143,6 +151,14 @@ async function handleTask(msg, t) {
     return;
   }
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
+  if (!(await browserUp())) {
+    await logCh?.send(`[${AGENT_NAME}] ${t.id} 中止: 専用Chromeが起動していません。ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いておいてください`);
+    await msg.channel.send(JSON.stringify({
+      v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "blocked",
+      summary: "専用Chrome(ブラウザ操作の接続先)が起動していません", error: "browser_down",
+    }));
+    return;
+  }
   await logCh?.send(`[${AGENT_NAME}] ${t.id} 開始: ${t.title ?? ""}`);
   chain = chain.then(async () => {
     // 作業の様子を、数秒ごとに #log へ流す(裏で動いていても、何をしているか分かるように)
@@ -156,11 +172,14 @@ async function handleTask(msg, t) {
     const r = await runCodex(buildPrompt(t), makeProgress((x) => buf.push(x)));
     clearInterval(timer);
     await flush();
+    // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
+    const mk = [...r.text.matchAll(/RESULT:\s*(OK|FAILED|BLOCKED)/gi)].pop()?.[1]?.toUpperCase();
+    const status = r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
+    const why = r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
     const result = {
-      v: 1, type: "result", id: t.id, from: AGENT_NAME,
-      status: r.code === 0 ? "done" : "failed",
-      summary: r.text.slice(0, 1500),
-      error: r.code === 0 ? null : `code=${r.code}${r.sig ? " " + r.sig : ""}`,
+      v: 1, type: "result", id: t.id, from: AGENT_NAME, status,
+      summary: r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
+      error: why,
     };
     await msg.channel.send(JSON.stringify(result));
     await logCh?.send(`[${AGENT_NAME}] ${t.id} ${result.status}`);
