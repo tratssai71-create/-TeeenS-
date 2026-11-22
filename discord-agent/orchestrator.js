@@ -74,6 +74,7 @@ const plannerPrompt = (request) => `あなたはWebサイト制作チームの�
 使えるロール(これ以外の名前は絶対に使わない): ${ROLES.join(", ")}
 ${ROLES.map((r) => `- ${r}: ${ROLE_DESC[r] ?? "担当作業"}`).join("\n")}
 制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。小さな依頼は1〜2タスクで足りる。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
+あなたの仕事は計画の作成だけ。ブラウザやツールは使わず、依頼の作業は実行しない。
 出力は次の形式のJSONのみ(説明文は不要):
 {"tasks":[{"key":"短い英数字ID","to":"ロール","title":"件名","instructions":"具体的な作業指示","acceptance":["受け入れ基準"],"deps":["先行タスクのkey"]}]}
 
