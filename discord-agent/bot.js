@@ -105,7 +105,9 @@ function buildPrompt(t) {
 async function handleTask(msg, t) {
   if (seenTasks.has(t.id)) return;
   seenTasks.add(t.id);
-  if (REQUIRE_APPROVAL && !verifyApproval(APPROVAL_SECRET, t.inputs?.approval, t.job)) {
+  // 公開タスク(requiresApproval か、IDに -publish- を含む)は、署名付きの公開承認がなければ実行しない
+  const isPublish = t.requiresApproval === true || String(t.id).includes("-publish-");
+  if ((REQUIRE_APPROVAL || isPublish) && !verifyApproval(APPROVAL_SECRET, t.inputs?.approval, t.job)) {
     await msg.channel.send(JSON.stringify({
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "blocked",
       summary: "有効な公開承認がないため実行しません", error: "approval_invalid",

@@ -21,9 +21,9 @@ const STATE_FILE = env.STATE_FILE ?? "state.json";
 const WORKDIR = env.WORKDIR ?? process.cwd();
 const PLANNER_ARGS = (env.PLANNER_ARGS ?? "--sandbox read-only --skip-git-repo-check").split(/\s+/).filter(Boolean);
 const { DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET } = env;
-const PUBLISHER_ROLE = env.PUBLISHER_ROLE ?? "publisher";
+const PUBLISHER_ROLE = env.PUBLISHER_ROLE ?? ROLES[0]; // 既定: 編集担当(designer)が承認後に公開も行う
 const PUBLISH_INSTRUCTIONS = env.PUBLISH_INSTRUCTIONS ??
-  "STUDIOエディタで、承認済みの変更を本番に公開する操作だけを行う。公開後に公開URLを開いて表示を確認し、URLを報告する。公開以外の編集は一切しない。想定外の画面や確認ダイアログが出たら公開せず blocked として報告する。";
+  "【本番公開】承認済みの変更を、STUDIOの編集画面の右上にある「公開」ボタンから公開する。対象は、直前の作業で編集したプロジェクトだけ。公開ダイアログが出たら、公開先とプロジェクト名が、直前の作業のものと一致することを確認してから確定する。公開後に、公開URLを開いて表示を確認し、URLを報告する。公開以外の編集はしない。想定外の画面や、プロジェクトが違う場合は、公開せずに blocked として報告する。";
 
 for (const [k, v] of Object.entries({ DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET })) {
   if (!v) { console.error(`${k} が未設定です`); process.exit(1); }

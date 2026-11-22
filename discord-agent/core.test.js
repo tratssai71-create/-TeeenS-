@@ -86,3 +86,13 @@ test("quickPlan: 計画を省いて1タスクにする", () => {
   assert.equal(p[0].instructions, "見出しを「テスト」に変えて");
   assert.throws(() => quickPlan("!quick   ", "designer"));
 });
+
+test("公開タスクには requiresApproval が付く", () => {
+  const tasks = validatePlan({ tasks: [mk({ key: "a", to: "designer" })] }, opt);
+  tasks.push({ key: "publish", to: "designer", title: "p", instructions: "i", acceptance: [], deps: ["a"],
+    requiresApproval: true, status: "pending", attempt: 1, sentId: "j1-publish-a1", summary: null });
+  tasks[0].status = "done"; tasks[0].sentId = "j1-a-a1";
+  const job = { id: "j1", tasks, approval: signApproval("s", "j1", "u1") };
+  assert.equal(JSON.parse(buildTaskMessage(job, tasks[1], 30)).requiresApproval, true);
+  assert.equal(JSON.parse(buildTaskMessage(job, tasks[0], 30)).requiresApproval, undefined);
+});

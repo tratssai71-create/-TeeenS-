@@ -41,7 +41,7 @@ Discordのチャンネルに書いた指示を `codex exec` で実行し、結�
 作業が全部成功すると、司令塔は **公開せずに `#approve` へ承認ボタンを出す**。
 
 1. `#approve` を作り、司令塔の `.env.director` に `APPROVE_CHANNEL_ID` と `APPROVAL_SECRET`(長いランダム文字列)を設定
-2. **publisher端末**のワーカーを追加: `AGENT_NAME=publisher`、`REQUIRE_APPROVAL=1`、`APPROVAL_SECRET=司令塔と同じ値`
+2. (既定では不要)公開を専用Botに分けたいとき、**publisher端末**のワーカーを追加: `AGENT_NAME=publisher`、`REQUIRE_APPROVAL=1`、`APPROVAL_SECRET=司令塔と同じ値`
    - 司令塔の `WORKER_BOT_IDS` にそのBotのIDも追加
 3. 「公開する」を押す → 司令塔が**署名付き承認トークン**(ジョブID・承認者・時刻、有効1時間)を発行し、publisherに公開タスクを送る
 4. publisherはトークンの署名・ジョブ一致・期限を検証し、**不正なら実行せず blocked で返す**(承認なしの公開を端末側でも拒否)
@@ -52,3 +52,8 @@ publisherのCodex権限は「公開操作だけ」になるよう指示を絞る
 ## 速く動かすコツ
 - `#command` に **`!quick 依頼`** と書くと、計画づくりを省いて、すぐデザイナーが作業する(小さな依頼向け)。公開は、これまでどおり承認が必要。
 - `docs/studio-playbook.md`(STUDIOの操作手順)と `projects.json`(プロジェクトの編集画面URL)は、デザイナーへの指示に自動で添えられる。プロジェクトを増やすときは、`projects.json` に追記する。
+
+## 公開の流れ(既定: デザイナーが公開まで担当)
+作業完了 → `#approve` に承認待ち → 「公開する」を押す → 司令塔が署名付き承認を発行 → **デザイナーが「公開」ボタンを押す**。
+- デザイナーは、公開タスク(IDに `-publish-` を含む)を、署名付き承認がなければ実行しない。通常の編集タスクは、承認なしで動く。
+- 専用Botに分けたいときは、`.env.director` に `PUBLISHER_ROLE=publisher` と、publisherワーカーを追加する。

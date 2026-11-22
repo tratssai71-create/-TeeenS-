@@ -73,6 +73,7 @@ export function buildTaskMessage(job, task, timeoutMin) {
   });
   const make = (p) => JSON.stringify({
     v: 1, type: "task", id: task.sentId, job: job.id, to: task.to,
+    requiresApproval: task.requiresApproval ? true : undefined,
     title: task.title, instructions: task.instructions, acceptance: task.acceptance,
     inputs: (p.length || task.requiresApproval)
       ? { previous: p.length ? p : undefined, approval: task.requiresApproval ? job.approval : undefined }
