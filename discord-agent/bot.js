@@ -40,6 +40,16 @@ const client = new Client({
 let current = null;      // 実行中の子プロセス
 let chain = Promise.resolve(); // タスクは1件ずつ直列実行
 
+// 連続する同じ行を「×N」にまとめる(進捗の表示を短くする)
+function compress(lines) {
+  const out = [];
+  for (const l of lines) {
+    const last = out[out.length - 1];
+    if (last && last.text === l) last.n++; else out.push({ text: l, n: 1 });
+  }
+  return out.map((o) => (o.n > 1 ? `${o.text} ×${o.n}` : o.text));
+}
+
 // 受け取った文字列を、1行ずつコールバックに渡す
 function lineSplitter(cb) {
   let buf = "";
@@ -184,7 +194,7 @@ async function handleTask(msg, t) {
     const buf = []; let sentN = 0;
     const flush = async () => {
       if (!buf.length || !logCh) return;
-      const text = buf.splice(0).join("\n").slice(0, 1900);
+      const text = compress(buf.splice(0)).join("\n").slice(0, 1900);
       if (sentN++ < 40) await logCh.send(text).catch(() => {});
     };
     const timer = setInterval(flush, 4000);
@@ -239,7 +249,7 @@ client.on("messageCreate", async (msg) => {
     const buf = []; let sentN = 0;
     const flush = async () => {
       if (!buf.length) return;
-      const t = buf.splice(0).join("\n").slice(0, 1900);
+      const t = compress(buf.splice(0)).join("\n").slice(0, 1900);
       if (sentN++ < 40) await msg.channel.send(t).catch(() => {});
     };
     const timer = setInterval(flush, 4000);
@@ -247,7 +257,8 @@ client.on("messageCreate", async (msg) => {
     msg.channel.sendTyping().catch(() => {});
     const fresh = (t) => `${CHAT_PREAMBLE}\n\nユーザー: ${t}`;
     const sid = sessions[msg.channelId];
-    const mkProg = () => makeProgress((x) => buf.push(x), { session: false });
+    let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
+    const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
     let r = await runCodex(sid ? text : fresh(text), mkProg(), sid);
     if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
       buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
@@ -258,7 +269,9 @@ client.on("messageCreate", async (msg) => {
     if (r.sessionId) { sessions[msg.channelId] = r.sessionId; saveSessions(); }
     await flush();
     const body = r.code === 0 ? r.text : `うまくいきませんでした(code=${r.code}${r.sig ? ", " + r.sig : ""})\n${r.text}`;
-    for (const p of chunks(body)) await msg.channel.send(p);
+    const norm = (s) => s.replace(/\s+/g, "");
+    const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
+    if (!dup) for (const p of chunks(body)) await msg.channel.send(p);
   }).catch((e) => console.error(e));
 });
 
