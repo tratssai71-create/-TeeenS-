@@ -176,10 +176,11 @@ async function logTiming(job, t) {
     ["送信→ワーカー受信", m.recvAt - t.sentAt],
     ["ブラウザ整備", m.guardMs],
     ["Codex作業", m.codexMs],
+    ["Bot確認", m.verifyMs],
     ["結果→集約", t.doneAt - m.endAt],
   ];
   const slow = parts.filter(([, v]) => v != null).sort((a, b) => b[1] - a[1])[0];
-  await log(`⏱️ [${job.id}] ${t.title}: ${parts.map(([k, v]) => `${k} ${sec(v)}`).join(" / ")} / 合計 ${sec(t.doneAt - (job.receivedAt ?? job.createdAt))}(最長: ${slow[0]})`);
+  await log(`⏱️ [${job.id}] ${t.title}: ${parts.filter(([k, v]) => v != null || k !== "Bot確認").map(([k, v]) => `${k} ${sec(v)}`).join(" / ")} / 合計 ${sec(t.doneAt - (job.receivedAt ?? job.createdAt))}(最長: ${slow[0]})`);
 }
 
 async function onResult(r) {

@@ -81,3 +81,48 @@ export async function prepareBrowser({
     return { ok: false, code: "cdp_error", detail: e.message };
   }
 }
+
+/**
+ * 作業の完了後、Bot自身が、専用Chromeの編集タブを再読み込みして、期待する文字が画面に出ているかを確かめる(Codexの自己申告を信じない)。
+ * メイン画面と、入れ子の画面(iframe)の両方の文字を調べる。
+ * @returns {{status:"verified"|"not_found"|"unverifiable", detail?:string}}
+ *   verified=見つかった / not_found=画面は読めたが文字がない / unverifiable=タブやChromeにつなげなかった
+ */
+export async function verifyText({ cdp = "http://localhost:9222", expected, timeoutMs = 40000, reload = true } = {}) {
+  if (!expected) return { status: "unverifiable", detail: "期待する文字が不明" };
+  let pages;
+  try { pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page"); } catch (e) { return { status: "unverifiable", detail: `Chromeに接続できません: ${e.message}` }; }
+  // 編集画面らしいタブを優先(一覧ページ以外のSTUDIOのタブ)
+  const page = pages.find((p) => /studio\.design/.test(p.url) && !/\/projects\/?(\?|$)/.test(p.url)) ?? pages[0];
+  if (!page) return { status: "unverifiable", detail: "開いているタブがありません" };
+  let s;
+  try {
+    s = await cdpSession(page.webSocketDebuggerUrl);
+    await s.send("Page.enable");
+    if (reload) await s.send("Page.reload", { ignoreCache: true });
+    const deadline = Date.now() + timeoutMs;
+    let seen = false;
+    while (Date.now() < deadline) {
+      await sleep(2000);
+      const texts = [];
+      try {
+        const main = await s.send("Runtime.evaluate", { expression: "document.body ? document.body.innerText : ''", returnByValue: true });
+        texts.push(main.result.value ?? "");
+        const walk = (n) => [n.frame.id, ...(n.childFrames ?? []).flatMap(walk)];
+        const tree = await s.send("Page.getFrameTree");
+        for (const fid of walk(tree.frameTree).slice(1)) {
+          try {
+            const w = await s.send("Page.createIsolatedWorld", { frameId: fid });
+            const r = await s.send("Runtime.evaluate", { contextId: w.executionContextId, expression: "document.body ? document.body.innerText : ''", returnByValue: true });
+            texts.push(r.result.value ?? "");
+          } catch {}
+        }
+      } catch { continue; } // 再読み込み中は、読めないことがある
+      seen = seen || texts.some((t) => t.length > 0);
+      if (texts.some((t) => t.includes(expected))) return { status: "verified" };
+    }
+    return seen ? { status: "not_found", detail: `再読み込み後の画面に「${expected}」が見つかりません` } : { status: "unverifiable", detail: "画面の文字を読み取れませんでした" };
+  } catch (e) {
+    return { status: "unverifiable", detail: e.message };
+  } finally { s?.close(); }
+}

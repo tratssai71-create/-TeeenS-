@@ -119,3 +119,9 @@ export function quickPlan(request, role) {
     acceptance: ["依頼どおりに完了している"], deps: [],
   }] }, { roles: [role], maxTasks: 1 });
 }
+
+/** 依頼文から「変更後の文字」を取り出す。例: 見出しを「公開テスト4」に変えて → 公開テスト4。見つからなければ null */
+export function extractExpectedText(text = "") {
+  const m = [...text.matchAll(/「([^」]{1,80})」(?:に|へ|と)(?:変え|変更|書き換え|差し替え|して|する|なる)/g)].pop();
+  return m ? m[1] : null;
+}

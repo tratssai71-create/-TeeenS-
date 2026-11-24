@@ -31,6 +31,8 @@ export function hintFor(error, summary = "") {
     case "not_ready":
     case "cdp_error":
       return "STUDIOの画面の準備に失敗しました(自動でやり直します)。続くときは、専用Chromeを終了して `npm run browser` で開き直してください。";
+    case "verify_failed":
+      return "Codexは完了と報告しましたが、Botが再読み込みして確認したところ、変更後の文字が見つかりませんでした(保存されていない可能性があります。自動でやり直します)。";
     case "no_result_marker":
       return "Codexの報告が不完全でした(自動でやり直します)。";
     case "reported_failed":

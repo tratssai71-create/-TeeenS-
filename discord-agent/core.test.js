@@ -96,3 +96,10 @@ test("公開タスクには requiresApproval が付く", () => {
   assert.equal(JSON.parse(buildTaskMessage(job, tasks[1], 30)).requiresApproval, true);
   assert.equal(JSON.parse(buildTaskMessage(job, tasks[0], 30)).requiresApproval, undefined);
 });
+
+test("extractExpectedText: 依頼文から変更後の文字を取り出す", async () => {
+  const { extractExpectedText } = await import("./core.js");
+  assert.equal(extractExpectedText("STUDIOの「あああ(サンプル)」のホーム最上部の見出しを「公開テスト4」に変えて"), "公開テスト4");
+  assert.equal(extractExpectedText("見出しを「テスト」に変えて。変えたら再読み込みして"), "テスト");
+  assert.equal(extractExpectedText("時刻の記録を入れて"), null);
+});

@@ -3,9 +3,9 @@ import { spawn } from "node:child_process";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { verifyApproval } from "./core.js";
+import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit } from "./messages.js";
-import { prepareBrowser } from "./browser-guard.js";
+import { prepareBrowser, verifyText } from "./browser-guard.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -228,7 +228,6 @@ async function handleTask(msg, t) {
     timing.codexStartAt = Date.now();
     const r = await runCodex(buildPrompt(t), makeProgress((x) => buf.push(x)));
     timing.codexMs = Date.now() - timing.codexStartAt;
-    timing.endAt = Date.now();
     clearInterval(timer);
     await flush();
     // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
@@ -236,13 +235,31 @@ async function handleTask(msg, t) {
     const mk = [...r.text.matchAll(/RESULT:\s*(OK|FAILED|BLOCKED)/gi)].pop()?.[1]?.toUpperCase();
     const status = lim ? "blocked" : r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
     const why = lim ? "usage_limit" : r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
+    // Bot自身の確認: Codexが「完了」と言っても、再読み込みして、変更後の文字が本当にあるかを見る。VERIFY_MODE=off で無効 / strict で、見つからなければ失敗にする(既定: warn=警告だけ)
+    let finalStatus = status, verifyNote = null;
+    const VERIFY_MODE = process.env.VERIFY_MODE ?? "warn";
+    const expected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
+    if (status === "done" && expected && VERIFY_MODE !== "off" && process.env.BROWSER_CHECK !== "0") {
+      await logCh?.send(`🔍 [${roleLabel(AGENT_NAME)}] Bot自身で、再読み込みして「${expected}」を確認しています…`).catch(() => {});
+      const t0 = Date.now();
+      const v = await verifyText({ cdp: BROWSER_CDP, expected });
+      timing.verifyMs = Date.now() - t0;
+      if (v.status === "verified") verifyNote = `Botが再読み込み後に「${expected}」を確認しました`;
+      else if (v.status === "not_found") {
+        verifyNote = `⚠️ ${v.detail}`;
+        if (VERIFY_MODE === "strict") finalStatus = "failed";
+      } else verifyNote = `(Botでの確認はできませんでした: ${v.detail})`;
+      await logCh?.send(`${v.status === "verified" ? "✅" : v.status === "not_found" ? "⚠️" : "ℹ️"} ${verifyNote}`).catch(() => {});
+    }
+    timing.endAt = Date.now();
     const result = {
-      v: 1, type: "result", id: t.id, from: AGENT_NAME, status,
+      v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
       summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
-      error: why, timing,
+      error: finalStatus !== status ? "verify_failed" : why, timing,
     };
+    if (verifyNote) result.summary = `${result.summary}\n${verifyNote}`.slice(0, 1500);
     await msg.channel.send(JSON.stringify(result));
-    await logCh?.send(`${status === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${status === "done" ? "完了" : status === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);
+    await logCh?.send(`${finalStatus === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${finalStatus === "done" ? "完了" : finalStatus === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);
   }).catch((e) => console.error(e));
 }
 
