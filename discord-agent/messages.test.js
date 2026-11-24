@@ -1,0 +1,35 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel } from "./messages.js";
+
+const job = (tasks, extra = {}) => ({ id: "j9", request: "見出しを変えて", tasks, ...extra });
+const t = (o = {}) => ({ key: "a", to: "designer", title: "見出しを変更", deps: [], acceptance: ["見出しが変わる"], status: "done", summary: "変更しました", ...o });
+
+test("役割名が日本語になる", () => { assert.equal(roleLabel("designer"), "デザイナー"); assert.equal(roleLabel("x"), "x"); });
+
+test("計画案: 番号・役割・確認事項・案内が入る", () => {
+  const s = formatPlan(job([t(), t({ key: "b", title: "確認", deps: ["a"], acceptance: [] })]));
+  assert.match(s, /\[j9\] 計画案/); assert.match(s, /1\. \*\*デザイナー\*\* — 見出しを変更/);
+  assert.match(s, /✔ 見出しが変わる/); assert.match(s, /「a」のあと/); assert.match(s, /「実行」か「却下」/);
+});
+
+test("完了: 成功と失敗で見出しと次の手順が変わる", () => {
+  assert.match(formatDone(job([t()])), /✅ \*\*\[j9\] 完了しました/);
+  const f = formatDone(job([t({ status: "failed", error: "browser_down", summary: "" })]));
+  assert.match(f, /❌/); assert.match(f, /npm run browser/); assert.match(f, /公開は行っていません/);
+});
+
+test("承認画面: 本番に反映される旨の注意が入る", () => {
+  const s = formatApproval(job([t()]));
+  assert.match(s, /公開の承認をお願いします/); assert.match(s, /本番のサイトに反映/); assert.match(s, /変更しました/);
+});
+
+test("hintFor: 種類ごとの案内", () => {
+  assert.match(hintFor("approval_invalid"), /もう一度/); assert.match(hintFor("reported_blocked"), /人の対応/);
+  assert.match(hintFor(null, "タイムアウト(ワーカー無応答)"), /Bot/); assert.equal(hintFor(null, "ok"), "");
+});
+
+test("長い文は、1行に切り詰める", () => {
+  const s = formatDone(job([t({ summary: "あ".repeat(500) + "\n改行" })]));
+  assert.ok(!s.includes("\n改行")); assert.ok(s.length < 400);
+});

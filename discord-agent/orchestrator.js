@@ -7,6 +7,7 @@ import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan } from "./core.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel } from "./messages.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const env = process.env;
@@ -90,7 +91,7 @@ async function createJob(request, replyTo) {
   state.jobsToday++;
   const id = `j${++state.seq}`;
   const quick = /^!quick(\s|$)/.test(request);
-  await replyTo.reply(quick ? `[${id}] 受付(クイック: 計画を省いて、すぐ作業します)` : `[${id}] 受付。計画を作成中…`);
+  await replyTo.reply(quick ? `⚡ [${id}] 受付しました(クイック: 計画を省いて、すぐ作業します)` : `📝 [${id}] 受付しました。計画を作っています…(1〜2分かかります)`);
   try {
     const tasks = quick
       ? quickPlan(request, ROLES[0])
@@ -102,15 +103,14 @@ async function createJob(request, replyTo) {
     }
     state.jobs[id] = { id, request, status: "awaiting_plan_approval", tasks, createdAt: Date.now() };
     await save();
-    const lines = tasks.map((t) => `• \`${t.key}\` [${t.to}] ${t.title}${t.deps.length ? ` (← ${t.deps.join(", ")})` : ""}`);
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId(`plan:ok:${id}`).setLabel("実行").setStyle(ButtonStyle.Success),
       new ButtonBuilder().setCustomId(`plan:ng:${id}`).setLabel("却下").setStyle(ButtonStyle.Danger),
     );
-    await replyTo.channel.send({ content: `[${id}] 計画案:\n${lines.join("\n")}`.slice(0, 1900), components: [row] });
+    await replyTo.channel.send({ content: formatPlan(state.jobs[id]).slice(0, 1900), components: [row] });
   } catch (e) {
     await save();
-    await replyTo.channel.send(`[${id}] 計画の作成に失敗: ${e.message}`);
+    await replyTo.channel.send(`❌ [${id}] 計画を作れませんでした: ${e.message}\n👉 依頼を、もう少し具体的に書いて、もう一度送ってください。小さな依頼は、先頭に \`!quick\` を付けると、計画を省けます。`);
   }
 }
 
@@ -131,7 +131,7 @@ async function dispatch(job) {
       state.halted = true; await save();
       return;
     }
-    await log(`[${job.id}] → ${t.to}: ${t.key} (${t.title})`);
+    await log(`🔄 [${job.id}] ${roleLabel(t.to)}に依頼しました: ${t.title}`);
   }
   await save();
   await maybeFinish(job);
@@ -149,22 +149,20 @@ async function maybeFinish(job) {
   if (!failed.length && !job.approval) return awaitApproval(job); // 公開前に必ず人の承認
   job.status = failed.length ? "failed" : "completed";
   await save();
-  const body = job.tasks.map((t) => `• \`${t.key}\` ${t.status}: ${(t.summary ?? "").slice(0, 150)}`).join("\n");
   const c = await ch(COMMAND_CHANNEL_ID);
-  await c.send(`[${job.id}] ${failed.length ? "一部失敗で終了(公開は未実施または要確認)" : "完了・公開済み"}\n${body}`.slice(0, 1900));
+  await c.send(formatDone(job).slice(0, 1900));
 }
 
 async function awaitApproval(job) {
   job.status = "awaiting_approval";
   await save();
-  const body = job.tasks.map((t) => `• \`${t.key}\` [${t.to}] ${(t.summary ?? "").slice(0, 200)}`).join("\n");
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder().setCustomId(`pub:ok:${job.id}`).setLabel("公開する").setStyle(ButtonStyle.Success),
     new ButtonBuilder().setCustomId(`pub:ng:${job.id}`).setLabel("公開しない").setStyle(ButtonStyle.Danger),
   );
   const c = await ch(APPROVE_CHANNEL_ID);
-  await c.send({ content: `[${job.id}] 公開の承認待ち\n依頼: ${job.request.slice(0, 200)}\n${body}`.slice(0, 1900), components: [row] });
-  await log(`[${job.id}] 作業完了。#approve で公開の承認待ち`);
+  await c.send({ content: formatApproval(job).slice(0, 1900), components: [row] });
+  await log(`🔔 [${job.id}] 作業が終わりました。#approve で、公開の承認をお願いします`);
 }
 
 async function onResult(r) {
@@ -172,10 +170,11 @@ async function onResult(r) {
   const task = job?.tasks.find((t) => t.sentId === r.id && t.status === "sent");
   if (!task) return; // 古い/重複した結果は無視
   task.summary = r.summary ?? "";
-  if (r.status === "done") task.status = "done";
-  else if (r.status === "blocked") { task.status = "failed"; await log(`[${job.id}] ${task.key} が blocked: ${task.summary.slice(0, 300)} → 人の対応が必要`); }
-  else if (task.attempt <= MAX_RETRY) { task.status = "pending"; await log(`[${job.id}] ${task.key} 失敗、再試行 (${task.attempt}/${MAX_RETRY})`); }
-  else task.status = "failed";
+  task.error = r.error ?? null;
+  if (r.status === "done") { task.status = "done"; await log(`✅ [${job.id}] ${roleLabel(task.to)}が完了しました: ${task.title}`); }
+  else if (r.status === "blocked") { task.status = "failed"; await log(`⛔ [${job.id}] ${task.title}: 人の対応が必要です\n${hintFor(task.error, task.summary) || task.summary.slice(0, 200)}`); }
+  else if (task.attempt <= MAX_RETRY) { task.status = "pending"; await log(`🔁 [${job.id}] ${task.title}: やり直します(${task.attempt}/${MAX_RETRY})\n${hintFor(task.error, task.summary)}`.trim()); }
+  else { task.status = "failed"; await log(`❌ [${job.id}] ${task.title}: 失敗しました`); }
   await save();
   await dispatch(job);
 }
@@ -188,7 +187,7 @@ setInterval(async () => {
     for (const t of job.tasks) if (t.status === "sent" && Date.now() - t.sentAt > (TASK_TIMEOUT_MIN + 5) * 60_000) {
       t.summary = "タイムアウト(ワーカー無応答)";
       t.status = t.attempt <= MAX_RETRY ? "pending" : "failed"; changed = true;
-      await log(`[${job.id}] ${t.key} 無応答 → ${t.status}`);
+      await log(`⏱️ [${job.id}] ${t.title}: 応答がありません(${t.status === "pending" ? "やり直します" : "失敗にしました"})\n${hintFor(null, t.summary)}`.trim());
     }
     if (changed) { await save(); await dispatch(job); }
   }

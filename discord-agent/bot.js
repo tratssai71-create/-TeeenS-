@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval } from "./core.js";
+import { roleLabel } from "./messages.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -181,14 +182,14 @@ async function handleTask(msg, t) {
   }
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
   if (!(await browserUp())) {
-    await logCh?.send(`[${AGENT_NAME}] ${t.id} 中止: 専用Chromeが起動していません。ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いておいてください`);
+    await logCh?.send(`⛔ [${roleLabel(AGENT_NAME)}] 作業できません: 専用Chromeが閉じています\n👉 ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いてください`);
     await msg.channel.send(JSON.stringify({
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "blocked",
       summary: "専用Chrome(ブラウザ操作の接続先)が起動していません", error: "browser_down",
     }));
     return;
   }
-  await logCh?.send(`[${AGENT_NAME}] ${t.id} 開始: ${t.title ?? ""}`);
+  await logCh?.send(`🛠️ [${roleLabel(AGENT_NAME)}] 作業を始めました: ${t.title ?? t.id}`);
   chain = chain.then(async () => {
     // 作業の様子を、数秒ごとに #log へ流す(裏で動いていても、何をしているか分かるように)
     const buf = []; let sentN = 0;
@@ -211,7 +212,7 @@ async function handleTask(msg, t) {
       error: why,
     };
     await msg.channel.send(JSON.stringify(result));
-    await logCh?.send(`[${AGENT_NAME}] ${t.id} ${result.status}`);
+    await logCh?.send(`${status === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${status === "done" ? "完了" : status === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);
   }).catch((e) => console.error(e));
 }
 
