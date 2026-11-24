@@ -4,7 +4,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval } from "./core.js";
-import { roleLabel } from "./messages.js";
+import { roleLabel, detectUsageLimit } from "./messages.js";
 import { prepareBrowser } from "./browser-guard.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
@@ -232,12 +232,13 @@ async function handleTask(msg, t) {
     clearInterval(timer);
     await flush();
     // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
+    const lim = r.code !== 0 ? detectUsageLimit(r.text) : null;
     const mk = [...r.text.matchAll(/RESULT:\s*(OK|FAILED|BLOCKED)/gi)].pop()?.[1]?.toUpperCase();
-    const status = r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
-    const why = r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
+    const status = lim ? "blocked" : r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
+    const why = lim ? "usage_limit" : r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status,
-      summary: r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
+      summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
       error: why, timing,
     };
     await msg.channel.send(JSON.stringify(result));

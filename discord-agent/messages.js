@@ -9,8 +9,19 @@ export const statusIcon = (s) => ICON[s] ?? "•";
 const oneLine = (s, n = 120) => (s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
 
 /** エラーの種類ごとに、「次に何をすればいいか」を1〜2行で返す */
+// Codexの利用上限エラーかどうかを見分ける(上限のときは、やり直しても無駄なので、すぐ止める)
+export function detectUsageLimit(text = "") {
+  if (!/hit your usage limit|usage limit/i.test(text)) return null;
+  const at = text.match(/try again at ([^.\n]*?\d{1,2}:\d{2}\s*[AP]M)/i)?.[1] ?? null;
+  return { at };
+}
+
 export function hintFor(error, summary = "") {
   switch (error) {
+    case "usage_limit": {
+      const at = summary.match(/再開できる時刻: (.+)/)?.[1];
+      return `Codex(ChatGPT)の利用上限です。やり直しても失敗するため、止めました。${at ? `${at} 以降に、もう一度依頼してください。` : "上限が解除されてから、もう一度依頼してください。"}プランやクレジットは、chatgpt.com/settings/usage で確認できます。`;
+    }
     case "browser_down":
       return "専用Chromeが閉じています。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。そのあと、もう一度依頼してください。";
     case "approval_invalid":

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { formatPlan, formatDone, formatApproval, hintFor, roleLabel } from "./messages.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, detectUsageLimit } from "./messages.js";
 
 const job = (tasks, extra = {}) => ({ id: "j9", request: "見出しを変えて", tasks, ...extra });
 const t = (o = {}) => ({ key: "a", to: "designer", title: "見出しを変更", deps: [], acceptance: ["見出しが変わる"], status: "done", summary: "変更しました", ...o });
@@ -32,4 +32,11 @@ test("hintFor: 種類ごとの案内", () => {
 test("長い文は、1行に切り詰める", () => {
   const s = formatDone(job([t({ summary: "あ".repeat(500) + "\n改行" })]));
   assert.ok(!s.includes("\n改行")); assert.ok(s.length < 400);
+});
+
+test("detectUsageLimit: Codexの上限エラーを見分けて、再開時刻を取り出す", () => {
+  const t = "ERROR: You've hit your usage limit. Upgrade to Pro or try again at Nov 25th, 2026 2:21 AM.";
+  assert.equal(detectUsageLimit(t).at, "Nov 25th, 2026 2:21 AM");
+  assert.equal(detectUsageLimit("普通のエラー"), null);
+  assert.match(hintFor("usage_limit", "再開できる時刻: Nov 25th, 2026 2:21 AM"), /Nov 25th, 2026 2:21 AM 以降/);
 });
