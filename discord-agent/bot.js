@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval } from "./core.js";
 import { roleLabel } from "./messages.js";
+import { prepareBrowser } from "./browser-guard.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -136,7 +137,7 @@ const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。返答は、短く、分かりやすい日本語で。",
   PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
   PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
-  "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
+  "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
   "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
   "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(同じURLを開き直す)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
   "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
@@ -157,18 +158,36 @@ function buildPrompt(t) {
     acc ? `受け入れ基準:\n${acc}` : "",
     PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
     PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
-    "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
+    "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
     "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(同じURLを開き直す)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
     "最後に、何をしたかと確認結果を簡潔に報告し、**最終行**に次のどれか1つだけを書く: 依頼どおり完了したなら `RESULT: OK` / 一部でも未実施・失敗なら `RESULT: FAILED` / 人の対応が必要なら `RESULT: BLOCKED`。",
   ].filter(Boolean).join("\n\n");
 }
 
-// 専用Chrome(ブラウザ操作の接続先)が起動しているか確認する。BROWSER_CHECK=0 で無効
+// 作業の前に、専用Chromeを毎回同じ状態に整える(古いタブを閉じる→キャッシュ消去→STUDIOの一覧を開いて待つ)。BROWSER_CHECK=0 で無効
 const BROWSER_CDP = process.env.BROWSER_CDP ?? "http://localhost:9222";
-async function browserUp() {
-  if (process.env.BROWSER_CHECK === "0") return true;
-  try { return (await fetch(`${BROWSER_CDP}/json/version`, { signal: AbortSignal.timeout(2500) })).ok; } catch { return false; }
+const restartChrome = () => new Promise((resolve) => {
+  // 固まった専用Chromeだけを終了して(ふだん使いのChromeは対象外)、起動スクリプトでもう一度開く
+  spawn("pkill", ["-f", "studio-chrome-profile"]).on("close", () => {
+    setTimeout(() => { spawn("bash", ["scripts/browser.sh"], { stdio: "ignore", detached: true }).unref(); resolve(); }, 2000);
+  });
+});
+async function ensureBrowser(log = () => {}) {
+  if (process.env.BROWSER_CHECK === "0") return { ok: true };
+  return prepareBrowser({
+    cdp: BROWSER_CDP,
+    startUrl: process.env.BROWSER_START_URL ?? "https://app.studio.design/projects",
+    readyText: process.env.BROWSER_READY_TEXT ?? "プロジェクト",
+    autoRestart: process.env.BROWSER_AUTORESTART !== "0",
+    restart: restartChrome, log,
+  });
 }
+const BROWSER_ERR = {
+  browser_down: "専用Chromeが起動していません。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。",
+  login_required: "STUDIOのログインが切れています。専用Chromeで、STUDIOにログインし直してください(ログイン後、そのまま開いておきます)。",
+  not_ready: "STUDIOの画面が、40秒待っても表示されませんでした。ネットワークやSTUDIO側の状態を確認して、もう一度送ってください。",
+  cdp_error: "専用Chromeとの接続に失敗しました。もう一度送ってください。続く場合は、専用Chromeを終了して `npm run browser` で開き直してください。",
+};
 
 async function handleTask(msg, t) {
   if (seenTasks.has(t.id)) return;
@@ -183,11 +202,14 @@ async function handleTask(msg, t) {
     return;
   }
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
-  if (!(await browserUp())) {
-    await logCh?.send(`⛔ [${roleLabel(AGENT_NAME)}] 作業できません: 専用Chromeが閉じています\n👉 ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いてください`);
+  await logCh?.send(`🧹 [${roleLabel(AGENT_NAME)}] ブラウザを整えています(古いタブを閉じて、STUDIOの一覧を開きます)…`);
+  const br = await ensureBrowser((m) => logCh?.send(`🔧 ${m}`).catch(() => {}));
+  if (!br.ok) {
+    await logCh?.send(`⛔ [${roleLabel(AGENT_NAME)}] 作業できません\n👉 ${BROWSER_ERR[br.code] ?? br.code}`);
     await msg.channel.send(JSON.stringify({
-      v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "blocked",
-      summary: "専用Chrome(ブラウザ操作の接続先)が起動していません", error: "browser_down",
+      v: 1, type: "result", id: t.id, from: AGENT_NAME,
+      status: br.code === "browser_down" || br.code === "login_required" ? "blocked" : "failed",
+      summary: BROWSER_ERR[br.code] ?? br.code, error: br.code,
     }));
     return;
   }
@@ -246,9 +268,9 @@ client.on("messageCreate", async (msg) => {
   // ---- チャットモード: 同じチャンネルの会話は、同じCodexセッションで続ける ----
   msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
-    if (!(await browserUp())) {
-      return void msg.channel.send(`専用Chromeが起動していません。ターミナルで \`npm run browser\` を実行して、STUDIOにログインしたまま開いておいてください`);
-    }
+    await msg.channel.send("🧹 ブラウザを整えています…").catch(() => {});
+    const br = await ensureBrowser();
+    if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
     const buf = []; let sentN = 0;
     const flush = async () => {
       if (!buf.length) return;

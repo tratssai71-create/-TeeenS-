@@ -15,6 +15,11 @@ export function hintFor(error, summary = "") {
       return "専用Chromeが閉じています。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。そのあと、もう一度依頼してください。";
     case "approval_invalid":
       return "公開の承認が確認できませんでした。#approve の「公開する」を、もう一度押してください(承認は1時間で期限切れになります)。";
+    case "login_required":
+      return "STUDIOのログインが切れています。専用Chromeで、STUDIOにログインし直してください。";
+    case "not_ready":
+    case "cdp_error":
+      return "STUDIOの画面の準備に失敗しました(自動でやり直します)。続くときは、専用Chromeを終了して `npm run browser` で開き直してください。";
     case "no_result_marker":
       return "Codexの報告が不完全でした(自動でやり直します)。";
     case "reported_failed":
