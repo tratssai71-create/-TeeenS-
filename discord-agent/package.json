@@ -7,7 +7,8 @@
     "test": "node --test core.test.js messages.test.js browser-guard.test.js",
     "start": "node run.js",
     "setup-browser": "bash scripts/setup-browser.sh",
-    "browser": "bash scripts/browser.sh"
+    "browser": "bash scripts/browser.sh",
+    "spec": "node scripts/make-spec.js"
   },
   "dependencies": {
     "discord.js": "^14.16.0"
