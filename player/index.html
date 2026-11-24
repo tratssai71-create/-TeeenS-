@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#121212">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Player">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>My Player</title>
+<style>
+:root{--bg:#121212;--panel:#1e1e1e;--text:#fff;--sub:#a7a7a7;--accent:#1db954}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,"Hiragino Sans",sans-serif}
+body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+header{display:flex;gap:8px;align-items:center;padding:12px 16px}
+header h1{font-size:20px;margin:0;flex:1}
+button,.btn{background:var(--panel);color:var(--text);border:0;border-radius:20px;padding:8px 14px;font-size:14px}
+.btn.primary{background:var(--accent);color:#000;font-weight:700}
+.tabs{display:flex;gap:8px;padding:0 16px 8px;overflow-x:auto}
+.tabs button.on{background:var(--accent);color:#000}
+.search{margin:0 16px 8px;padding:10px 14px;border-radius:10px;border:0;background:var(--panel);color:var(--text);font-size:16px}
+#list{flex:1;overflow-y:auto;padding:0 8px 8px}
+.row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px}
+.row.cur{background:var(--panel)}
+.row.cur .t{color:var(--accent)}
+.row img,.ph{width:48px;height:48px;border-radius:6px;object-fit:cover;background:#333;flex:none}
+.info{flex:1;min-width:0}
+.t{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a{font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.more{background:none;padding:8px 10px;font-size:18px;color:var(--sub)}
+.empty{text-align:center;color:var(--sub);padding:48px 24px;line-height:1.8}
+#player{background:var(--panel);padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-radius:16px 16px 0 0}
+#now{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+#cover{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#333}
+#seek{width:100%;accent-color:var(--accent)}
+.time{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}
+.ctrl{display:flex;justify-content:space-around;align-items:center;margin-top:4px}
+.ctrl button{background:none;font-size:26px;padding:6px 12px}
+.ctrl button.on{color:var(--accent)}
+#play{background:#fff;color:#000;width:56px;height:56px;border-radius:50%;font-size:24px;padding:0}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;z-index:9}
+.sheet.show{display:flex}
+.sheet>div{background:var(--panel);width:100%;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));max-height:70vh;overflow-y:auto}
+.sheet button{display:block;width:100%;text-align:left;border-radius:8px;padding:14px;margin-bottom:4px;background:#2a2a2a}
+.sheet .del{color:#ff6b6b}
+</style>
+</head>
+<body>
+<header>
+  <h1>My Player</h1>
+  <label class="btn primary">＋ 曲を追加<input id="file" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac" multiple hidden></label>
+</header>
+<div class="tabs" id="tabs"></div>
+<input class="search" id="q" type="search" placeholder="曲名・アーティストで検索">
+<div id="list"></div>
+
+<div id="player">
+  <div id="now">
+    <img id="cover" alt="">
+    <div class="info"><div class="t" id="ttl">曲を選んでください</div><div class="a" id="art"></div></div>
+  </div>
+  <input type="range" id="seek" min="0" max="1000" value="0">
+  <div class="time"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+  <div class="ctrl">
+    <button id="shuf" aria-label="シャッフル">🔀</button>
+    <button id="prev" aria-label="前へ">⏮</button>
+    <button id="play" aria-label="再生">▶</button>
+    <button id="next" aria-label="次へ">⏭</button>
+    <button id="rep" aria-label="リピート">🔁</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet"><div id="sheetBody"></div></div>
+<audio id="audio" playsinline preload="metadata"></audio>
+
+<script>
+// ---------- IndexedDB ----------
+const DB = {
+  db: null,
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('my-player', 1);
+      r.onupgradeneeded = () => {
+        r.result.createObjectStore('tracks', { keyPath: 'id', autoIncrement: true });
+        r.result.createObjectStore('playlists', { keyPath: 'id', autoIncrement: true });
+      };
+      r.onsuccess = () => { this.db = r.result; res(); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  tx(store, mode, fn) {
+    return new Promise((res, rej) => {
+      const t = this.db.transaction(store, mode), s = t.objectStore(store);
+      const req = fn(s);
+      t.oncomplete = () => res(req && req.result);
+      t.onerror = () => rej(t.error);
+    });
+  },
+  all: (s) => DB.tx(s, 'readonly', st => st.getAll()),
+  put: (s, v) => DB.tx(s, 'readwrite', st => st.put(v)),
+  del: (s, id) => DB.tx(s, 'readwrite', st => st.delete(id)),
+};
+
+// ---------- 状態 ----------
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+let tracks = [], playlists = [];
+let view = 'all';            // 'all' | 'fav' | playlist id
+let queue = [], qi = -1;     // 再生キュー(トラックid配列)
+let shuffle = false, repeat = 0; // 0:なし 1:全曲 2:1曲
+let curUrl = null;
+const coverCache = {};
+
+const fmt = s => { if (!isFinite(s)) return '0:00'; s = Math.floor(s); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- ID3タグ(曲名・アーティスト・ジャケット) 簡易パーサ ----------
+async function readTags(file) {
+  const out = { title: file.name.replace(/\.[^.]+$/, ''), artist: '', cover: null };
+  try {
+    const buf = await file.slice(0, 1024 * 1024).arrayBuffer();
+    const v = new DataView(buf), u8 = new Uint8Array(buf);
+    if (String.fromCharCode(u8[0], u8[1], u8[2]) !== 'ID3') return out;
+    const ver = u8[3];
+    const size = (u8[6] << 21) | (u8[7] << 14) | (u8[8] << 7) | u8[9];
+    let p = 10;
+    const end = Math.min(10 + size, buf.byteLength);
+    const dec = (b, enc) => new TextDecoder(['iso-8859-1','utf-16','utf-16be','utf-8'][enc] || 'utf-8').decode(b).replace(/\0+$/g, '').replace(/^﻿/, '');
+    while (p + 10 < end) {
+      const id = String.fromCharCode(u8[p], u8[p+1], u8[p+2], u8[p+3]);
+      if (!/^[A-Z0-9]{4}$/.test(id)) break;
+      let fs = v.getUint32(p + 4);
+      if (ver === 4) fs = (u8[p+4] << 21) | (u8[p+5] << 14) | (u8[p+6] << 7) | u8[p+7];
+      const body = u8.subarray(p + 10, p + 10 + fs);
+      if (id === 'TIT2') out.title = dec(body.subarray(1), body[0]) || out.title;
+      else if (id === 'TPE1') out.artist = dec(body.subarray(1), body[0]);
+      else if (id === 'APIC') {
+        const enc = body[0]; let i = 1;
+        while (body[i] !== 0) i++;
+        const mime = new TextDecoder().decode(body.subarray(1, i)) || 'image/jpeg';
+        i += 2; // 0終端 + 画像タイプ
+        if (enc === 1 || enc === 2) { while (!(body[i] === 0 && body[i+1] === 0)) i += 2; i += 2; }
+        else { while (body[i] !== 0) i++; i++; }
+        out.cover = new Blob([body.subarray(i)], { type: mime.includes('/') ? mime : 'image/jpeg' });
+      }
+      p += 10 + fs;
+    }
+  } catch (e) {}
+  return out;
+}
+
+// ---------- 曲追加 ----------
+$('file').addEventListener('change', async e => {
+  const files = [...e.target.files];
+  for (const f of files) {
+    const tag = await readTags(f);
+    await DB.put('tracks', { title: tag.title, artist: tag.artist, cover: tag.cover, blob: f, type: f.type, fav: false, added: Date.now() });
+  }
+  e.target.value = '';
+  await load();
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+});
+
+async function load() {
+  tracks = (await DB.all('tracks')).sort((a, b) => a.added - b.added);
+  playlists = await DB.all('playlists');
+  render();
+}
+
+// ---------- 一覧 ----------
+function visible() {
+  const q = $('q').value.trim().toLowerCase();
+  let list = tracks;
+  if (view === 'fav') list = list.filter(t => t.fav);
+  else if (view !== 'all') { const pl = playlists.find(p => p.id === view); list = pl ? pl.ids.map(id => tracks.find(t => t.id === id)).filter(Boolean) : []; }
+  if (q) list = list.filter(t => (t.title + ' ' + t.artist).toLowerCase().includes(q));
+  return list;
+}
+function coverUrl(t) {
+  if (!t.cover) return '';
+  return coverCache[t.id] || (coverCache[t.id] = URL.createObjectURL(t.cover));
+}
+function render() {
+  $('tabs').innerHTML =
+    `<button data-v="all" class="${view==='all'?'on':''}">すべて</button>` +
+    `<button data-v="fav" class="${view==='fav'?'on':''}">♥ お気に入り</button>` +
+    playlists.map(p => `<button data-v="${p.id}" class="${view===p.id?'on':''}">${esc(p.name)}</button>`).join('') +
+    `<button data-v="new">＋ プレイリスト</button>`;
+  const list = visible();
+  const curId = queue[qi];
+  $('list').innerHTML = list.length ? list.map(t => `
+    <div class="row ${t.id===curId?'cur':''}" data-id="${t.id}">
+      ${t.cover ? `<img src="${coverUrl(t)}" alt="">` : '<div class="ph"></div>'}
+      <div class="info"><div class="t">${esc(t.title)}</div><div class="a">${esc(t.artist)}</div></div>
+      <button class="more" data-more="${t.id}" aria-label="メニュー">⋯</button>
+    </div>`).join('')
+    : `<div class="empty">${tracks.length ? '該当する曲がありません' : '右上の「＋ 曲を追加」から、<br>iPhoneの「ファイル」にあるMP3やM4Aを選んでください。'}</div>`;
+}
+$('q').addEventListener('input', render);
+$('tabs').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const v = b.dataset.v;
+  if (v === 'new') {
+    const name = prompt('プレイリスト名'); if (!name) return;
+    await DB.put('playlists', { name, ids: [] }); await load();
+    return;
+  }
+  view = (v === 'all' || v === 'fav') ? v : Number(v);
+  render();
+});
+$('list').addEventListener('click', e => {
+  const m = e.target.closest('[data-more]');
+  if (m) return openMenu(Number(m.dataset.more));
+  const r = e.target.closest('.row'); if (!r) return;
+  queue = visible().map(t => t.id);
+  qi = queue.indexOf(Number(r.dataset.id));
+  playCurrent();
+});
+
+// ---------- メニュー ----------
+function closeSheet() { $('sheet').classList.remove('show'); }
+$('sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
+function openMenu(id) {
+  const t = tracks.find(x => x.id === id);
+  $('sheetBody').innerHTML = `
+    <button data-a="fav">${t.fav ? '♡ お気に入りから外す' : '♥ お気に入りに追加'}</button>
+    ${playlists.map(p => `<button data-a="pl" data-p="${p.id}">${p.ids.includes(id) ? '✓ ' : '＋ '}${esc(p.name)}</button>`).join('')}
+    ${typeof view === 'number' ? '<button data-a="rmpl">このプレイリストから外す</button>' : ''}
+    <button data-a="del" class="del">🗑 この曲を削除</button>`;
+  $('sheet').classList.add('show');
+  $('sheetBody').onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'fav') { t.fav = !t.fav; await DB.put('tracks', t); }
+    else if (a === 'pl') {
+      const p = playlists.find(x => x.id === Number(b.dataset.p));
+      p.ids = p.ids.includes(id) ? p.ids.filter(x => x !== id) : [...p.ids, id];
+      await DB.put('playlists', p);
+    } else if (a === 'rmpl') {
+      const p = playlists.find(x => x.id === view); p.ids = p.ids.filter(x => x !== id); await DB.put('playlists', p);
+    } else if (a === 'del') {
+      if (!confirm('削除しますか？')) return;
+      await DB.del('tracks', id);
+      for (const p of playlists) if (p.ids.includes(id)) { p.ids = p.ids.filter(x => x !== id); await DB.put('playlists', p); }
+      if (queue[qi] === id) { audio.pause(); audio.removeAttribute('src'); queue = []; qi = -1; updateNow(null); }
+    }
+    closeSheet(); await load();
+  };
+}
+
+// ---------- 再生 ----------
+function playCurrent() {
+  const t = tracks.find(x => x.id === queue[qi]); if (!t) return;
+  if (curUrl) URL.revokeObjectURL(curUrl);
+  curUrl = URL.createObjectURL(t.blob);
+  audio.src = curUrl;
+  audio.play().catch(() => {});
+  updateNow(t); render();
+}
+function updateNow(t) {
+  $('ttl').textContent = t ? t.title : '曲を選んでください';
+  $('art').textContent = t ? t.artist : '';
+  $('cover').src = t && t.cover ? coverUrl(t) : 'icon-192.png';
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = t ? new MediaMetadata({
+      title: t.title, artist: t.artist || 'My Player',
+      artwork: [{ src: t.cover ? coverUrl(t) : new URL('icon-512.png', location.href).href, sizes: '512x512' }]
+    }) : null;
+  }
+}
+function step(dir, auto) {
+  if (!queue.length) return;
+  if (auto && repeat === 2) { audio.currentTime = 0; audio.play(); return; }
+  let n;
+  if (shuffle && queue.length > 1) { do { n = Math.floor(Math.random() * queue.length); } while (n === qi); }
+  else n = qi + dir;
+  if (n >= queue.length) { if (repeat === 1 || !auto) n = 0; else { audio.pause(); return; } }
+  if (n < 0) n = queue.length - 1;
+  qi = n; playCurrent();
+}
+$('play').onclick = () => {
+  if (!audio.src) { const l = visible(); if (l.length) { queue = l.map(t => t.id); qi = 0; playCurrent(); } return; }
+  audio.paused ? audio.play() : audio.pause();
+};
+$('next').onclick = () => step(1, false);
+$('prev').onclick = () => { if (audio.currentTime > 3) audio.currentTime = 0; else step(-1, false); };
+$('shuf').onclick = () => { shuffle = !shuffle; $('shuf').classList.toggle('on', shuffle); };
+$('rep').onclick = () => { repeat = (repeat + 1) % 3; $('rep').textContent = repeat === 2 ? '🔂' : '🔁'; $('rep').classList.toggle('on', repeat > 0); };
+audio.addEventListener('ended', () => step(1, true));
+audio.addEventListener('play', () => $('play').textContent = '⏸');
+audio.addEventListener('pause', () => $('play').textContent = '▶');
+let seeking = false;
+audio.addEventListener('timeupdate', () => {
+  $('cur').textContent = fmt(audio.currentTime); $('dur').textContent = fmt(audio.duration);
+  if (!seeking && audio.duration) $('seek').value = audio.currentTime / audio.duration * 1000;
+  if ('mediaSession' in navigator && audio.duration && navigator.mediaSession.setPositionState) {
+    try { navigator.mediaSession.setPositionState({ duration: audio.duration, position: audio.currentTime, playbackRate: 1 }); } catch (e) {}
+  }
+});
+$('seek').addEventListener('input', () => { seeking = true; });
+$('seek').addEventListener('change', () => { if (audio.duration) audio.currentTime = $('seek').value / 1000 * audio.duration; seeking = false; });
+
+// ロック画面・イヤホン操作
+if ('mediaSession' in navigator) {
+  const ms = navigator.mediaSession;
+  ms.setActionHandler('play', () => audio.play());
+  ms.setActionHandler('pause', () => audio.pause());
+  ms.setActionHandler('nexttrack', () => step(1, false));
+  ms.setActionHandler('previoustrack', () => step(-1, false));
+  ms.setActionHandler('seekto', d => { audio.currentTime = d.seekTime; });
+}
+
+// ---------- 起動 ----------
+DB.open().then(load);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
