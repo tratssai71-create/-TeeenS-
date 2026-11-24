@@ -201,9 +201,11 @@ async function handleTask(msg, t) {
     }));
     return;
   }
+  const timing = { recvAt: Date.now() }; // 段階ごとの所要時間(ms)。結果JSONに載せて、ディレクターが #log に出す
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
   await logCh?.send(`🧹 [${roleLabel(AGENT_NAME)}] ブラウザを整えています(古いタブを閉じて、STUDIOの一覧を開きます)…`);
   const br = await ensureBrowser((m) => logCh?.send(`🔧 ${m}`).catch(() => {}));
+  timing.guardMs = Date.now() - timing.recvAt;
   if (!br.ok) {
     await logCh?.send(`⛔ [${roleLabel(AGENT_NAME)}] 作業できません\n👉 ${BROWSER_ERR[br.code] ?? br.code}`);
     await msg.channel.send(JSON.stringify({
@@ -223,7 +225,10 @@ async function handleTask(msg, t) {
       if (sentN++ < 40) await logCh.send(text).catch(() => {});
     };
     const timer = setInterval(flush, 4000);
+    timing.codexStartAt = Date.now();
     const r = await runCodex(buildPrompt(t), makeProgress((x) => buf.push(x)));
+    timing.codexMs = Date.now() - timing.codexStartAt;
+    timing.endAt = Date.now();
     clearInterval(timer);
     await flush();
     // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
@@ -233,7 +238,7 @@ async function handleTask(msg, t) {
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status,
       summary: r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
-      error: why,
+      error: why, timing,
     };
     await msg.channel.send(JSON.stringify(result));
     await logCh?.send(`${status === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${status === "done" ? "完了" : status === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);

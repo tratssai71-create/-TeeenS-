@@ -91,17 +91,18 @@ async function createJob(request, replyTo) {
   state.jobsToday++;
   const id = `j${++state.seq}`;
   const quick = /^!quick(\s|$)/.test(request);
+  const receivedAt = replyTo.createdTimestamp ?? Date.now(); // 依頼がDiscordに投稿された時刻
   await replyTo.reply(quick ? `⚡ [${id}] 受付しました(クイック: 計画を省いて、すぐ作業します)` : `📝 [${id}] 受付しました。計画を作っています…(1〜2分かかります)`);
   try {
     const tasks = quick
       ? quickPlan(request, ROLES[0])
       : validatePlan(extractJson(await runPlanner(plannerPrompt(request))), { roles: ROLES, maxTasks: MAX_TASKS });
     if (quick) {
-      state.jobs[id] = { id, request: request.replace(/^!quick\s*/, ""), status: "running", tasks, createdAt: Date.now() };
+      state.jobs[id] = { id, request: request.replace(/^!quick\s*/, ""), status: "running", tasks, createdAt: Date.now(), receivedAt };
       await save();
       return void dispatch(state.jobs[id]);
     }
-    state.jobs[id] = { id, request, status: "awaiting_plan_approval", tasks, createdAt: Date.now() };
+    state.jobs[id] = { id, request, status: "awaiting_plan_approval", tasks, createdAt: Date.now(), receivedAt };
     await save();
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId(`plan:ok:${id}`).setLabel("実行").setStyle(ButtonStyle.Success),
@@ -165,11 +166,29 @@ async function awaitApproval(job) {
   await log(`🔔 [${job.id}] 作業が終わりました。#approve で、公開の承認をお願いします`);
 }
 
+// 段階ごとの所要時間を #log に出す(どこが遅いかを数字で見るため)
+const sec = (ms) => (ms == null || Number.isNaN(ms) ? "?" : (ms / 1000).toFixed(1) + "秒");
+async function logTiming(job, t) {
+  const m = t.timing;
+  if (!m) return;
+  const parts = [
+    ["受付→送信", t.sentAt - (job.receivedAt ?? job.createdAt)],
+    ["送信→ワーカー受信", m.recvAt - t.sentAt],
+    ["ブラウザ整備", m.guardMs],
+    ["Codex作業", m.codexMs],
+    ["結果→集約", t.doneAt - m.endAt],
+  ];
+  const slow = parts.filter(([, v]) => v != null).sort((a, b) => b[1] - a[1])[0];
+  await log(`⏱️ [${job.id}] ${t.title}: ${parts.map(([k, v]) => `${k} ${sec(v)}`).join(" / ")} / 合計 ${sec(t.doneAt - (job.receivedAt ?? job.createdAt))}(最長: ${slow[0]})`);
+}
+
 async function onResult(r) {
   const job = state.jobs[r.job] ?? Object.values(state.jobs).find((j) => j.tasks.some((t) => t.sentId === r.id));
   const task = job?.tasks.find((t) => t.sentId === r.id && t.status === "sent");
   if (!task) return; // 古い/重複した結果は無視
   task.summary = r.summary ?? "";
+  task.timing = r.timing ?? null; task.doneAt = Date.now();
+  await logTiming(job, task);
   task.error = r.error ?? null;
   if (r.status === "done") { task.status = "done"; await log(`✅ [${job.id}] ${roleLabel(task.to)}が完了しました: ${task.title}`); }
   else if (r.status === "blocked") { task.status = "failed"; await log(`⛔ [${job.id}] ${task.title}: 人の対応が必要です\n${hintFor(task.error, task.summary) || task.summary.slice(0, 200)}`); }
