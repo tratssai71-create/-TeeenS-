@@ -128,13 +128,13 @@ const PLAYBOOK = readIf(process.env.PLAYBOOK_FILE ?? "docs/studio-playbook.md");
 let PROJECTS = "";
 try {
   const pj = JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}");
-  PROJECTS = Object.entries(pj).map(([n, u]) => `- ${n}: ${u}`).join("\n");
+  PROJECTS = Object.keys(pj).map((n) => `- ${n}`).join("\n");
 } catch {}
 
 // チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
 const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。返答は、短く、分かりやすい日本語で。",
-  PROJECTS ? `STUDIOプロジェクトの編集画面URL(名前で探さず、直接開く):\n${PROJECTS}` : "",
+  PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
   PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
   "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
   "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
@@ -155,7 +155,7 @@ function buildPrompt(t) {
     t.instructions ?? "",
     t.inputs ? `入力: ${JSON.stringify(t.inputs)}` : "",
     acc ? `受け入れ基準:\n${acc}` : "",
-    PROJECTS ? `STUDIOプロジェクトの編集画面URL(名前で探さず、直接開く):\n${PROJECTS}` : "",
+    PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
     PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
     "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。",
     "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(同じURLを開き直す)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
