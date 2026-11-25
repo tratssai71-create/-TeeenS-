@@ -177,15 +177,20 @@ const restartChrome = () => new Promise((resolve) => {
     setTimeout(() => { spawn("bash", ["scripts/browser.sh"], { stdio: "ignore", detached: true }).unref(); resolve(); }, 2000);
   });
 });
+let needDeep = false; // 直前の作業が失敗したときだけ、次は「タブ作り直し+キャッシュ消去」の念入りな整備をする
 async function ensureBrowser(log = () => {}) {
   if (process.env.BROWSER_CHECK === "0") return { ok: true };
-  return prepareBrowser({
+  const deep = needDeep || process.env.BROWSER_DEEP === "1";
+  const r = await prepareBrowser({
+    deep,
     cdp: BROWSER_CDP,
     startUrl: process.env.BROWSER_START_URL ?? "https://app.studio.design/projects",
     readyText: process.env.BROWSER_READY_TEXT ?? "プロジェクト",
     autoRestart: process.env.BROWSER_AUTORESTART !== "0",
     restart: restartChrome, log,
   });
+  if (r.ok) needDeep = false;
+  return r;
 }
 const BROWSER_ERR = {
   browser_down: "専用Chromeが起動していません。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。",
@@ -258,6 +263,7 @@ async function handleTask(msg, t) {
       await logCh?.send(`${v.status === "verified" ? "✅" : v.status === "not_found" ? "⚠️" : "ℹ️"} ${verifyNote}`).catch(() => {});
     }
     timing.endAt = Date.now();
+    if (finalStatus !== "done") needDeep = true; // 失敗の後は、次に念入りに整える
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
       summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),

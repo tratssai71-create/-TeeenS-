@@ -39,12 +39,32 @@ export function cdpSession(wsUrl, timeoutMs = 8000) {
   });
 }
 
+// 画面に readyText が出た時点で、すぐ終わる(0.3秒ごとに確認。以前は、1.5秒ごと)
+async function waitReady(s, readyText, timeoutMs, startUrl) {
+  const want = new URL(startUrl).pathname.replace(/\/$/, ""); // 前のページの文字を読み違えないよう、URLが一覧に変わったことも確かめる
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const r = await s.send("Runtime.evaluate", {
+        expression: `JSON.stringify({u:location.href,s:document.readyState,t:document.body?document.body.innerText.slice(0,4000):""})`,
+        returnByValue: true,
+      });
+      const st = JSON.parse(r.result.value);
+      if (/\/login/.test(st.u)) return { ok: false, code: "login_required" };
+      if (st.s === "complete" && st.t.includes(readyText) && new URL(st.u).pathname.replace(/\/$/, "") === want) return { ok: true };
+    } catch {}
+    await sleep(300);
+  }
+  return { ok: false, code: "not_ready" };
+}
+
 /**
  * @returns {{ok:true}|{ok:false, code:"browser_down"|"login_required"|"not_ready"|"cdp_error", detail?:string}}
  */
 export async function prepareBrowser({
   cdp = "http://localhost:9222", startUrl = "https://app.studio.design/projects",
   readyText = "プロジェクト", autoRestart = true, restart, log = () => {}, readyTimeoutMs = 40000,
+  deep = false, studioPattern = /studio\.design/, // true: 毎回の整備(タブを作り直す+キャッシュ消去)。false(既定): 正常なら、既存のタブを一覧に戻すだけ
 } = {}) {
   let alive = await ping(cdp);
   if (!alive && autoRestart && restart) {
@@ -53,6 +73,24 @@ export async function prepareBrowser({
     for (let i = 0; i < 25 && !alive; i++) { await sleep(1000); alive = await ping(cdp); }
   }
   if (!alive) return { ok: false, code: "browser_down" };
+
+  // 速い道(既定): タブが1つだけで、STUDIOを開いているなら、キャッシュ消去も、タブの作り直しもせず、一覧へ戻して、画面が出た時点で終わる
+  if (!deep) {
+    try {
+      const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page");
+      if (pages.length === 1 && studioPattern.test(pages[0].url)) {
+        const s = await cdpSession(pages[0].webSocketDebuggerUrl);
+        try {
+          await s.send("Page.enable");
+          await s.send("Page.navigate", { url: startUrl });
+          const r = await waitReady(s, readyText, Math.min(readyTimeoutMs, 15000), startUrl);
+          if (r.ok) return { ok: true, fast: true };
+          if (r.code === "login_required") return { ok: false, code: "login_required" };
+          log("速い整備で画面が出なかったので、タブを作り直します…");
+        } finally { s.close(); }
+      }
+    } catch (e) { log(`速い整備に失敗(${e.message})。タブを作り直します…`); }
+  }
 
   try {
     const old = (await http(cdp, "/json/list")).filter((t) => t.type === "page");
@@ -64,18 +102,7 @@ export async function prepareBrowser({
       await s.send("Network.clearBrowserCache");     // 古いスクリプト(404)の原因を消す。ログイン(Cookie)は消えない
       await s.send("Page.enable");
       await s.send("Page.navigate", { url: startUrl });
-      const deadline = Date.now() + readyTimeoutMs;
-      while (Date.now() < deadline) {
-        await sleep(1500);
-        const r = await s.send("Runtime.evaluate", {
-          expression: `JSON.stringify({u:location.href,s:document.readyState,t:document.body?document.body.innerText.slice(0,4000):""})`,
-          returnByValue: true,
-        });
-        const st = JSON.parse(r.result.value);
-        if (/\/login/.test(st.u)) return { ok: false, code: "login_required" };
-        if (st.s === "complete" && st.t.includes(readyText)) return { ok: true };
-      }
-      return { ok: false, code: "not_ready" };
+      return await waitReady(s, readyText, readyTimeoutMs, startUrl);
     } finally { s.close(); }
   } catch (e) {
     return { ok: false, code: "cdp_error", detail: e.message };
