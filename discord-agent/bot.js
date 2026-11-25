@@ -284,6 +284,7 @@ async function handleTask(msg, t) {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
       summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").replace(/CHANGED_TO:.*\n?/g, "").trim().slice(0, 1500),
       error: finalStatus !== status ? "verify_failed" : why, timing,
+      ...(lim?.atMs ? { limitUntil: lim.atMs } : {}),
     };
     if (verifyNote) result.summary = `${result.summary}\n${verifyNote}`.slice(0, 1500);
     await msg.channel.send(JSON.stringify(result));

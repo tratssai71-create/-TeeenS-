@@ -10,11 +10,27 @@ const oneLine = (s, n = 120) => (s ?? "").replace(/\s+/g, " ").trim().slice(0, n
 
 /** エラーの種類ごとに、「次に何をすればいいか」を1〜2行で返す */
 // Codexの利用上限エラーかどうかを見分ける(上限のときは、やり直しても無駄なので、すぐ止める)
-export function detectUsageLimit(text = "") {
+export function detectUsageLimit(text = "", now = Date.now()) {
   if (!/hit your usage limit|usage limit/i.test(text)) return null;
   const at = text.match(/try again at ([^.\n]*?\d{1,2}:\d{2}\s*[AP]M)/i)?.[1] ?? null;
-  return { at };
+  return { at, atMs: parseResetTime(at, now) };
 }
+
+/** "Nov 25th, 2026 2:21 AM" や "3:38 PM"(今日。過ぎていれば明日)を、時刻(ms)にする。読めなければ null */
+export function parseResetTime(str, now = Date.now()) {
+  if (!str) return null;
+  const s = str.replace(/(\d)(st|nd|rd|th)\b/i, "$1").trim();
+  const time = s.match(/(\d{1,2}):(\d{2})\s*([AP]M)$/i);
+  if (!time) return null;
+  if (/[A-Za-z]{3,}\s+\d{1,2},?\s+\d{4}/.test(s)) { const t = new Date(s).getTime(); return Number.isNaN(t) ? null : t; }
+  let h = Number(time[1]) % 12; if (/pm/i.test(time[3])) h += 12;
+  const d = new Date(now); d.setHours(h, Number(time[2]), 0, 0);
+  if (d.getTime() <= now) d.setDate(d.getDate() + 1);
+  return d.getTime();
+}
+
+/** 時刻(ms)を、「11/25 15:38」のように見せる */
+export const fmtTime = (ms) => new Date(ms).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
 
 export function hintFor(error, summary = "") {
   switch (error) {

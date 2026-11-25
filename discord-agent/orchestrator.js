@@ -6,8 +6,8 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan } from "./core.js";
-import { formatPlan, formatDone, formatApproval, hintFor, roleLabel } from "./messages.js";
+import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan, extractQuestions } from "./core.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, fmtTime } from "./messages.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const env = process.env;
@@ -70,12 +70,16 @@ const ROLE_DESC = {
   writer: "文言・記事・SEO文・素材の用意(STUDIOは触らない)。",
   qa: "完成したページのスクリーンショット確認、リンク切れ、レスポンシブ、文言チェック(読み取りのみ)。",
 };
+let PROJECT_NAMES = [];
+try { PROJECT_NAMES = Object.keys(JSON.parse(await readFile(env.PROJECTS_FILE ?? "projects.json", "utf8"))); } catch {}
 const plannerPrompt = (request) => `あなたはWebサイト制作チームの司令塔です。次の依頼を、担当ロールごとのタスクに分解してください。
 
 使えるロール(これ以外の名前は絶対に使わない): ${ROLES.join(", ")}
 ${ROLES.map((r) => `- ${r}: ${ROLE_DESC[r] ?? "担当作業"}`).join("\n")}
 制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。小さな依頼は1〜2タスクで足りる。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
 あなたの仕事は計画の作成だけ。ブラウザやツールは使わず、依頼の作業は実行しない。
+${PROJECT_NAMES.length ? `STUDIOのプロジェクト一覧: ${PROJECT_NAMES.join(" / ")}` : ""}
+**依頼があいまいで、作業の対象や内容(どのプロジェクト、どのページのどこ、何と書くか、など)が決められない場合は、推測で計画を作らず、質問だけを返す**: {"questions":["質問1","質問2"]}(最大3問。短く。選べるように、選択肢を添える)。対象と内容が決まっているなら、質問せず、計画を作る。
 出力は次の形式のJSONのみ(説明文は不要):
 {"tasks":[{"key":"短い英数字ID","to":"ロール","title":"件名","instructions":"具体的な作業指示","acceptance":["受け入れ基準"],"deps":["先行タスクのkey"]}]}
 
@@ -88,15 +92,26 @@ async function createJob(request, replyTo) {
   if (state.day !== today) { state.day = today; state.jobsToday = 0; }
   if (state.jobsToday >= MAX_JOBS_PER_DAY) return replyTo.reply("本日のジョブ上限に達しました");
   if (state.halted) return replyTo.reply("停止中です(`!resume` で再開)");
+  if (state.limitUntil && Date.now() < state.limitUntil) {
+    return replyTo.reply(`⏸ Codex(ChatGPT)の利用上限中です。**${fmtTime(state.limitUntil)}** 以降に、もう一度送ってください(依頼は、受け付けていません)。上限が解除されたはずのときは、\`!limit clear\` で、解除できます`);
+  }
   state.jobsToday++;
   const id = `j${++state.seq}`;
   const quick = /^!quick(\s|$)/.test(request);
   const receivedAt = replyTo.createdTimestamp ?? Date.now(); // 依頼がDiscordに投稿された時刻
   await replyTo.reply(quick ? `⚡ [${id}] 受付しました(クイック: 計画を省いて、すぐ作業します)` : `📝 [${id}] 受付しました。計画を作っています…(1〜2分かかります)`);
   try {
-    const tasks = quick
-      ? quickPlan(request, ROLES[0])
-      : validatePlan(extractJson(await runPlanner(plannerPrompt(request))), { roles: ROLES, maxTasks: MAX_TASKS });
+    let tasks;
+    if (quick) tasks = quickPlan(request, ROLES[0]);
+    else {
+      const plan = extractJson(await runPlanner(plannerPrompt(request)));
+      const questions = extractQuestions(plan);
+      if (questions) { // あいまいな依頼: 作業は始めず、質問を返す(件数にも数えない)
+        state.jobsToday--; await save();
+        return void replyTo.reply(`❓ [${id}] 作業を始める前に、確認させてください:\n${questions.map((q, i) => `${i + 1}. ${q}`).join("\n")}\n\n👉 答えを書き足して、もう一度、依頼を送ってください(例: 「…」に変えて、まで書くと、そのまま進めます)`);
+      }
+      tasks = validatePlan(plan, { roles: ROLES, maxTasks: MAX_TASKS });
+    }
     if (quick) {
       state.jobs[id] = { id, request: request.replace(/^!quick\s*/, ""), status: "running", tasks, createdAt: Date.now(), receivedAt };
       await save();
@@ -187,6 +202,8 @@ async function onResult(r) {
   const job = state.jobs[r.job] ?? Object.values(state.jobs).find((j) => j.tasks.some((t) => t.sentId === r.id));
   const task = job?.tasks.find((t) => t.sentId === r.id && t.status === "sent");
   if (!task) return; // 古い/重複した結果は無視
+  if (r.error === "usage_limit" && r.limitUntil) state.limitUntil = r.limitUntil; // 上限の再開時刻を覚えて、次の依頼を、受付の時点で止める
+  else if (r.status === "done") state.limitUntil = 0;
   task.summary = r.summary ?? "";
   task.timing = r.timing ?? null; task.doneAt = Date.now();
   await logTiming(job, task);
@@ -225,9 +242,12 @@ client.on("messageCreate", async (msg) => {
   const text = msg.content.trim();
   if (text === "!halt") { state.halted = true; await save(); return void msg.reply("停止しました。新規の割り当てを止めます(実行中タスクは各ワーカーで `!stop` )"); }
   if (text === "!resume") { state.halted = false; await save(); for (const j of Object.values(state.jobs)) await dispatch(j); return void msg.reply("再開しました"); }
+  if (text === "!limit clear") { state.limitUntil = 0; await save(); return void msg.reply("利用上限の記録を、解除しました"); }
+  if (text === "!limit") return void msg.reply(state.limitUntil && Date.now() < state.limitUntil ? `利用上限中です(${fmtTime(state.limitUntil)} まで)` : "利用上限の記録は、ありません");
   if (text === "!status") {
     const rows = Object.values(state.jobs).slice(-5).map((j) => `${j.id}: ${j.status} (${j.tasks.filter((t) => t.status === "done").length}/${j.tasks.length})`);
-    return void msg.reply(rows.join("\n") || "ジョブなし");
+    const lim = state.limitUntil && Date.now() < state.limitUntil ? `\n⏸ Codexの利用上限中(${fmtTime(state.limitUntil)} まで)` : "";
+    return void msg.reply((rows.join("\n") || "ジョブなし") + lim);
   }
   if (text) await createJob(text, msg);
 });

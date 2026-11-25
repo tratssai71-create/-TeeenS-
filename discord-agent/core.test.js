@@ -103,3 +103,11 @@ test("extractExpectedText: 依頼文から変更後の文字を取り出す", as
   assert.equal(extractExpectedText("見出しを「テスト」に変えて。変えたら再読み込みして"), "テスト");
   assert.equal(extractExpectedText("時刻の記録を入れて"), null);
 });
+
+test("extractQuestions: 質問だけのプランを見分ける", async () => {
+  const { extractQuestions } = await import("./core.js");
+  assert.deepEqual(extractQuestions({ questions: ["どのプロジェクト?", "何時?", " ", "3", "4"] }), ["どのプロジェクト?", "何時?", "3"]);
+  assert.equal(extractQuestions({ tasks: [{ key: "a" }], questions: ["x"] }), null);
+  assert.equal(extractQuestions({ questions: [] }), null);
+  assert.equal(extractQuestions({}), null);
+});

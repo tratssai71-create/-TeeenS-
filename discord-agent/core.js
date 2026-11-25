@@ -125,3 +125,10 @@ export function extractExpectedText(text = "") {
   const m = [...text.matchAll(/「([^」]{1,80})」(?:に|へ|と)(?:変え|変更|書き換え|差し替え|して|する|なる)/g)].pop();
   return m ? m[1] : null;
 }
+
+/** プランナーの出力に、質問(questions)があれば、質問の配列を返す。計画(tasks)があるときは null */
+export function extractQuestions(plan) {
+  if (Array.isArray(plan?.tasks) && plan.tasks.length) return null;
+  const q = Array.isArray(plan?.questions) ? plan.questions.map((x) => String(x).trim()).filter(Boolean).slice(0, 3) : [];
+  return q.length ? q : null;
+}
