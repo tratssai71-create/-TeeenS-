@@ -160,27 +160,32 @@ export async function verifyText({ cdp = "http://localhost:9222", expected, time
  * 一意に特定できなければ、何も押さない(clicked:false)。そのときは、Codexが、自分で開く。
  * @returns {{clicked:boolean, detail?:string}}
  */
-export async function openEditor({ cdp = "http://localhost:9222", name, studioPattern = /studio\.design|localhost/ } = {}) {
+export async function openEditor({ cdp = "http://localhost:9222", name, studioPattern = /studio\.design|localhost/, wsUrl, dryRun = false } = {}) {
   if (!name) return { clicked: false, detail: "プロジェクト名が不明" };
   const key = name.replace(/[（(][^）)]*[）)]/g, "").trim(); // 「あああ(サンプル)」→「あああ」
   if (!key) return { clicked: false, detail: "プロジェクト名が空" };
   let s;
   try {
-    const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page");
-    if (pages.length !== 1 || !studioPattern.test(pages[0].url)) return { clicked: false, detail: "タブが1つではありません" };
-    s = await cdpSession(pages[0].webSocketDebuggerUrl);
+    if (!wsUrl) {
+      const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page");
+      if (pages.length !== 1 || !studioPattern.test(pages[0].url)) return { clicked: false, detail: "タブが1つではありません" };
+      wsUrl = pages[0].webSocketDebuggerUrl;
+    }
+    s = await cdpSession(wsUrl);
     const expr = `(() => {
       const key = ${JSON.stringify(key)};
       const label = (e) => (e.getAttribute("aria-label") || e.title || e.innerText || "").replace(/\\s+/g, " ").trim();
       let cands = [...document.querySelectorAll("a,button")].filter((e) => { const l = label(e); return l.includes("デザインエディタ") && l.includes(key); });
       const exact = cands.filter((e) => label(e).startsWith(key + ":") || label(e).startsWith(key + "："));  // 「あああ」と「あああ2」のように似た名前があるときは、完全一致を優先
-      if (exact.length === 1) cands = exact;
-      if (cands.length !== 1) return JSON.stringify({ n: cands.length });
-      cands[0].click();
-      return JSON.stringify({ n: 1, label: label(cands[0]) });
+      if (exact.length >= 1) cands = exact;
+      // 一覧には、同じプロジェクトへのリンクが2つ(カードと行)ある。移動先(href)が同じなら、1つとして扱う
+      const hrefs = new Set(cands.map((e) => e.getAttribute("href") || label(e)));
+      if (hrefs.size !== 1) return JSON.stringify({ n: hrefs.size });
+      if (!${dryRun}) cands[0].click();
+      return JSON.stringify({ n: 1, label: label(cands[0]), href: cands[0].getAttribute("href") });
     })()`;
     const r = JSON.parse((await s.send("Runtime.evaluate", { expression: expr, returnByValue: true })).result.value);
-    return r.n === 1 ? { clicked: true, detail: r.label } : { clicked: false, detail: `候補が${r.n}件(1件のときだけ押します)` };
+    return r.n === 1 ? { clicked: !dryRun, detail: `${r.label} → ${r.href}` } : { clicked: false, detail: `候補が${r.n}件(1件のときだけ押します)` };
   } catch (e) {
     return { clicked: false, detail: e.message };
   } finally { s?.close(); }
