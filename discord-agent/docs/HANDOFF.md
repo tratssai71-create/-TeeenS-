@@ -46,3 +46,13 @@ AIで作ったホームページを、STUDIO(studio.design)に移植する「AI�
 
 ## 作業ブランチ
 `claude/kind-johnson-3tz5sj`(PR: tratssai71-create/-TeeenS-#2)。
+
+## 追記(2026-11-25)
+- 自動立ち上げ: `~/Library/LaunchAgents/jp.teeens.discord-agent.plist` を作成済み(**まだ読み込んでいない**。次のログイン/再起動で、`node run.js all` が自動で上がる)。
+  - 今すぐ有効にする: `launchctl load ~/Library/LaunchAgents/jp.teeens.discord-agent.plist`(ターミナルで動いているBotは、先に止める。二重起動は、ロックで防がれる)
+  - 無効にする: `launchctl unload ~/Library/LaunchAgents/jp.teeens.discord-agent.plist`
+  - ログ: `~/Library/Logs/discord-agent.log`
+- コマンド: `!report`(今日の件数・成功率・段階ごとの平均秒数) `!limit` / `!limit clear`(Codex利用上限の記録)
+- 記録: `timings.csv`(段階ごとの秒数。コミット対象外)
+- Codex が上限になると、再開時刻を覚えて、受付の時点で案内し、時刻になったら #log でお知らせする。
+- 環境変数: `VERIFY_MODE=warn|strict|off`(Botの確認) `EDITOR_PREOPEN=0`(編集画面の先開きを止める) `BROWSER_DEEP=1`(毎回、念入りに整える)
