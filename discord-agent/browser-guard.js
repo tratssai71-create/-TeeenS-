@@ -64,7 +64,7 @@ async function waitReady(s, readyText, timeoutMs, startUrl) {
 export async function prepareBrowser({
   cdp = "http://localhost:9222", startUrl = "https://app.studio.design/projects",
   readyText = "プロジェクト", autoRestart = true, restart, log = () => {}, readyTimeoutMs = 40000,
-  deep = false, studioPattern = /studio\.design/, // true: 毎回の整備(タブを作り直す+キャッシュ消去)。false(既定): 正常なら、既存のタブを一覧に戻すだけ
+  deep = false, keepEditor = false, studioPattern = /studio\.design/, // true: 毎回の整備(タブを作り直す+キャッシュ消去)。false(既定): 正常なら、既存のタブを一覧に戻すだけ
 } = {}) {
   let alive = await ping(cdp);
   if (!alive && autoRestart && restart) {
@@ -73,6 +73,14 @@ export async function prepareBrowser({
     for (let i = 0; i < 25 && !alive; i++) { await sleep(1000); alive = await ping(cdp); }
   }
   if (!alive) return { ok: false, code: "browser_down" };
+
+  // 会話モード: すでに編集画面が開いているなら、一覧へ戻さず、そのまま続ける(直しの途中の状態を消さない)
+  if (keepEditor && !deep) {
+    try {
+      const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page");
+      if (pages.some((t) => /app\.studio\.design\/projects\/[^/]+\/editor/.test(t.url))) return { ok: true, kept: true };
+    } catch {}
+  }
 
   // 速い道(既定): タブが1つだけで、STUDIOを開いているなら、キャッシュ消去も、タブの作り直しもせず、一覧へ戻して、画面が出た時点で終わる
   if (!deep) {
@@ -189,4 +197,18 @@ export async function openEditor({ cdp = "http://localhost:9222", name, studioPa
   } catch (e) {
     return { clicked: false, detail: e.message };
   } finally { s?.close(); }
+}
+
+
+/** 専用Chromeの、STUDIO編集タブ(なければ、STUDIOのタブ)のスクリーンショットを、PNGで返す。撮れなければ null */
+export async function captureScreenshot({ cdp = "http://localhost:9222", studioPattern = /studio\.design/ } = {}) {
+  let s;
+  try {
+    const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page" && studioPattern.test(t.url));
+    const page = pages.find((t) => /\/editor/.test(t.url)) ?? pages[0];
+    if (!page) return null;
+    s = await cdpSession(page.webSocketDebuggerUrl, 15000);
+    const r = await s.send("Page.captureScreenshot", { format: "png" });
+    return Buffer.from(r.data, "base64");
+  } catch { return null; } finally { s?.close(); }
 }

@@ -1,11 +1,11 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, AttachmentBuilder } from "discord.js";
 import { spawn } from "node:child_process";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit } from "./messages.js";
-import { prepareBrowser, verifyText, openEditor } from "./browser-guard.js";
+import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -140,6 +140,8 @@ const CHAT_PREAMBLE = [
   "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
   "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
   "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(browser_evaluate で `() => location.reload()` を実行する。F5キーは効かない。URLを開き直さない)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
+  "**すでに編集画面が開いているとき(前の会話の続き)**は、一覧に戻さず、そのタブでそのまま作業を続ける。開いていなければ、一覧から「デザインエディタ」を押して開く。",
+  `**セクションを作るとき(制作)**: 移植元の仕様書(${process.cwd()}/spec-out/spec.md、見本画像は ${process.cwd()}/spec-out/shots/)があれば、先に読む。作るのは、1回の依頼につき、1セクションだけ。STUDIOの制作ルール(手順書の「制作ルール」。標準装備・blank を避ける・リッチテキストと絶対位置は必要なときだけ)を守る。作り終えたら、文字・大きさ・色・余白・配置が、仕様書と合っているかを自分で点検して、合っていない点を直してから報告する。画面のスクリーンショットは、報告のあとに、Botが自動で貼る(自分で撮らなくてよい)。報告には、「仕様書と違う点・自信のない点」を、正直に書く。`,
   "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
 ].filter(Boolean).join("\n\n");
 
@@ -183,11 +185,11 @@ const restartChrome = () => new Promise((resolve) => {
   });
 });
 let needDeep = false; // 直前の作業が失敗したときだけ、次は「タブ作り直し+キャッシュ消去」の念入りな整備をする
-async function ensureBrowser(log = () => {}) {
+async function ensureBrowser(log = () => {}, { keepEditor = false } = {}) {
   if (process.env.BROWSER_CHECK === "0") return { ok: true };
   const deep = needDeep || process.env.BROWSER_DEEP === "1";
   const r = await prepareBrowser({
-    deep,
+    deep, keepEditor,
     cdp: BROWSER_CDP,
     startUrl: process.env.BROWSER_START_URL ?? "https://app.studio.design/projects",
     readyText: process.env.BROWSER_READY_TEXT ?? "プロジェクト",
@@ -196,6 +198,13 @@ async function ensureBrowser(log = () => {}) {
   });
   if (r.ok) needDeep = false;
   return r;
+}
+// 画面のスクリーンショットを、Discordに貼る(SCREENSHOT=0 で止める)
+async function postShot(ch, label) {
+  if (process.env.SCREENSHOT === "0" || !ch) return;
+  const png = await captureScreenshot({ cdp: BROWSER_CDP });
+  if (!png) return void ch.send("(画面のスクリーンショットは、撮れませんでした)").catch(() => {});
+  await ch.send({ content: `📸 ${label}`, files: [new AttachmentBuilder(png, { name: `studio-${Date.now()}.png` })] }).catch(() => {});
 }
 const BROWSER_ERR = {
   browser_down: "専用Chromeが起動していません。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。",
@@ -280,6 +289,7 @@ async function handleTask(msg, t) {
       await logCh?.send(`${v.status === "verified" ? "✅" : v.status === "not_found" ? "⚠️" : "ℹ️"} ${verifyNote}`).catch(() => {});
     }
     timing.endAt = Date.now();
+    if (finalStatus === "done" && !isPublish) await postShot(logCh, `[${t.id}] 作業後のSTUDIOの画面`);
     if (finalStatus !== "done") needDeep = true; // 失敗の後は、次に念入りに整える
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
@@ -322,7 +332,7 @@ client.on("messageCreate", async (msg) => {
   msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
     await msg.channel.send("🧹 ブラウザを整えています…").catch(() => {});
-    const br = await ensureBrowser();
+    const br = await ensureBrowser(() => {}, { keepEditor: true });
     if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
     const buf = []; let sentN = 0;
     const flush = async () => {
@@ -350,6 +360,7 @@ client.on("messageCreate", async (msg) => {
     const norm = (s) => s.replace(/\s+/g, "");
     const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
     if (!dup) for (const p of chunks(body)) await msg.channel.send(p);
+    if (r.code === 0) await postShot(msg.channel, "いまのSTUDIOの画面");
   }).catch((e) => console.error(e));
 });
 
