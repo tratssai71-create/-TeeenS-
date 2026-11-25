@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit } from "./messages.js";
-import { prepareBrowser, verifyText } from "./browser-guard.js";
+import { prepareBrowser, verifyText, openEditor } from "./browser-guard.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -154,7 +154,8 @@ const BOT_VERIFY_LINE = "**再読み込みは、しない。スクリーンシ�
 const RELOAD_LINE = "**必須(編集を伴う作業)**: 完了を報告する前に、ページを再読み込みして、保存を確認する。再読み込みは、browser_evaluate で `() => location.reload()` を実行する(F5キーは効かない)。そのあと、browser_wait_for で、確認したい文字が出るまで待つ(固定秒数では待たない)。報告には「再読み込み後に、○○と表示されていた」と書く。確認できなかったら `RESULT: FAILED`。";
 const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、exec の中で `tools.mcp__playwright__browser_*` として呼ぶ。最初の1回だけ、`text(ALL_TOOLS.filter(x=>/mcp__playwright/.test(x.name)).map(x=>x.name))` で道具を読み込む(読み込む前は「関数ではない」と出る)。そのあとは、探し直さない。呼び方: browser_snapshot({}) の結果は r.content[0].text / browser_click({target:\"e123\"})(引数名は ref ではなく target) / browser_find({text:\"文字\"}) または ({regex:\"...\"})(query は使えない) / browser_evaluate({function:\"() => ...\"}) / browser_press_key({key}) / browser_type / browser_wait_for({text}) / browser_tabs({action:\"list\"})。1回の exec で、複数の操作を、まとめて実行する。";
 const CHANGED_TO_LINE = "文字を変更した場合は、最終行(RESULT行)の1つ前に、`CHANGED_TO: 変更後の文字` と、変更後の文字だけを、そのまま1行で書く(Botが、これを読んで、再読み込み後の画面と照合する)。";
-function buildPrompt(t, botVerifies = false, askChangedTo = false) {
+const EDITOR_OPEN_LINE = "**編集画面は、Botが、いま一覧から開いている最中(「デザインエディタ」のクリックは、済み)。一覧から開く手順は、しない。**道具を読み込んだら、browser_wait_for({text:\"コンテンツ編集モードに切り替える\"}) で、編集画面が出るまで待つ。30秒待っても出ないときだけ、自分で一覧から開く。";
+function buildPrompt(t, botVerifies = false, askChangedTo = false, editorOpening = false) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
     `タスク: ${t.title ?? t.id}`,
@@ -165,6 +166,7 @@ function buildPrompt(t, botVerifies = false, askChangedTo = false) {
     PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
     "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
     SPEED_LINE,
+    editorOpening ? EDITOR_OPEN_LINE : "",
     botVerifies ? BOT_VERIFY_LINE : RELOAD_LINE,
     botVerifies && askChangedTo ? CHANGED_TO_LINE : "",
     "最後に、何をしたかと確認結果を簡潔に報告し、**最終行**に次のどれか1つだけを書く: 依頼どおり完了したなら `RESULT: OK` / 一部でも未実施・失敗なら `RESULT: FAILED` / 人の対応が必要なら `RESULT: BLOCKED`。",
@@ -241,7 +243,17 @@ async function handleTask(msg, t) {
     const knownExpected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
     // 依頼に「○○」に変えて、がなくても、Codexに CHANGED_TO: を書かせて、Botが確認する(Codexに再読み込みさせない)
     const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0";
-    const r = await runCodex(buildPrompt(t, botVerifies, !knownExpected), makeProgress((x) => buf.push(x)));
+    // Botが先に、対象プロジェクトの「デザインエディタ」を押しておく(読み込みの待ちを、Codexの起動と並行させる)。EDITOR_PREOPEN=0 で無効
+    let editorOpening = false;
+    const projName = (t.instructions ?? t.title ?? "").match(/STUDIOの「([^」]+)」/)?.[1];
+    if (!isPublish && process.env.EDITOR_PREOPEN !== "0" && process.env.BROWSER_CHECK !== "0" && projName) {
+      const t0 = Date.now();
+      const o = await openEditor({ cdp: BROWSER_CDP, name: projName });
+      timing.preopenMs = Date.now() - t0;
+      editorOpening = o.clicked;
+      await logCh?.send(o.clicked ? `🚪 [${roleLabel(AGENT_NAME)}] 編集画面を先に開きました: ${o.detail}` : `ℹ️ 編集画面の先開きは、しませんでした(${o.detail}。Codexが自分で開きます)`).catch(() => {});
+    }
+    const r = await runCodex(buildPrompt(t, botVerifies, !knownExpected, editorOpening), makeProgress((x) => buf.push(x)));
     timing.codexMs = Date.now() - timing.codexStartAt;
     clearInterval(timer);
     await flush();
