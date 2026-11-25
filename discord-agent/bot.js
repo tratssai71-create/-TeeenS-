@@ -139,7 +139,7 @@ const CHAT_PREAMBLE = [
   PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
   "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
   "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
-  "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(F5キー。編集画面のURLを開き直さない)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
+  "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(browser_evaluate で `() => location.reload()` を実行する。F5キーは効かない。URLを開き直さない)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
   "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
 ].filter(Boolean).join("\n\n");
 
@@ -149,7 +149,11 @@ let sessions = {};
 try { sessions = JSON.parse(readIf(SESSIONS_FILE) || "{}"); } catch {}
 const saveSessions = () => { try { writeFileSync(SESSIONS_FILE, JSON.stringify(sessions)); } catch {} };
 
-function buildPrompt(t) {
+// Botが完了後に再読み込みして確認できる依頼では、Codexに再読み込みをさせない(以前は、F5が効かず、約25秒を無駄にした)
+const BOT_VERIFY_LINE = "**再読み込みは、しない。スクリーンショットも撮らない。**変更したら、変更後の文字が、画面(または右パネル)に出たことだけを確認して、すぐに報告する(完了後に、Bot自身が、再読み込みして、保存を確認する)。";
+const RELOAD_LINE = "**必須(編集を伴う作業)**: 完了を報告する前に、ページを再読み込みして、保存を確認する。再読み込みは、browser_evaluate で `() => location.reload()` を実行する(F5キーは効かない)。そのあと、browser_wait_for で、確認したい文字が出るまで待つ(固定秒数では待たない)。報告には「再読み込み後に、○○と表示されていた」と書く。確認できなかったら `RESULT: FAILED`。";
+const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、すでに登録済みで、exec の中で `tools.mcp__playwright__browser_snapshot` / `_click` / `_find` / `_evaluate` / `_type` / `_press_key` / `_wait_for` / `_tabs` として、すぐ呼べる。道具の一覧の調べ直しは、しない。1回の exec で、複数の操作(例: クリック→待つ→find)を、まとめて実行する。";
+function buildPrompt(t, botVerifies = false) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
     `タスク: ${t.title ?? t.id}`,
@@ -159,7 +163,8 @@ function buildPrompt(t) {
     PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
     PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
     "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
-    "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(F5キー。編集画面のURLを開き直さない)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
+    SPEED_LINE,
+    botVerifies ? BOT_VERIFY_LINE : RELOAD_LINE,
     "最後に、何をしたかと確認結果を簡潔に報告し、**最終行**に次のどれか1つだけを書く: 依頼どおり完了したなら `RESULT: OK` / 一部でも未実施・失敗なら `RESULT: FAILED` / 人の対応が必要なら `RESULT: BLOCKED`。",
   ].filter(Boolean).join("\n\n");
 }
@@ -226,7 +231,8 @@ async function handleTask(msg, t) {
     };
     const timer = setInterval(flush, 4000);
     timing.codexStartAt = Date.now();
-    const r = await runCodex(buildPrompt(t), makeProgress((x) => buf.push(x)));
+    const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0" && !!extractExpectedText(t.instructions ?? t.title ?? "");
+    const r = await runCodex(buildPrompt(t, botVerifies), makeProgress((x) => buf.push(x)));
     timing.codexMs = Date.now() - timing.codexStartAt;
     clearInterval(timer);
     await flush();
