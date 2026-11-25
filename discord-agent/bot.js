@@ -364,5 +364,8 @@ client.on("messageCreate", async (msg) => {
   }).catch((e) => console.error(e));
 });
 
+// ネットワークの一時的な切れ(Discordとの接続の失敗)で、プロセスごと落ちないようにする
+process.on("uncaughtException", (e) => console.error("[uncaughtException]", e?.message ?? e));
+process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
 client.once("ready", () => console.log(`[${AGENT_NAME}] logged in as ${client.user.tag}`));
 client.login(DISCORD_TOKEN);
