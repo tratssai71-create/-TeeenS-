@@ -100,3 +100,35 @@ export function formatApproval(job) {
     "⚠️ 「公開する」を押すと、**本番のサイトに反映**されます。専用Chromeの画面で、変更内容を確認してから押してください。",
   ].join("\n");
 }
+
+/** 1件の作業の、段階ごとの秒数(ms)。無い段階は null */
+export function stageTimes(job, t) {
+  const m = t.timing; if (!m) return null;
+  const start = job.receivedAt ?? job.createdAt;
+  return {
+    受付送信: t.sentAt - start, 受信: m.recvAt - t.sentAt, ブラウザ整備: m.guardMs, 先開き: m.preopenMs,
+    Codex: m.codexMs, Bot確認: m.verifyMs, 集約: t.doneAt - m.endAt, 合計: t.doneAt - start,
+  };
+}
+
+/** !report 用: 今日の件数・成功率・段階ごとの平均秒数 */
+export function buildReport(jobs, now = Date.now()) {
+  const day = (ms) => new Date(ms).toDateString();
+  const today = Object.values(jobs).filter((j) => (j.receivedAt ?? j.createdAt) && day(j.receivedAt ?? j.createdAt) === day(now));
+  if (!today.length) return "今日の依頼は、まだありません";
+  const done = today.filter((j) => j.tasks.every((t) => t.status === "done")).length;
+  const fail = today.filter((j) => j.status === "failed").length;
+  const rows = []; // 成功した作業の、段階ごとの時間
+  for (const j of today) for (const t of j.tasks) if (t.status === "done" && t.to !== "publisher") { const s = stageTimes(j, t); if (s) rows.push(s); }
+  const avg = (k) => { const v = rows.map((r) => r[k]).filter((x) => x != null && !Number.isNaN(x)); return v.length ? (v.reduce((a, b) => a + b, 0) / v.length / 1000).toFixed(1) + "秒" : null; };
+  const keys = ["ブラウザ整備", "先開き", "Codex", "Bot確認", "集約", "合計"];
+  const lines = [`📊 **今日のレポート**: 依頼 ${today.length}件 / 作業完了 ${done}件 / 失敗 ${fail}件(成功率 ${Math.round((done / today.length) * 100)}%)`];
+  if (rows.length) {
+    lines.push(`平均(成功 ${rows.length}件): ` + keys.map((k) => (avg(k) ? `${k} ${avg(k)}` : null)).filter(Boolean).join(" / "));
+    const stages = keys.filter((k) => k !== "合計").map((k) => [k, Number(String(avg(k)).replace("秒", ""))]).filter(([, v]) => !Number.isNaN(v)).sort((a, b) => b[1] - a[1]);
+    if (stages.length) lines.push(`最長の段階: ${stages[0][0]}(${stages[0][1]}秒)`);
+    const best = rows.map((r) => r["合計"]).filter((x) => x != null).sort((a, b) => a - b)[0];
+    if (best != null) lines.push(`最速: ${(best / 1000).toFixed(1)}秒`);
+  }
+  return lines.join("\n");
+}

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, detectUsageLimit, parseResetTime, fmtTime } from "./messages.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, detectUsageLimit, parseResetTime, fmtTime, buildReport, stageTimes } from "./messages.js";
 
 const job = (tasks, extra = {}) => ({ id: "j9", request: "見出しを変えて", tasks, ...extra });
 const t = (o = {}) => ({ key: "a", to: "designer", title: "見出しを変更", deps: [], acceptance: ["見出しが変わる"], status: "done", summary: "変更しました", ...o });
@@ -49,4 +49,12 @@ test("parseResetTime: 英語の再開時刻を、時刻(ms)にする", () => {
   assert.equal(parseResetTime("よく分からない", now), null);
   assert.equal(parseResetTime(null, now), null);
   assert.equal(detectUsageLimit("You've hit your usage limit. try again at 3:38 PM.", now).atMs, new Date(2026, 10, 25, 15, 38).getTime());
+});
+
+test("buildReport: 今日の件数・成功率・平均を出す", () => {
+  const now = Date.now();
+  const mk = (id, codex, status = "done") => ({ id, status: status === "done" ? "rejected" : "failed", receivedAt: now - 5000, tasks: [{ to: "designer", status, sentAt: now - 4000, doneAt: now, timing: { recvAt: now - 3900, guardMs: 2000, codexMs: codex, verifyMs: 6000, endAt: now - 100 } }] });
+  const r = buildReport({ a: mk("j1", 30000), b: mk("j2", 50000), c: mk("j3", 1000, "failed") }, now);
+  assert.match(r, /依頼 3件/); assert.match(r, /作業完了 2件/); assert.match(r, /Codex 40\.0秒/); assert.match(r, /最長の段階: Codex/);
+  assert.match(buildReport({}, now), /まだありません/);
 });

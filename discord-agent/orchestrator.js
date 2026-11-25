@@ -4,10 +4,11 @@ import {
 import { spawn } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { appendFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan, extractQuestions } from "./core.js";
-import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, fmtTime } from "./messages.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, fmtTime, stageTimes, buildReport } from "./messages.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const env = process.env;
@@ -183,9 +184,36 @@ async function awaitApproval(job) {
 
 // 段階ごとの所要時間を #log に出す(どこが遅いかを数字で見るため)
 const sec = (ms) => (ms == null || Number.isNaN(ms) ? "?" : (ms / 1000).toFixed(1) + "秒");
+// 段階ごとの秒数を timings.csv に追記する(あとで、遅くなった原因を比べるため)
+const CSV = env.TIMINGS_FILE ?? "timings.csv";
+async function appendCsv(job, t) {
+  const s = stageTimes(job, t); if (!s) return;
+  try {
+    if (!existsSync(CSV)) await appendFile(CSV, "時刻,job,タスク,状態,試行,受付送信,受信,ブラウザ整備,先開き,Codex,Bot確認,集約,合計(秒)\n");
+    const f = (x) => (x == null || Number.isNaN(x) ? "" : (x / 1000).toFixed(1));
+    await appendFile(CSV, [new Date().toISOString(), job.id, JSON.stringify(t.title ?? t.key), t.status, t.attempt, f(s.受付送信), f(s.受信), f(s.ブラウザ整備), f(s.先開き), f(s.Codex), f(s.Bot確認), f(s.集約), f(s.合計)].join(",") + "\n");
+  } catch (e) { console.error("[csv]", e.message); }
+}
+
+// 利用上限の解除時刻になったら、#log でお知らせする
+let limitTimer = null;
+function scheduleLimitNotice() {
+  clearTimeout(limitTimer);
+  if (!state.limitUntil) return;
+  const wait = state.limitUntil - Date.now();
+  if (wait <= 0) return;
+  limitTimer = setTimeout(async () => {
+    if (state.limitUntil && Date.now() >= state.limitUntil) {
+      state.limitUntil = 0; await save();
+      await log("✅ Codex(ChatGPT)の利用上限が、解除される時刻になりました。依頼を送れます(まだ上限なら、受付後に、もう一度、案内します)");
+    }
+  }, Math.min(wait + 1000, 2 ** 31 - 1));
+}
+
 async function logTiming(job, t) {
   const m = t.timing;
   if (!m) return;
+  await appendCsv(job, t);
   const parts = [
     ["受付→送信", t.sentAt - (job.receivedAt ?? job.createdAt)],
     ["送信→ワーカー受信", m.recvAt - t.sentAt],
@@ -202,7 +230,7 @@ async function onResult(r) {
   const job = state.jobs[r.job] ?? Object.values(state.jobs).find((j) => j.tasks.some((t) => t.sentId === r.id));
   const task = job?.tasks.find((t) => t.sentId === r.id && t.status === "sent");
   if (!task) return; // 古い/重複した結果は無視
-  if (r.error === "usage_limit" && r.limitUntil) state.limitUntil = r.limitUntil; // 上限の再開時刻を覚えて、次の依頼を、受付の時点で止める
+  if (r.error === "usage_limit" && r.limitUntil) { state.limitUntil = r.limitUntil; scheduleLimitNotice(); } // 上限の再開時刻を覚えて、次の依頼を、受付の時点で止める
   else if (r.status === "done") state.limitUntil = 0;
   task.summary = r.summary ?? "";
   task.timing = r.timing ?? null; task.doneAt = Date.now();
@@ -242,7 +270,8 @@ client.on("messageCreate", async (msg) => {
   const text = msg.content.trim();
   if (text === "!halt") { state.halted = true; await save(); return void msg.reply("停止しました。新規の割り当てを止めます(実行中タスクは各ワーカーで `!stop` )"); }
   if (text === "!resume") { state.halted = false; await save(); for (const j of Object.values(state.jobs)) await dispatch(j); return void msg.reply("再開しました"); }
-  if (text === "!limit clear") { state.limitUntil = 0; await save(); return void msg.reply("利用上限の記録を、解除しました"); }
+  if (text === "!report") return void msg.reply(buildReport(state.jobs).slice(0, 1900));
+  if (text === "!limit clear") { state.limitUntil = 0; clearTimeout(limitTimer); await save(); return void msg.reply("利用上限の記録を、解除しました"); }
   if (text === "!limit") return void msg.reply(state.limitUntil && Date.now() < state.limitUntil ? `利用上限中です(${fmtTime(state.limitUntil)} まで)` : "利用上限の記録は、ありません");
   if (text === "!status") {
     const rows = Object.values(state.jobs).slice(-5).map((j) => `${j.id}: ${j.status} (${j.tasks.filter((t) => t.status === "done").length}/${j.tasks.length})`);
@@ -295,6 +324,7 @@ async function onPublishButton(i) {
 
 client.once("ready", async () => {
   console.log(`orchestrator logged in as ${client.user.tag}`);
+  scheduleLimitNotice();
   for (const j of Object.values(state.jobs)) if (j.status === "running") await dispatch(j); // 再起動復帰
 });
 client.login(DISCORD_TOKEN);

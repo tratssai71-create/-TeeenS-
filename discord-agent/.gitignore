@@ -6,3 +6,4 @@ state.json
 chat-sessions.json
 .lock-*
 spec-out/
+timings.csv
