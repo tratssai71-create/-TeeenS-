@@ -86,7 +86,7 @@ function runCodex(prompt, onLine, resumeId) {
     const approve = list(process.env.MCP_AUTO_APPROVE ?? "playwright")
       .flatMap((s) => ["-c", `mcp_servers.${s}.default_tools_approval_mode="approve"`]);
     const win = process.platform === "win32";
-    const base = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve,
+    const base = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve, ...(DIRECT_TOOLS ? ["-c", "features.deferred_tool_world_state=false"] : []),
       "-C", WORKDIR, "--output-last-message", outFile];
     // 通常: 指示文は stdin("-")。会話の続き(resume): 前のセッションに続けて実行する
     const args = resumeId ? [...base, "resume", resumeId, win ? "-" : (prompt.startsWith("-") ? " " + prompt : prompt)] : [...base, "-"];
@@ -152,9 +152,10 @@ const saveSessions = () => { try { writeFileSync(SESSIONS_FILE, JSON.stringify(s
 // Botが完了後に再読み込みして確認できる依頼では、Codexに再読み込みをさせない(以前は、F5が効かず、約25秒を無駄にした)
 const BOT_VERIFY_LINE = "**再読み込みは、しない。スクリーンショットも撮らない。**変更したら、変更後の文字が、画面(または右パネル)に出たことだけを確認して、すぐに報告する(完了後に、Bot自身が、再読み込みして、保存を確認する)。";
 const RELOAD_LINE = "**必須(編集を伴う作業)**: 完了を報告する前に、ページを再読み込みして、保存を確認する。再読み込みは、browser_evaluate で `() => location.reload()` を実行する(F5キーは効かない)。そのあと、browser_wait_for で、確認したい文字が出るまで待つ(固定秒数では待たない)。報告には「再読み込み後に、○○と表示されていた」と書く。確認できなかったら `RESULT: FAILED`。";
-const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、exec の中で `tools.mcp__playwright__browser_*` として呼ぶ。最初の1回だけ、`text(ALL_TOOLS.filter(x=>/mcp__playwright/.test(x.name)).map(x=>x.name))` で道具を読み込む(読み込む前は「関数ではない」と出る)。そのあとは、探し直さない。呼び方: browser_snapshot({}) の結果は r.content[0].text / browser_click({target:\"e123\"})(引数名は ref ではなく target) / browser_find({text:\"文字\"}) または ({regex:\"...\"})(query は使えない) / browser_evaluate({function:\"() => ...\"}) / browser_press_key({key}) / browser_type / browser_wait_for({text}) / browser_tabs({action:\"list\"})。1回の exec で、複数の操作を、まとめて実行する。";
+const DIRECT_TOOLS = process.env.DIRECT_TOOLS !== "0"; // 0 で、従来の「最初に道具を読み込む exec」に戻す
+const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、exec の中で `tools.mcp__playwright__browser_*` として呼ぶ。" + (DIRECT_TOOLS ? "道具は、最初から呼べる。**道具を探す・読み込む exec は、しない**(ALL_TOOLS は使わない)。" : "最初の1回だけ、`text(ALL_TOOLS.filter(x=>/mcp__playwright/.test(x.name)).map(x=>x.name))` で道具を読み込む(読み込む前は「関数ではない」と出る)。そのあとは、探し直さない。") + "呼び方: browser_snapshot({}) の結果は r.content[0].text / browser_click({target:\"e123\"})(引数名は ref ではなく target) / browser_find({text:\"文字\"}) または ({regex:\"...\"})(query は使えない) / browser_evaluate({function:\"() => ...\"}) / browser_press_key({key}) / browser_type / browser_wait_for({text}) / browser_tabs({action:\"list\"})。1回の exec で、複数の操作を、まとめて実行する。";
 const CHANGED_TO_LINE = "文字を変更した場合は、最終行(RESULT行)の1つ前に、`CHANGED_TO: 変更後の文字` と、変更後の文字だけを、そのまま1行で書く(Botが、これを読んで、再読み込み後の画面と照合する)。";
-const EDITOR_OPEN_LINE = "**編集画面は、Botが、いま一覧から開いている最中(「デザインエディタ」のクリックは、済み)。一覧から開く手順は、しない。**道具を読み込んだら、browser_wait_for({text:\"コンテンツ編集モードに切り替える\"}) で、編集画面が出るまで待つ。30秒待っても出ないときだけ、自分で一覧から開く。**道具を読み込んだあとの exec は、2回だけにする**: (1回目) browser_wait_for → browser_evaluate で `main h1` の今の文字を読む → 「コンテンツ編集モードに切り替える」ボタンを押す → browser_find で、その文字を持つ右パネルの paragraph の ref を探す、までを1回の exec で行う。(2回目) browser_type で新しい文字を入れる → blur → `main h1` を読んで、新しい文字になったことを確かめる、までを1回の exec で行う。最後の確認だけの exec は、増やさない。";
+const EDITOR_OPEN_LINE = "**編集画面は、Botが、いま一覧から開いている最中(「デザインエディタ」のクリックは、済み)。一覧から開く手順は、しない。**browser_wait_for({text:\"コンテンツ編集モードに切り替える\"}) で、編集画面が出るまで待つ。30秒待っても出ないときだけ、自分で一覧から開く。**exec は、2回だけにする**: (1回目) browser_wait_for → browser_evaluate で `main h1` の今の文字を読む → 「コンテンツ編集モードに切り替える」ボタンを押す → browser_find で、その文字を持つ右パネルの paragraph の ref を探す、までを1回の exec で行う。(2回目) browser_type で新しい文字を入れる → blur → `main h1` を読んで、新しい文字になったことを確かめる、までを1回の exec で行う。最後の確認だけの exec は、増やさない。";
 function buildPrompt(t, botVerifies = false, askChangedTo = false, editorOpening = false) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
