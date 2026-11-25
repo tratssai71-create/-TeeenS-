@@ -153,7 +153,8 @@ const saveSessions = () => { try { writeFileSync(SESSIONS_FILE, JSON.stringify(s
 const BOT_VERIFY_LINE = "**再読み込みは、しない。スクリーンショットも撮らない。**変更したら、変更後の文字が、画面(または右パネル)に出たことだけを確認して、すぐに報告する(完了後に、Bot自身が、再読み込みして、保存を確認する)。";
 const RELOAD_LINE = "**必須(編集を伴う作業)**: 完了を報告する前に、ページを再読み込みして、保存を確認する。再読み込みは、browser_evaluate で `() => location.reload()` を実行する(F5キーは効かない)。そのあと、browser_wait_for で、確認したい文字が出るまで待つ(固定秒数では待たない)。報告には「再読み込み後に、○○と表示されていた」と書く。確認できなかったら `RESULT: FAILED`。";
 const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、exec の中で `tools.mcp__playwright__browser_*` として呼ぶ。最初の1回だけ、`text(ALL_TOOLS.filter(x=>/mcp__playwright/.test(x.name)).map(x=>x.name))` で道具を読み込む(読み込む前は「関数ではない」と出る)。そのあとは、探し直さない。呼び方: browser_snapshot({}) の結果は r.content[0].text / browser_click({target:\"e123\"})(引数名は ref ではなく target) / browser_find({text:\"文字\"}) または ({regex:\"...\"})(query は使えない) / browser_evaluate({function:\"() => ...\"}) / browser_press_key({key}) / browser_type / browser_wait_for({text}) / browser_tabs({action:\"list\"})。1回の exec で、複数の操作を、まとめて実行する。";
-function buildPrompt(t, botVerifies = false) {
+const CHANGED_TO_LINE = "文字を変更した場合は、最終行(RESULT行)の1つ前に、`CHANGED_TO: 変更後の文字` と、変更後の文字だけを、そのまま1行で書く(Botが、これを読んで、再読み込み後の画面と照合する)。";
+function buildPrompt(t, botVerifies = false, askChangedTo = false) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
     `タスク: ${t.title ?? t.id}`,
@@ -165,6 +166,7 @@ function buildPrompt(t, botVerifies = false) {
     "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
     SPEED_LINE,
     botVerifies ? BOT_VERIFY_LINE : RELOAD_LINE,
+    botVerifies && askChangedTo ? CHANGED_TO_LINE : "",
     "最後に、何をしたかと確認結果を簡潔に報告し、**最終行**に次のどれか1つだけを書く: 依頼どおり完了したなら `RESULT: OK` / 一部でも未実施・失敗なら `RESULT: FAILED` / 人の対応が必要なら `RESULT: BLOCKED`。",
   ].filter(Boolean).join("\n\n");
 }
@@ -236,8 +238,10 @@ async function handleTask(msg, t) {
     };
     const timer = setInterval(flush, 4000);
     timing.codexStartAt = Date.now();
-    const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0" && !!extractExpectedText(t.instructions ?? t.title ?? "");
-    const r = await runCodex(buildPrompt(t, botVerifies), makeProgress((x) => buf.push(x)));
+    const knownExpected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
+    // 依頼に「○○」に変えて、がなくても、Codexに CHANGED_TO: を書かせて、Botが確認する(Codexに再読み込みさせない)
+    const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0";
+    const r = await runCodex(buildPrompt(t, botVerifies, !knownExpected), makeProgress((x) => buf.push(x)));
     timing.codexMs = Date.now() - timing.codexStartAt;
     clearInterval(timer);
     await flush();
@@ -249,7 +253,7 @@ async function handleTask(msg, t) {
     // Bot自身の確認: Codexが「完了」と言っても、再読み込みして、変更後の文字が本当にあるかを見る。VERIFY_MODE=off で無効 / strict で、見つからなければ失敗にする(既定: warn=警告だけ)
     let finalStatus = status, verifyNote = null;
     const VERIFY_MODE = process.env.VERIFY_MODE ?? "warn";
-    const expected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
+    const expected = isPublish ? null : (knownExpected ?? r.text.match(/CHANGED_TO:\s*(.+)/)?.[1]?.trim().replace(/^[「"']|[」"']$/g, "") ?? null);
     if (status === "done" && expected && VERIFY_MODE !== "off" && process.env.BROWSER_CHECK !== "0") {
       await logCh?.send(`🔍 [${roleLabel(AGENT_NAME)}] Bot自身で、再読み込みして「${expected}」を確認しています…`).catch(() => {});
       const t0 = Date.now();
@@ -266,7 +270,7 @@ async function handleTask(msg, t) {
     if (finalStatus !== "done") needDeep = true; // 失敗の後は、次に念入りに整える
     const result = {
       v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
-      summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").trim().slice(0, 1500),
+      summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").replace(/CHANGED_TO:.*\n?/g, "").trim().slice(0, 1500),
       error: finalStatus !== status ? "verify_failed" : why, timing,
     };
     if (verifyNote) result.summary = `${result.summary}\n${verifyNote}`.slice(0, 1500);

@@ -17,3 +17,16 @@
 
 - プロジェクトIDやURLは、自分で書き写さない(文字の写し間違いで、アクセス権限エラーになった例がある)。必ず、一覧の画面にあるリンクや「デザインエディタ」ボタンを使う。
 - 1回の編集作業は、5分以内を目安にする。操作が1つ5秒以上止まる(タイムアウトする)ときは、同じ操作をくり返さず、別の方法(レイヤー検索→右パネルで入力)に切り替える。
+- **速く終わらせる型(2026-11-25 の計測: 1回の exec は、モデルの往復で約3秒かかる。往復の数が、そのまま時間になる)**: 全体で、exec は4〜5回以内にする。「ページパネル」「レイヤーパネル」は開かない(ホームの最上部の見出し = 編集画面を開いたとき最初に出るページの `main h1`)。1回の exec の中で、snapshot の文字から ref を正規表現で取り出して、続けて操作する。例(道具を読み込んだあとの、2回目の exec):
+```js
+const ref = (s, re) => s.match(re)?.[1];
+let s = (await tools.mcp__playwright__browser_snapshot({})).content[0].text;
+await tools.mcp__playwright__browser_click({target: ref(s, /link "[^"]*デザインエディタ"[^\n]*\[ref=(e\d+)\]/)}); // 対象プロジェクトの行のリンクを選ぶこと(複数あるときは、プロジェクト名で絞る)
+await tools.mcp__playwright__browser_wait_for({text: "コンテンツ編集モードに切り替える"});
+s = (await tools.mcp__playwright__browser_snapshot({})).content[0].text;
+await tools.mcp__playwright__browser_click({target: ref(s, /button "コンテンツ編集モードに切り替える"[^\n]*\[ref=(e\d+)\]/)});
+s = (await tools.mcp__playwright__browser_snapshot({})).content[0].text;
+text(s.split("\n").filter(l => /右パネル|paragraph \[ref=/.test(l)).slice(0, 40).join("\n")); // 右パネルの入力欄(paragraph)の一覧を見て、いまの文字と一致する ref を選ぶ
+```
+  次の exec で、browser_type({target: その ref, text: "新しい文字", element: "右パネルの入力欄"}) → browser_evaluate で blur() して、`main h1` の innerText を読む、までを1回にまとめる。
+
