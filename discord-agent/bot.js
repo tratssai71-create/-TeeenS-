@@ -152,7 +152,7 @@ const saveSessions = () => { try { writeFileSync(SESSIONS_FILE, JSON.stringify(s
 // Botが完了後に再読み込みして確認できる依頼では、Codexに再読み込みをさせない(以前は、F5が効かず、約25秒を無駄にした)
 const BOT_VERIFY_LINE = "**再読み込みは、しない。スクリーンショットも撮らない。**変更したら、変更後の文字が、画面(または右パネル)に出たことだけを確認して、すぐに報告する(完了後に、Bot自身が、再読み込みして、保存を確認する)。";
 const RELOAD_LINE = "**必須(編集を伴う作業)**: 完了を報告する前に、ページを再読み込みして、保存を確認する。再読み込みは、browser_evaluate で `() => location.reload()` を実行する(F5キーは効かない)。そのあと、browser_wait_for で、確認したい文字が出るまで待つ(固定秒数では待たない)。報告には「再読み込み後に、○○と表示されていた」と書く。確認できなかったら `RESULT: FAILED`。";
-const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、すでに登録済みで、exec の中で `tools.mcp__playwright__browser_snapshot` / `_click` / `_find` / `_evaluate` / `_type` / `_press_key` / `_wait_for` / `_tabs` として、すぐ呼べる。道具の一覧の調べ直しは、しない。1回の exec で、複数の操作(例: クリック→待つ→find)を、まとめて実行する。";
+const SPEED_LINE = "**速く進めるための決まり**: Playwrightの道具は、exec の中で `tools.mcp__playwright__browser_*` として呼ぶ。最初の1回だけ、`text(ALL_TOOLS.filter(x=>/mcp__playwright/.test(x.name)).map(x=>x.name))` で道具を読み込む(読み込む前は「関数ではない」と出る)。そのあとは、探し直さない。呼び方: browser_snapshot({}) の結果は r.content[0].text / browser_click({target:\"e123\"})(引数名は ref ではなく target) / browser_find({text:\"文字\"}) または ({regex:\"...\"})(query は使えない) / browser_evaluate({function:\"() => ...\"}) / browser_press_key({key}) / browser_type / browser_wait_for({text}) / browser_tabs({action:\"list\"})。1回の exec で、複数の操作を、まとめて実行する。";
 function buildPrompt(t, botVerifies = false) {
   const acc = (t.acceptance ?? []).map((a) => `- ${a}`).join("\n");
   return [
