@@ -387,14 +387,19 @@ client.on("messageCreate", async (msg) => {
     if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
     if (bm) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await msg.channel.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
     const buf = []; let sentN = 0;
-    let opCount = 0;
+    let opCount = 0, statusMsg = null;
     const flush = async () => {
       if (!buf.length) return;
       const lines = buf.splice(0);
       const talk = lines.filter((x) => !x.startsWith("🔧 "));
       opCount += lines.length - talk.length; // 道具の呼び出しの行は、1行ずつ出さず、回数だけ数える(画面がうるさくなるため)
-      const t = [...compress(talk), ...(lines.length > talk.length ? [`⏳ 作業中…(操作 ${opCount}回)`] : [])].join("\n").slice(0, 1900);
+      const t = compress(talk).join("\n").slice(0, 1900);
       if (t && sentN++ < 40) await msg.channel.send(t).catch(() => {});
+      if (lines.length > talk.length) { // 操作の回数は、新しい投稿を増やさず、1つの投稿を、書き換えて見せる
+        const label = `⏳ 作業中…(操作 ${opCount}回)`;
+        if (!statusMsg) statusMsg = await msg.channel.send(label).catch(() => null);
+        else await statusMsg.edit(label).catch(() => {});
+      }
     };
     const timer = setInterval(flush, 4000);
     const typing = setInterval(() => msg.channel.sendTyping().catch(() => {}), 8000);
@@ -418,6 +423,7 @@ client.on("messageCreate", async (msg) => {
     clearInterval(timer); clearInterval(typing);
     if (r.sessionId) { sessions[msg.channelId] = r.sessionId; saveSessions(); }
     await flush();
+    if (statusMsg) await statusMsg.edit(`✅ 作業の操作: ${opCount}回`).catch(() => {});
     const body = r.code === 0 ? r.text : `うまくいきませんでした(code=${r.code}${r.sig ? ", " + r.sig : ""})\n${r.text}`;
     const norm = (s) => s.replace(/\s+/g, "");
     const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
