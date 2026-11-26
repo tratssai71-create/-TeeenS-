@@ -200,11 +200,17 @@ async function ensureBrowser(log = () => {}, { keepEditor = false } = {}) {
   return r;
 }
 // 画面のスクリーンショットを、Discordに貼る(SCREENSHOT=0 で止める)
-async function postShot(ch, label) {
+async function postShot(ch, label, { bottom = false } = {}) {
   if (process.env.SCREENSHOT === "0" || !ch) return;
   const png = await captureScreenshot({ cdp: BROWSER_CDP });
   if (!png) return void ch.send("(画面のスクリーンショットは、撮れませんでした)").catch(() => {});
-  await ch.send({ content: `📸 ${label}`, files: [new AttachmentBuilder(png, { name: `studio-${Date.now()}.png` })] }).catch(() => {});
+  const files = [new AttachmentBuilder(png, { name: `studio-${Date.now()}.png` })];
+  let note = label;
+  if (bottom) { // 制作では、新しい部分が、ページの下にできるので、一番下まで動かした画面も、続けて貼る
+    const low = await captureScreenshot({ cdp: BROWSER_CDP, scroll: "bottom" });
+    if (low) { files.push(new AttachmentBuilder(low, { name: `studio-bottom-${Date.now()}.png` })); note += "(1枚目: いまの画面 / 2枚目: 一番下までスクロールした画面)"; }
+  }
+  await ch.send({ content: `📸 ${note}`, files }).catch(() => {});
 }
 const BROWSER_ERR = {
   browser_down: "専用Chromeが起動していません。ターミナルで `npm run browser` を実行して、STUDIOにログインしたまま開いてください。",
@@ -323,6 +329,7 @@ client.on("messageCreate", async (msg) => {
     if (current) { current.kill("SIGTERM"); return void msg.reply(`[${AGENT_NAME}] 中断しました`); }
     return void msg.reply(`[${AGENT_NAME}] 実行中のタスクはありません`);
   }
+  if (text === "!shot") { await postShot(msg.channel, "いまのSTUDIOの画面", { bottom: true }); return; } // Codexを使わず、画面だけ貼る
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
@@ -360,7 +367,7 @@ client.on("messageCreate", async (msg) => {
     const norm = (s) => s.replace(/\s+/g, "");
     const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
     if (!dup) for (const p of chunks(body)) await msg.channel.send(p);
-    if (r.code === 0) await postShot(msg.channel, "いまのSTUDIOの画面");
+    if (r.code === 0) await postShot(msg.channel, "いまのSTUDIOの画面", { bottom: true });
   }).catch((e) => console.error(e));
 });
 

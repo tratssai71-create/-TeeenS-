@@ -201,13 +201,18 @@ export async function openEditor({ cdp = "http://localhost:9222", name, studioPa
 
 
 /** 専用Chromeの、STUDIO編集タブ(なければ、STUDIOのタブ)のスクリーンショットを、PNGで返す。撮れなければ null */
-export async function captureScreenshot({ cdp = "http://localhost:9222", studioPattern = /studio\.design/ } = {}) {
+export async function captureScreenshot({ cdp = "http://localhost:9222", studioPattern = /studio\.design/, scroll = null } = {}) {
   let s;
   try {
     const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page" && studioPattern.test(t.url));
     const page = pages.find((t) => /\/editor/.test(t.url)) ?? pages[0];
     if (!page) return null;
     s = await cdpSession(page.webSocketDebuggerUrl, 15000);
+    if (scroll) { // 編集画面の中の、スクロールできる場所(キャンバス)を、一番下/上へ動かしてから撮る
+      const to = scroll === "top" ? "0" : "el.scrollHeight";
+      await s.send("Runtime.evaluate", { expression: `(() => { const docs=[document]; document.querySelectorAll("iframe").forEach(f=>{try{if(f.contentDocument)docs.push(f.contentDocument)}catch{}}); for(const d of docs){ const els=[...d.querySelectorAll("*")].filter(e=>e.scrollHeight>e.clientHeight+80 && /(auto|scroll)/.test(getComputedStyle(e).overflowY)); for(const el of els) el.scrollTop=${to}; if(d.scrollingElement) d.scrollingElement.scrollTop=${scroll==="top"?"0":"d.scrollingElement.scrollHeight"}; } return docs.length })()`, returnByValue: true }).catch(() => {});
+      await new Promise((r) => setTimeout(r, 900));
+    }
     const r = await s.send("Page.captureScreenshot", { format: "png" });
     return Buffer.from(r.data, "base64");
   } catch { return null; } finally { s?.close(); }
