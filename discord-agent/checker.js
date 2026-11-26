@@ -78,13 +78,16 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
   return all;
 }
 
+/** 文字の色が透明(飾りの特大文字・グラデーション文字など)の項目は、検査と制作の対象外にする */
+const isDecor = (it) => { const c = rgb(it.style?.color); return !!c && c.a < 0.05; };
+
 /** 仕様書(spec.json)の、文字の項目を、1つの配列にする。section を指定すると、そのセクション(1始まり)だけ */
 export function specTextItems(spec, { section = null, device = "pc" } = {}) {
   const secs = spec?.[device]?.sections ?? [];
   const out = [];
   secs.forEach((sec, i) => {
     if (section && i + 1 !== section) return;
-    for (const it of sec.items ?? []) if (it.kind !== "image" && it.text) out.push({ ...it, section: i + 1 });
+    for (const it of sec.items ?? []) if (it.kind !== "image" && it.text && !isDecor(it)) out.push({ ...it, section: i + 1 });
   });
   return out;
 }
@@ -103,4 +106,39 @@ export async function checkStudio({ specPath = "spec-out/spec.json", section = n
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
   return compareSpec(specTextItems(spec, { section, device }), studio);
+}
+
+/** 仕様書の、1セクションから、Codexへの「作ってください」の依頼文を作る(!build N 用) */
+export function sectionPrompt(spec, n, { device = "pc" } = {}) {
+  const sec = spec?.[device]?.sections?.[n - 1];
+  if (!sec) return null;
+  const L = sec.layout ?? {};
+  const lines = [
+    `STUDIOの編集画面で、ページの一番下に、新しいセクション(セクション${n})を1つ作ってください。仕様書(spec-out/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
+    `- 全体: 背景 ${sec.bg} / 高さの目安 ${sec.h}px / 並べ方 ${L.display ?? "block"}${L.dir ? " " + L.dir : ""}${L.gap && L.gap !== "normal" ? " 間隔" + L.gap : ""}${L.justify ? " 横:" + L.justify : ""}${L.align ? " 縦:" + L.align : ""} / 余白 ${L.pad ?? ""}`,
+    "- 中身(上から順。文字は、一字一句、そのまま):",
+  ];
+  for (const it of sec.items ?? []) {
+    if (isDecor(it)) { lines.push(`  ・(飾りの文字「${String(it.text).slice(0, 20)}」は、色が透明で、画像のように見せている飾りなので、作らない)`); continue; }
+    if (it.kind === "image") { lines.push(`  ・画像 ${it.w}×${it.h}(代わりの画像「${it.alt || ""}」。画像ファイルの差し替えは、あとで人がやるので、画像の枠だけ作る)`); continue; }
+    const st = it.style ?? {};
+    lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}`);
+  }
+  lines.push("制作ルール(手順書)を守って。作ったあとは、仕様書と合っているか自分で点検して、違う点・自信のない点を正直に報告して。公開はしない。");
+  return lines.join("\n").slice(0, 1900);
+}
+
+/** !progress 用: 全セクションの検査結果を、1つの表にする */
+export async function progressTable({ specPath = "spec-out/spec.json", cdp, device = "pc" } = {}) {
+  const spec = JSON.parse(readFileSync(specPath, "utf8"));
+  const studio = await readStudioTexts({ cdp });
+  const secs = spec?.[device]?.sections ?? [];
+  const rows = secs.map((_, i) => {
+    const r = compareSpec(specTextItems(spec, { section: i + 1, device }), studio);
+    const total = r.ok.length + r.diffs.length + r.missing.length;
+    const done = total > 0 && r.missing.length === 0 && r.diffs.length === 0;
+    const none = total > 0 && r.ok.length + r.diffs.length === 0;
+    return `${done ? "✅" : none ? "⬜" : "🔶"} セクション${i + 1}: 合っている${r.ok.length} / 違い${r.diffs.length} / 無い${r.missing.length}`;
+  });
+  return `📋 進み具合(✅=文字がすべて合っている / 🔶=作業中 / ⬜=未着手)\n${rows.join("\n")}`;
 }

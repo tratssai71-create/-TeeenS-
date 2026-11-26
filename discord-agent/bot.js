@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
-import { checkStudio, formatCheck } from "./checker.js";
+import { checkStudio, formatCheck, sectionPrompt, progressTable } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -144,6 +144,7 @@ const CHAT_PREAMBLE = [
   "**すでに編集画面が開いているとき(前の会話の続き)**は、一覧に戻さず、そのタブでそのまま作業を続ける。開いていなければ、一覧から「デザインエディタ」を押して開く。",
   `**セクションを作るとき(制作)**: 移植元の仕様書(${process.cwd()}/spec-out/spec.md、見本画像は ${process.cwd()}/spec-out/shots/)があれば、先に読む。作るのは、1回の依頼につき、1セクションだけ。STUDIOの制作ルール(手順書の「制作ルール」。標準装備・blank を避ける・リッチテキストと絶対位置は必要なときだけ)を守る。作り終えたら、文字・大きさ・色・余白・配置が、仕様書と合っているかを自分で点検して、合っていない点を直してから報告する。画面のスクリーンショットは、報告のあとに、Botが自動で貼る(自分で撮らなくてよい)。報告には、「仕様書と違う点・自信のない点」を、正直に書く。`,
   "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
+  "**育てるための記録**: 作業の最後に、STUDIOの操作で「次からは、こうすると速い・確実」と分かったことが、あれば、1行だけ「📝 学び: …」と書く(なければ書かない)。うまくいかなかった操作と、その代わりに、うまくいった操作を、具体的に書く。",
 ].filter(Boolean).join("\n\n");
 
 // チャンネルごとの会話セッションを覚えておく(再起動しても続けられる)
@@ -338,11 +339,25 @@ client.on("messageCreate", async (msg) => {
     catch (e) { await msg.reply(`検査できませんでした: ${e.message}(仕様書は \`npm run spec -- 移植元のHTML\` で作ります。編集画面を開いてから送ってください)`); }
     return;
   }
+  if (text === "!progress") {
+    try { await msg.reply(await progressTable({ cdp: BROWSER_CDP })); } catch (e) { await msg.reply(`進み具合を出せませんでした: ${e.message}`); }
+    return;
+  }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
   if (text === "!session") return void msg.reply(sessions[msg.channelId] ? `セッション: \`${sessions[msg.channelId]}\`(\`codex resume ${sessions[msg.channelId]}\` で、Codexで続きを見られます)` : "まだ会話が始まっていません");
 
+  let userText = text;
+  const bm = text.match(/^!build\s+(\d+)$/);
+  if (bm) { // 仕様書から、そのセクションの依頼文を作って、そのまま会話に渡す
+    try {
+      const spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+      userText = sectionPrompt(spec, Number(bm[1]));
+      if (!userText) return void msg.reply(`セクション${bm[1]}は、仕様書にありません(1〜${spec.pc.sections.length})`);
+      await msg.channel.send(`🧱 セクション${bm[1]}の依頼文を、仕様書から作りました。このまま、作業に渡します。`).catch(() => {});
+    } catch (e) { return void msg.reply(`仕様書を読めませんでした: ${e.message}(\`npm run spec -- 移植元のHTML\` で作ります)`); }
+  }
   // ---- チャットモード: 同じチャンネルの会話は、同じCodexセッションで続ける ----
   msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
@@ -362,11 +377,11 @@ client.on("messageCreate", async (msg) => {
     const sid = sessions[msg.channelId];
     let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
     const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
-    let r = await runCodex(sid ? text : fresh(text), mkProg(), sid);
+    let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid);
     if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
       buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
       delete sessions[msg.channelId];
-      r = await runCodex(fresh(text), mkProg());
+      r = await runCodex(fresh(userText), mkProg());
     }
     clearInterval(timer); clearInterval(typing);
     if (r.sessionId) { sessions[msg.channelId] = r.sessionId; saveSessions(); }
