@@ -125,7 +125,7 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
     lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}`);
   }
   lines.push("制作ルール(手順書)を守って。作ったあとは、仕様書と合っているか自分で点検して、違う点・自信のない点を正直に報告して。公開はしない。");
-  return lines.join("\n").slice(0, 1900);
+  return lines.join("\n"); // Codexに渡す文なので、Discordの文字数の上限では切らない(切ると、後ろの項目と「公開しない」が消える)
 }
 
 /** !progress 用: 全セクションの検査結果を、1つの表にする */

@@ -4,10 +4,10 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
-import { roleLabel, detectUsageLimit } from "./messages.js";
+import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
 import { checkStudio, formatCheck, sectionPrompt, progressTable } from "./checker.js";
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -187,6 +187,7 @@ const restartChrome = () => new Promise((resolve) => {
     setTimeout(() => { spawn("bash", ["scripts/browser.sh"], { stdio: "ignore", detached: true }).unref(); resolve(); }, 2000);
   });
 });
+let chatLimitUntil = 0; // 会話モードで、Codexの利用上限に当たったとき、再開できる時刻(ms)
 let needDeep = false; // 直前の作業が失敗したときだけ、次は「タブ作り直し+キャッシュ消去」の念入りな整備をする
 async function ensureBrowser(log = () => {}, { keepEditor = false } = {}) {
   if (process.env.BROWSER_CHECK === "0") return { ok: true };
@@ -344,6 +345,11 @@ client.on("messageCreate", async (msg) => {
     try { await msg.reply(await progressTable({ cdp: BROWSER_CDP })); } catch (e) { await msg.reply(`進み具合を出せませんでした: ${e.message}`); }
     return;
   }
+  if (text === "!limit clear") { chatLimitUntil = 0; return void msg.reply("利用上限の記録を、消しました"); }
+  if (text === "!lessons") { // 貯まった「学び」を見る
+    const t = readIf("docs/lessons.md");
+    return void msg.reply(t ? `📝 学びの記録(新しい順に最大8件)\n${t.split("\n").filter(Boolean).slice(-8).reverse().join("\n")}`.slice(0, 1900) : "まだ、学びの記録は、ありません");
+  }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
@@ -360,6 +366,9 @@ client.on("messageCreate", async (msg) => {
     } catch (e) { return void msg.reply(`仕様書を読めませんでした: ${e.message}(\`npm run spec -- 移植元のHTML\` で作ります)`); }
   }
   // ---- チャットモード: 同じチャンネルの会話は、同じCodexセッションで続ける ----
+  if (chatLimitUntil > Date.now()) { // Codexの利用上限の間は、ブラウザの準備もせず、すぐ案内する(無駄な再試行を避ける)
+    return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。**${fmtTime(chatLimitUntil)}** 以降に、もう一度送ってください。(\`!check\` \`!progress\` \`!shot\` は、上限中でも使えます。上限が解除されたはずのときは \`!limit clear\`)`);
+  }
   msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
     await msg.channel.send("🧹 ブラウザを整えています…").catch(() => {});
@@ -380,6 +389,12 @@ client.on("messageCreate", async (msg) => {
     let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
     const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
     let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid);
+    const limHit = r.code !== 0 ? detectUsageLimit(r.text) : null;
+    if (limHit) { // 上限のときは、会話を作り直さず(余計に消費するため)、再開の時刻だけ案内する
+      clearInterval(timer); clearInterval(typing);
+      chatLimitUntil = limHit.atMs ?? Date.now() + 30 * 60 * 1000;
+      return void msg.channel.send(`⏸ Codex(ChatGPT)の利用上限に達しました。再開できる時刻: **${limHit.at ?? fmtTime(chatLimitUntil)}**。それまでは、\`!check\` \`!progress\` \`!shot\` だけ使えます。`);
+    }
     if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
       buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
       delete sessions[msg.channelId];
@@ -392,6 +407,8 @@ client.on("messageCreate", async (msg) => {
     const norm = (s) => s.replace(/\s+/g, "");
     const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
     if (!dup) for (const p of chunks(body)) await msg.channel.send(p);
+    // 育てる記録: Codexが書いた「📝 学び: …」を、docs/lessons.md に、日付つきで貯める(あとで、手順書に取り込む)
+    for (const m of r.text.matchAll(/📝\s*学び[:：]\s*(.+)/g)) { try { appendFileSync("docs/lessons.md", `- ${new Date().toISOString().slice(0, 10)} ${m[1].trim()}\n`); } catch {} }
     if (r.code === 0) await postShot(msg.channel, "いまのSTUDIOの画面", { bottom: true });
   }).catch((e) => console.error(e));
 });
