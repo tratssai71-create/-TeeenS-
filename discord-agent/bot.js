@@ -136,7 +136,8 @@ try {
 // チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
 const BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
 const CHAT_PREAMBLE = [
-  "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。返答は、短く、分かりやすい日本語で。",
+  "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。",
+  "**話し方**: ユーザーは、気軽に、お願いする感じで話しかけます(「ここ、もうちょい濃くして」のような、くだけた言い方、ざっくりした頼み方)。あなたも、親しみやすい、やさしい口調で返す(です・ます調で、堅すぎない。専門用語は避け、使うときは、ひとこと説明する)。返事は、短く。次の形にする: ①やったこと(1〜2行) ②気になる点・できなかったこと(あれば) ③次にできること(1つだけ、提案)。頼みがざっくりしていても、仕様書や見本から、読み取れる範囲は、自分で決めて進める。本当に分からないときだけ、質問を1つだけする(選択肢を添える)。",
   PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
   PLAYBOOK ? `操作手順:\n${PLAYBOOK}` : "",
   "ブラウザ操作は、登録済みの Playwright の道具(playwright/browser_*)だけを使う。cua_repl など別の道具は使わない。ブラウザは、すでに、STUDIOのプロジェクト一覧が、1タブだけ開いた状態に整えてある。新しいタブは開かず、そのタブで、対象プロジェクトの「デザインエディタ」を押して開く。",
@@ -386,10 +387,14 @@ client.on("messageCreate", async (msg) => {
     if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
     if (bm) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await msg.channel.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
     const buf = []; let sentN = 0;
+    let opCount = 0;
     const flush = async () => {
       if (!buf.length) return;
-      const t = compress(buf.splice(0)).join("\n").slice(0, 1900);
-      if (sentN++ < 40) await msg.channel.send(t).catch(() => {});
+      const lines = buf.splice(0);
+      const talk = lines.filter((x) => !x.startsWith("🔧 "));
+      opCount += lines.length - talk.length; // 道具の呼び出しの行は、1行ずつ出さず、回数だけ数える(画面がうるさくなるため)
+      const t = [...compress(talk), ...(lines.length > talk.length ? [`⏳ 作業中…(操作 ${opCount}回)`] : [])].join("\n").slice(0, 1900);
+      if (t && sentN++ < 40) await msg.channel.send(t).catch(() => {});
     };
     const timer = setInterval(flush, 4000);
     const typing = setInterval(() => msg.channel.sendTyping().catch(() => {}), 8000);
