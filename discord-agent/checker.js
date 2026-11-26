@@ -109,12 +109,12 @@ export async function checkStudio({ specPath = "spec-out/spec.json", section = n
 }
 
 /** 仕様書の、1セクションから、Codexへの「作ってください」の依頼文を作る(!build N 用) */
-export function sectionPrompt(spec, n, { device = "pc" } = {}) {
+export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
   const sec = spec?.[device]?.sections?.[n - 1];
   if (!sec) return null;
   const L = sec.layout ?? {};
   const lines = [
-    `STUDIOの編集画面で、${sec.tag === "header" ? "ページの**一番上**(ほかのセクションより上)" : sec.tag === "footer" ? "ページの**一番下**" : `すでに作ったセクションの下(セクション${n - 1}の直後)`}に、新しい${sec.tag === "header" ? "ヘッダー" : "セクション"}(セクション${n})を1つ作ってください。仕様書(spec-out/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
+    `STUDIO${project ? "の「" + project + "」" : ""}の編集画面(別のプロジェクトが開いていたら、一覧から「" + (project || "対象") + "」を開き直す)で、${sec.tag === "header" ? "ページの**一番上**(ほかのセクションより上)" : sec.tag === "footer" ? "ページの**一番下**" : `すでに作ったセクションの下(セクション${n - 1}の直後)`}に、新しい${sec.tag === "header" ? "ヘッダー" : "セクション"}(セクション${n})を1つ作ってください。仕様書(spec-out/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
     `- 全体: 背景 ${sec.bg} / 高さの目安 ${sec.h}px / 並べ方 ${L.display ?? "block"}${L.dir ? " " + L.dir : ""}${L.gap && L.gap !== "normal" ? " 間隔" + L.gap : ""}${L.justify ? " 横:" + L.justify : ""}${L.align ? " 縦:" + L.align : ""} / 余白 ${L.pad ?? ""}`,
     "- 中身(上から順。文字は、一字一句、そのまま):",
   ];

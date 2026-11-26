@@ -134,6 +134,7 @@ try {
 } catch {}
 
 // チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
+const BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
 const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。返答は、短く、分かりやすい日本語で。",
   PROJECTS ? `STUDIOのプロジェクト(編集画面は、直接URLではなく、必ず https://app.studio.design/projects の一覧から、該当プロジェクトの「デザインエディタ」を押して開く):\n${PROJECTS}` : "",
@@ -353,7 +354,7 @@ client.on("messageCreate", async (msg) => {
   if (bm) { // 仕様書から、そのセクションの依頼文を作って、そのまま会話に渡す
     try {
       const spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
-      userText = sectionPrompt(spec, Number(bm[1]));
+      userText = sectionPrompt(spec, Number(bm[1]), { project: BUILD_PROJECT });
       if (!userText) return void msg.reply(`セクション${bm[1]}は、仕様書にありません(1〜${spec.pc.sections.length})`);
       await msg.channel.send(`🧱 セクション${bm[1]}の依頼文を、仕様書から作りました。このまま、作業に渡します。`).catch(() => {});
     } catch (e) { return void msg.reply(`仕様書を読めませんでした: ${e.message}(\`npm run spec -- 移植元のHTML\` で作ります)`); }
@@ -362,8 +363,9 @@ client.on("messageCreate", async (msg) => {
   msg.react("👀").catch(() => {});
   chain = chain.then(async () => {
     await msg.channel.send("🧹 ブラウザを整えています…").catch(() => {});
-    const br = await ensureBrowser(() => {}, { keepEditor: true });
+    const br = await ensureBrowser(() => {}, { keepEditor: !bm }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
     if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
+    if (bm) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await msg.channel.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
     const buf = []; let sentN = 0;
     const flush = async () => {
       if (!buf.length) return;
