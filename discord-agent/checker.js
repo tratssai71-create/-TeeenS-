@@ -1,0 +1,106 @@
+// 検査役: 移植元の仕様書(spec.json)と、いまのSTUDIOの編集画面を、見比べて、違いを一覧にする。
+// 文字が有るか、大きさ・太さ・色・行間・字間・フォントが合っているか、を調べる(画面の操作はしない。読むだけ)。
+import { readFileSync } from "node:fs";
+import { cdpSession } from "./browser-guard.js";
+
+const norm = (t) => String(t ?? "").replace(/[\s　「」『』"'“”‘’]/g, "");
+const px = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+const rgb = (v) => { const m = String(v ?? "").match(/rgba?\(([^)]+)\)/); if (!m) return null; const [r, g, b, a = 1] = m[1].split(",").map((x) => parseFloat(x)); return { r, g, b, a }; };
+const fam = (v) => String(v ?? "").split(",")[0].replace(/["']/g, "").trim().toLowerCase();
+
+/** 文字の要素1つを、仕様書の1項目と比べて、違いの文を返す(合っていれば空) */
+export function diffStyle(spec, got, text = "") {
+  const out = [];
+  const a = px(spec.size), b = px(got.size);
+  if (a != null && b != null && Math.abs(a - b) > 1) out.push(`文字の大きさ: 仕様 ${spec.size} / STUDIO ${got.size}`);
+  const wa = parseInt(spec.weight, 10), wb = parseInt(got.weight, 10);
+  if (wa && wb && Math.abs(wa - wb) > 100) out.push(`太さ: 仕様 ${spec.weight} / STUDIO ${got.weight}`);
+  const ca = rgb(spec.color), cb = rgb(got.color);
+  if (ca && cb && ca.a > 0.05 && cb.a > 0.05 && Math.hypot(ca.r - cb.r, ca.g - cb.g, ca.b - cb.b) > 24) out.push(`色: 仕様 ${spec.color} / STUDIO ${got.color}`);
+  const la = px(spec.lh), lb = px(got.lh);
+  if (la != null && lb != null && Math.abs(la - lb) > 3) out.push(`行間: 仕様 ${spec.lh} / STUDIO ${got.lh}`);
+  const sa = px(spec.ls) ?? 0, sb = px(got.ls) ?? 0;
+  if (Math.abs(sa - sb) > 0.8) out.push(`字間: 仕様 ${spec.ls || "0"} / STUDIO ${got.ls || "0"}`);
+  // 日本語の文字は、欧文フォント(Poppinsなど)の違いが見た目に出ないので、フォントは、日本語を含まない文字だけ比べる
+  if (!/[\u3040-\u30ff\u3400-\u9fff]/.test(text) && spec.font && got.font && fam(spec.font) !== fam(got.font)) out.push(`フォント: 仕様 ${spec.font} / STUDIO ${fam(got.font)}`);
+  return out;
+}
+
+/**
+ * @param specItems [{text, style:{size,weight,color,lh,ls,font}, section}]
+ * @param studioItems [{text, size, weight, color, lh, ls, font}]
+ */
+export function compareSpec(specItems, studioItems) {
+  const pool = studioItems.map((s) => ({ ...s, n: norm(s.text) })).filter((s) => s.n);
+  const result = { ok: [], missing: [], diffs: [] };
+  for (const it of specItems) {
+    const n = norm(it.text);
+    if (!n) continue;
+    // 完全一致を優先。なければ、一方がもう一方を含む(文の区切り方が違うとき)ものを探す
+    const hit = pool.find((s) => s.n === n) ?? pool.find((s) => n.length >= 6 && (s.n.includes(n) || (s.n.length >= 6 && n.includes(s.n))));
+    if (!hit) { result.missing.push(it); continue; }
+    const d = diffStyle(it.style ?? {}, hit, it.text);
+    d.length ? result.diffs.push({ item: it, diffs: d }) : result.ok.push(it);
+  }
+  return result;
+}
+
+const EXTRACT = `(() => {
+  const out = [];
+  for (const el of document.querySelectorAll("body *")) {
+    const own = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+    if (!own) continue;
+    const cs = getComputedStyle(el);
+    if (cs.display === "none" || cs.visibility === "hidden") continue;
+    out.push({ text: own, size: cs.fontSize, weight: cs.fontWeight, color: cs.color, lh: cs.lineHeight, ls: cs.letterSpacing === "normal" ? "" : cs.letterSpacing, font: cs.fontFamily });
+  }
+  return JSON.stringify(out);
+})()`;
+
+/** いまの編集画面(STUDIOのタブ)から、文字の要素を、すべて読む(入れ子の画面も含む) */
+export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
+  const pages = (await (await fetch(`${cdp}/json/list`, { signal: AbortSignal.timeout(3000) })).json()).filter((t) => t.type === "page" && /studio\.design/.test(t.url));
+  const page = pages.find((p) => /\/editor/.test(p.url));
+  if (!page) throw new Error("STUDIOの編集画面が、開かれていません");
+  const s = await cdpSession(page.webSocketDebuggerUrl, 15000);
+  const all = [];
+  try {
+    const walk = (n) => [n.frame.id, ...(n.childFrames ?? []).flatMap(walk)];
+    const tree = await s.send("Page.getFrameTree");
+    for (const fid of walk(tree.frameTree)) {
+      try {
+        const w = await s.send("Page.createIsolatedWorld", { frameId: fid });
+        const r = await s.send("Runtime.evaluate", { contextId: w.executionContextId, expression: EXTRACT, returnByValue: true });
+        all.push(...JSON.parse(r.result.value ?? "[]"));
+      } catch {}
+    }
+  } finally { s.close(); }
+  return all;
+}
+
+/** 仕様書(spec.json)の、文字の項目を、1つの配列にする。section を指定すると、そのセクション(1始まり)だけ */
+export function specTextItems(spec, { section = null, device = "pc" } = {}) {
+  const secs = spec?.[device]?.sections ?? [];
+  const out = [];
+  secs.forEach((sec, i) => {
+    if (section && i + 1 !== section) return;
+    for (const it of sec.items ?? []) if (it.kind !== "image" && it.text) out.push({ ...it, section: i + 1 });
+  });
+  return out;
+}
+
+export function formatCheck(r, { section = null } = {}) {
+  const total = r.ok.length + r.missing.length + r.diffs.length;
+  const head = `🔍 検査の結果${section ? `(セクション${section})` : ""}: 文字 ${total}件のうち、**合っている ${r.ok.length}** / **スタイルの違い ${r.diffs.length}** / **見つからない ${r.missing.length}**`;
+  const lines = [head];
+  if (r.missing.length) lines.push("", "❌ 見つからない文字:", ...r.missing.slice(0, 12).map((m) => `・「${String(m.text).slice(0, 40)}」`));
+  if (r.diffs.length) lines.push("", "⚠️ スタイルの違い:", ...r.diffs.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 24)}」 ${d.diffs.join(" / ")}`));
+  if (!r.missing.length && !r.diffs.length) lines.push("", "✅ 文字は、すべて、仕様書と合っています(配置・余白・画像は、この検査の対象外です。画面で見てください)");
+  return lines.join("\n").slice(0, 1900);
+}
+
+export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = "pc" } = {}) {
+  const spec = JSON.parse(readFileSync(specPath, "utf8"));
+  const studio = await readStudioTexts({ cdp });
+  return compareSpec(specTextItems(spec, { section, device }), studio);
+}

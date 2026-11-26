@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
+import { checkStudio, formatCheck } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -330,6 +331,13 @@ client.on("messageCreate", async (msg) => {
     return void msg.reply(`[${AGENT_NAME}] 実行中のタスクはありません`);
   }
   if (text === "!shot") { await postShot(msg.channel, "いまのSTUDIOの画面", { bottom: true }); return; } // Codexを使わず、画面だけ貼る
+  // 検査役: 仕様書(spec-out/spec.json)と、いまのSTUDIOの編集画面を見比べて、違いを一覧にする。!check / !check 2(セクション2だけ)
+  if (/^!check(\s+\d+)?$/.test(text)) {
+    const section = Number(text.split(/\s+/)[1]) || null;
+    try { await msg.reply(formatCheck(await checkStudio({ section, cdp: BROWSER_CDP }), { section })); }
+    catch (e) { await msg.reply(`検査できませんでした: ${e.message}(仕様書は \`npm run spec -- 移植元のHTML\` で作ります。編集画面を開いてから送ってください)`); }
+    return;
+  }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
