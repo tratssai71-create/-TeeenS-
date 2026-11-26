@@ -64,3 +64,4 @@ AIで作ったホームページを、STUDIO(studio.design)に移植する「AI�
 - 環境変数: `SCREENSHOT=0`(画面の自動投稿を止める) `DIRECT_TOOLS=1`(道具の直接呼び。実測で効果なし)
 - 制作の流れ(#designer-chat): `!new`(会話リセット)→ `!build N`(仕様書から依頼文を作って制作)→ `!check N`(検査)→ `!fix N`(検査の違いから、直す依頼文を作って修正)→ `!progress`(全体の進み具合)。`!lessons`(Codexの「📝 学び」の記録 docs/lessons.md)、`!shot`(画面)。制作先は `BUILD_PROJECT`(既定: discord テスト)。
 - 仕様書(`npm run spec -- 移植元HTML`)は、文字を包む「箱」(背景・角丸・余白・枠)も記録する。
+- ディレクター(自動): #designer-chat で `!auto N`(1セクション)/ `!auto N-M`(連続)。作る → 検査 → 違いがあれば直す を、最大 `AUTO_MAX_ROUNDS`(既定3)回まで自動で繰り返す。失敗したら、理由を聞いて、別のやり方で1回だけ再試行。同じ違いが残る・2回続けて失敗・利用上限のときは、止めて、人に判断を求める。公開は、しない。`!stop` で中断。

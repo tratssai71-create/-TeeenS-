@@ -224,6 +224,102 @@ const BROWSER_ERR = {
   cdp_error: "専用Chromeとの接続に失敗しました。もう一度送ってください。続く場合は、専用Chromeを終了して `npm run browser` で開き直してください。",
 };
 
+async function chatTurn(ch, channelId, userText, { openProject = false } = {}) {
+  await ch.send("🧹 ブラウザを整えています…").catch(() => {});
+  const br = await ensureBrowser(() => {}, { keepEditor: !openProject }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
+  if (!br.ok) { await ch.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`); return { ok: false, why: "browser" }; }
+  if (openProject) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await ch.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
+  const buf = []; let sentN = 0;
+  let opCount = 0, statusMsg = null;
+  const flush = async () => {
+    if (!buf.length) return;
+    const lines = buf.splice(0);
+    const talk = lines.filter((x) => !x.startsWith("🔧 "));
+    opCount += lines.length - talk.length; // 道具の呼び出しの行は、1行ずつ出さず、回数だけ数える(画面がうるさくなるため)
+    const t = compress(talk).join("\n").slice(0, 1900);
+    if (t && sentN++ < 40) await ch.send(t).catch(() => {});
+    if (lines.length > talk.length) { // 操作の回数は、新しい投稿を増やさず、1つの投稿を、書き換えて見せる
+      const label = `⏳ 作業中…(操作 ${opCount}回)`;
+      if (!statusMsg) statusMsg = await ch.send(label).catch(() => null);
+      else await statusMsg.edit(label).catch(() => {});
+    }
+  };
+  const timer = setInterval(flush, 4000);
+  const typing = setInterval(() => ch.sendTyping().catch(() => {}), 8000);
+  ch.sendTyping().catch(() => {});
+  const fresh = (t) => `${CHAT_PREAMBLE}\n\nユーザー: ${t}`;
+  const sid = sessions[channelId];
+  let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
+  const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
+  let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid);
+  const limHit = r.code !== 0 ? detectUsageLimit(r.text) : null;
+  if (limHit) { // 上限のときは、会話を作り直さず(余計に消費するため)、再開の時刻だけ案内する
+    clearInterval(timer); clearInterval(typing);
+    chatLimitUntil = limHit.atMs ?? Date.now() + 30 * 60 * 1000;
+    await ch.send(`⏸ Codex(ChatGPT)の利用上限に達しました。再開できる時刻: **${limHit.at ?? fmtTime(chatLimitUntil)}**。それまでは、\`!check\` \`!progress\` \`!shot\` だけ使えます。`);
+    return { ok: false, why: "limit" };
+  }
+  if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
+    buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
+    delete sessions[channelId];
+    r = await runCodex(fresh(userText), mkProg());
+  }
+  clearInterval(timer); clearInterval(typing);
+  if (r.sessionId) { sessions[channelId] = r.sessionId; saveSessions(); }
+  await flush();
+  if (statusMsg) await statusMsg.edit(`✅ 作業の操作: ${opCount}回`).catch(() => {});
+  const body = r.code === 0 ? r.text : `うまくいきませんでした(code=${r.code}${r.sig ? ", " + r.sig : ""})\n${r.text}`;
+  const norm = (s) => s.replace(/\s+/g, "");
+  const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
+  if (!dup) for (const p of chunks(body)) await ch.send(p);
+  // 育てる記録: Codexが書いた「📝 学び: …」を、docs/lessons.md に、日付つきで貯める(あとで、手順書に取り込む)
+  for (const m of r.text.matchAll(/📝\s*学び[:：]\s*(.+)/g)) { try { appendFileSync("docs/lessons.md", `- ${new Date().toISOString().slice(0, 10)} ${m[1].trim()}\n`); } catch {} }
+  if (r.code === 0) await postShot(ch, "いまのSTUDIOの画面", { bottom: true });
+  return { ok: r.code === 0, r };
+}
+
+// ---- ディレクター(自動): 作る → 検査 → 違いがあれば直す を、自動で繰り返す。公開は、しない ----
+let autoCancel = false;
+const AUTO_MAX_ROUNDS = Number(process.env.AUTO_MAX_ROUNDS ?? 3);
+async function autoSection(ch, n) {
+  const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
+  let spec;
+  try { spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
+  const first = sectionPrompt(spec, n, { project: BUILD_PROJECT });
+  if (!first) { await say(`セクション${n}は、仕様書にありません`); return "stop"; }
+  await say(`セクション${n}を、自動で作ります。「作る → 検査 → 違いがあれば直す」を、最大${AUTO_MAX_ROUNDS}回まで繰り返します。公開はしません。止めたいときは \`!stop\`。`);
+  // 1) 作る(失敗したら、理由を聞いて、別のやり方で、もう1回だけ)
+  let t = await chatTurn(ch, ch.id, first, { openProject: true });
+  if (t.why === "limit") return "limit";
+  if (!t.ok) {
+    if (autoCancel) return "cancel";
+    await say("うまくいかなかったようです。理由を聞いて、別のやり方で、もう1回だけ試します。");
+    t = await chatTurn(ch, ch.id, "さっきの作業は、うまくいきませんでした。何がうまくいかなかったかを1行で言ってから、別のやり方で、もう一度、やってください。公開はしないでください。", {});
+    if (t.why === "limit") return "limit";
+    if (!t.ok) { await say(`**ここで止めます。人の確認が必要です。** 2回続けて、うまくいきませんでした。画面を見て、どこで詰まっているか、教えてください。`); return "stop"; }
+  }
+  // 2) 検査 → 直す
+  let prev = null;
+  for (let round = 1; round <= AUTO_MAX_ROUNDS; round++) {
+    if (autoCancel) return "cancel";
+    let res;
+    try { res = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch (e) { await say(`検査できませんでした(${e.message})。ここで止めます。`); return "stop"; }
+    const left = res.diffs.length + res.missing.length;
+    await ch.send(formatCheck(res, { section: n })).catch(() => {});
+    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。`); return "ok"; }
+    const sig = JSON.stringify([res.diffs.map((d) => d.item.text + d.diffs.join()), res.missing.map((m) => m.text)]);
+    if (sig === prev) { await say(`**これ以上は、自動では、直せませんでした。** 同じ違いが、${left}件、残っています。人の判断が必要です(例: 仕様書にあるが、STUDIOで作れない・作らないと決めた文字)。`); return "stuck"; }
+    prev = sig;
+    if (round === AUTO_MAX_ROUNDS) break;
+    await say(`違いが${left}件あります。直します(${round}/${AUTO_MAX_ROUNDS - 1}回目)。`);
+    t = await chatTurn(ch, ch.id, fixPrompt(res, n, { project: BUILD_PROJECT }), {});
+    if (t.why === "limit") return "limit";
+    if (!t.ok) { await say("直す作業が、うまくいきませんでした。ここで止めます。人の確認が必要です。"); return "stop"; }
+  }
+  await say(`${AUTO_MAX_ROUNDS}回まで試しましたが、まだ違いが残っています。人の判断が必要です。`);
+  return "stuck";
+}
+
 async function handleTask(msg, t) {
   if (seenTasks.has(t.id)) return;
   seenTasks.add(t.id);
@@ -331,6 +427,7 @@ client.on("messageCreate", async (msg) => {
   if (!text) return;
 
   if (text === "!stop") {
+    autoCancel = true; // 自動作業(!auto)も、次の区切りで止める
     if (current) { current.kill("SIGTERM"); return void msg.reply(`[${AGENT_NAME}] 中断しました`); }
     return void msg.reply(`[${AGENT_NAME}] 実行中のタスクはありません`);
   }
@@ -350,6 +447,22 @@ client.on("messageCreate", async (msg) => {
   if (text === "!lessons") { // 貯まった「学び」を見る
     const t = readIf("docs/lessons.md");
     return void msg.reply(t ? `📝 学びの記録(新しい順に最大8件)\n${t.split("\n").filter(Boolean).slice(-8).reverse().join("\n")}`.slice(0, 1900) : "まだ、学びの記録は、ありません");
+  }
+  const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/); // !auto 3 / !auto 3-5
+  if (am) {
+    if (chatLimitUntil > Date.now()) return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。${fmtTime(chatLimitUntil)} 以降に、もう一度送ってください`);
+    const from = Number(am[1]), to = Number(am[2] ?? am[1]);
+    autoCancel = false;
+    msg.react("🧭").catch(() => {});
+    chain = chain.then(async () => {
+      for (let n = from; n <= to; n++) {
+        const r = await autoSection(msg.channel, n);
+        if (r === "limit" || r === "cancel" || r === "stop") { await msg.channel.send(`🧭 ディレクター: 自動作業を止めました(セクション${n}で${r === "limit" ? "利用上限" : r === "cancel" ? "中断" : "停止"})。`).catch(() => {}); return; }
+        if (r === "stuck" && n < to) { await msg.channel.send(`🧭 ディレクター: セクション${n}に、直せない違いが残っているので、ここで一度止めます。判断をいただいたら、\`!auto ${n + 1}-${to}\` で続けられます。`).catch(() => {}); return; }
+      }
+      await msg.channel.send(`🧭 ディレクター: 自動作業が終わりました。\`!progress\` で、全体の進み具合を見られます。`).catch(() => {});
+    }).catch((e) => console.error(e));
+    return;
   }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
@@ -381,57 +494,7 @@ client.on("messageCreate", async (msg) => {
     return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。**${fmtTime(chatLimitUntil)}** 以降に、もう一度送ってください。(\`!check\` \`!progress\` \`!shot\` は、上限中でも使えます。上限が解除されたはずのときは \`!limit clear\`)`);
   }
   msg.react("👀").catch(() => {});
-  chain = chain.then(async () => {
-    await msg.channel.send("🧹 ブラウザを整えています…").catch(() => {});
-    const br = await ensureBrowser(() => {}, { keepEditor: !bm }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
-    if (!br.ok) return void msg.channel.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`);
-    if (bm) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await msg.channel.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
-    const buf = []; let sentN = 0;
-    let opCount = 0, statusMsg = null;
-    const flush = async () => {
-      if (!buf.length) return;
-      const lines = buf.splice(0);
-      const talk = lines.filter((x) => !x.startsWith("🔧 "));
-      opCount += lines.length - talk.length; // 道具の呼び出しの行は、1行ずつ出さず、回数だけ数える(画面がうるさくなるため)
-      const t = compress(talk).join("\n").slice(0, 1900);
-      if (t && sentN++ < 40) await msg.channel.send(t).catch(() => {});
-      if (lines.length > talk.length) { // 操作の回数は、新しい投稿を増やさず、1つの投稿を、書き換えて見せる
-        const label = `⏳ 作業中…(操作 ${opCount}回)`;
-        if (!statusMsg) statusMsg = await msg.channel.send(label).catch(() => null);
-        else await statusMsg.edit(label).catch(() => {});
-      }
-    };
-    const timer = setInterval(flush, 4000);
-    const typing = setInterval(() => msg.channel.sendTyping().catch(() => {}), 8000);
-    msg.channel.sendTyping().catch(() => {});
-    const fresh = (t) => `${CHAT_PREAMBLE}\n\nユーザー: ${t}`;
-    const sid = sessions[msg.channelId];
-    let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
-    const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
-    let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid);
-    const limHit = r.code !== 0 ? detectUsageLimit(r.text) : null;
-    if (limHit) { // 上限のときは、会話を作り直さず(余計に消費するため)、再開の時刻だけ案内する
-      clearInterval(timer); clearInterval(typing);
-      chatLimitUntil = limHit.atMs ?? Date.now() + 30 * 60 * 1000;
-      return void msg.channel.send(`⏸ Codex(ChatGPT)の利用上限に達しました。再開できる時刻: **${limHit.at ?? fmtTime(chatLimitUntil)}**。それまでは、\`!check\` \`!progress\` \`!shot\` だけ使えます。`);
-    }
-    if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
-      buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
-      delete sessions[msg.channelId];
-      r = await runCodex(fresh(userText), mkProg());
-    }
-    clearInterval(timer); clearInterval(typing);
-    if (r.sessionId) { sessions[msg.channelId] = r.sessionId; saveSessions(); }
-    await flush();
-    if (statusMsg) await statusMsg.edit(`✅ 作業の操作: ${opCount}回`).catch(() => {});
-    const body = r.code === 0 ? r.text : `うまくいきませんでした(code=${r.code}${r.sig ? ", " + r.sig : ""})\n${r.text}`;
-    const norm = (s) => s.replace(/\s+/g, "");
-    const dup = r.code === 0 && said && norm(said).includes(norm(r.text).slice(0, 40));
-    if (!dup) for (const p of chunks(body)) await msg.channel.send(p);
-    // 育てる記録: Codexが書いた「📝 学び: …」を、docs/lessons.md に、日付つきで貯める(あとで、手順書に取り込む)
-    for (const m of r.text.matchAll(/📝\s*学び[:：]\s*(.+)/g)) { try { appendFileSync("docs/lessons.md", `- ${new Date().toISOString().slice(0, 10)} ${m[1].trim()}\n`); } catch {} }
-    if (r.code === 0) await postShot(msg.channel, "いまのSTUDIOの画面", { bottom: true });
-  }).catch((e) => console.error(e));
+  chain = chain.then(() => chatTurn(msg.channel, msg.channelId, userText, { openProject: !!bm })).catch((e) => console.error(e));
 });
 
 // ネットワークの一時的な切れ(Discordとの接続の失敗)で、プロセスごと落ちないようにする
