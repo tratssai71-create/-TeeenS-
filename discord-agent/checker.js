@@ -122,7 +122,7 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
     if (isDecor(it)) { lines.push(`  ・(飾りの文字「${String(it.text).slice(0, 20)}」は、色が透明で、画像のように見せている飾りなので、作らない)`); continue; }
     if (it.kind === "image") { lines.push(`  ・画像 ${it.w}×${it.h}(代わりの画像「${it.alt || ""}」。画像ファイルの差し替えは、あとで人がやるので、画像の枠だけ作る)`); continue; }
     const st = it.style ?? {};
-    lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}`);
+    lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}` + (it.box ? ` / 文字を包む箱: 背景${it.box.bg} 角丸${it.box.radius} 余白${it.box.pad}${it.box.border ? " 枠" + it.box.border : ""} 大きさ${it.box.w}×${it.box.h}` : ""));
   }
   lines.push("制作ルール(手順書)を守って。作ったあとは、仕様書と合っているか自分で点検して、違う点・自信のない点を正直に報告して。公開はしない。");
   return lines.join("\n"); // Codexに渡す文なので、Discordの文字数の上限では切らない(切ると、後ろの項目と「公開しない」が消える)
@@ -141,4 +141,14 @@ export async function progressTable({ specPath = "spec-out/spec.json", cdp, devi
     return `${done ? "✅" : none ? "⬜" : "🔶"} セクション${i + 1}: 合っている${r.ok.length} / 違い${r.diffs.length} / 無い${r.missing.length}`;
   });
   return `📋 進み具合(✅=文字がすべて合っている / 🔶=作業中 / ⬜=未着手)\n${rows.join("\n")}`;
+}
+
+/** !fix N 用: 検査の結果(違い・見つからない文字)から、「ここを直してください」の依頼文を作る。直すところがなければ null */
+export function fixPrompt(result, n, { project = "" } = {}) {
+  if (!result.diffs.length && !result.missing.length) return null;
+  const lines = [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(spec-out/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
+  if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));
+  if (result.missing.length) lines.push("【STUDIOに無い文字(追加するか、仕様書にある文字が正しく入っているか確認する)】", ...result.missing.map((m) => `・「${String(m.text).slice(0, 60)}」`));
+  lines.push("直せない項目(その書体が選べない、など)は、無理に別の方法を探し回らず、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。");
+  return lines.join("\n");
 }

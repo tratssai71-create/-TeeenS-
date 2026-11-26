@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
-import { checkStudio, formatCheck, sectionPrompt, progressTable } from "./checker.js";
+import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -356,6 +356,16 @@ client.on("messageCreate", async (msg) => {
   if (text === "!session") return void msg.reply(sessions[msg.channelId] ? `セッション: \`${sessions[msg.channelId]}\`(\`codex resume ${sessions[msg.channelId]}\` で、Codexで続きを見られます)` : "まだ会話が始まっていません");
 
   let userText = text;
+  const fm = text.match(/^!fix\s+(\d+)$/);
+  if (fm) { // 検査をして、見つかった違いから、直す依頼文を作って、会話に渡す(検査 → 直す の自動化)
+    try {
+      const n = Number(fm[1]);
+      const fp = fixPrompt(await checkStudio({ section: n, cdp: BROWSER_CDP }), n, { project: BUILD_PROJECT });
+      if (!fp) return void msg.reply(`✅ セクション${n}は、直すところが、ありません(文字は、すべて、仕様書と合っています)`);
+      userText = fp;
+      await msg.channel.send(`🔧 セクション${n}の違いを検査して、直す依頼文を作りました。このまま、作業に渡します。`).catch(() => {});
+    } catch (e) { return void msg.reply(`検査できませんでした: ${e.message}(編集画面を開いてから、もう一度)`); }
+  }
   const bm = text.match(/^!build\s+(\d+)$/);
   if (bm) { // 仕様書から、そのセクションの依頼文を作って、そのまま会話に渡す
     try {

@@ -38,6 +38,11 @@ const EXTRACT = `(() => {
     if (c.display.includes("grid")) { o.cols = c.gridTemplateColumns; o.gap = c.gap; }
     o.pad = c.padding; o.maxW = c.maxWidth; return o; };
   const bgOf = (el) => { let e = el; while (e) { const c = getComputedStyle(e); if (c.backgroundImage !== "none") return c.backgroundImage.slice(0, 160); if (c.backgroundColor !== "rgba(0, 0, 0, 0)") return c.backgroundColor; e = e.parentElement; } return "transparent"; };
+  // 文字を包んでいる「箱」(ボタンの背景・角丸・枠線・余白)。自分か、近い親(セクションの手前まで)に、背景か枠線があるとき
+  const boxOf = (el, root) => { let e = el; while (e && e !== root) { const c = getComputedStyle(e);
+      const hasBg = c.backgroundImage !== "none" || c.backgroundColor !== "rgba(0, 0, 0, 0)"; const hasBd = parseFloat(c.borderTopWidth) > 0 && c.borderTopStyle !== "none";
+      if (hasBg || hasBd) return { bg: c.backgroundImage !== "none" ? c.backgroundImage.slice(0, 120) : c.backgroundColor, radius: c.borderRadius, pad: c.padding, border: hasBd ? (c.borderTopWidth + " " + c.borderTopStyle + " " + c.borderTopColor) : "", w: Math.round(e.getBoundingClientRect().width), h: Math.round(e.getBoundingClientRect().height) };
+      e = e.parentElement; } return null; };
   const items = (root) => { const res = []; const walk = (el) => {
     if (!vis(el) || el.getAttribute("aria-hidden") === "true") return; // aria-hidden は、ホバー用の複製文字などなので除く
     const t = el.tagName.toLowerCase();
@@ -47,7 +52,7 @@ const EXTRACT = `(() => {
       const txt = own(el);
       if (txt) { const r = el.getBoundingClientRect();
         res.push({ kind: /^h[1-6]$/.test(t) ? "heading" : t === "a" || t === "button" ? "link" : "text", tag: t, text: txt.slice(0, 400), href: t === "a" ? el.getAttribute("href") : undefined,
-          style: sty(el), x: Math.round(r.x), w: Math.round(r.width), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }
+          style: sty(el), box: boxOf(el, root), x: Math.round(r.x), w: Math.round(r.width), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }
     for (const ch of el.children) walk(ch); }; walk(root); return res; };
   const roots = [...document.querySelectorAll("body > header, body > nav, body > main > *, body > section, body > footer, body > div")].filter(vis);
   // 大きな包み(wrapper)の中に、セクションが並んでいたら、中身のセクションごとに分ける
@@ -91,7 +96,7 @@ function mdSection(sec, mobile) {
   if (sec.shot) L.push(`- 見本画像: ${sec.shot}`);
   for (const it of sec.items) {
     if (it.kind === "image" || it.kind === "video" || it.kind === "svg") L.push(`- [${it.kind}] ${it.w}×${it.h} ${it.src ? `src=${it.src.slice(0, 120)}` : ""}${it.alt ? ` alt="${it.alt}"` : ""}`);
-    else L.push(`- [${it.kind === "heading" ? it.tag : it.kind}] 「${it.text.slice(0, 120)}」 ${fmtStyle(it.style)}${it.href ? ` → ${it.href}` : ""}${it.bg && it.bg !== "rgba(0, 0, 0, 0)" ? ` ボタン背景=${it.bg}` : ""}`);
+    else L.push(`- [${it.kind === "heading" ? it.tag : it.kind}] 「${it.text.slice(0, 120)}」 ${fmtStyle(it.style)}${it.href ? ` → ${it.href}` : ""}${it.bg && it.bg !== "rgba(0, 0, 0, 0)" ? ` ボタン背景=${it.bg}` : ""}${it.box ? ` 箱[背景=${it.box.bg} 角丸=${it.box.radius} 余白=${it.box.pad}${it.box.border ? " 枠=" + it.box.border : ""} ${it.box.w}×${it.box.h}]` : ""}`);
   }
   return L.join("\n");
 }

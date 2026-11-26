@@ -62,3 +62,5 @@ AIで作ったホームページを、STUDIO(studio.design)に移植する「AI�
 - 検査役: #designer-chat で `!check`(全部)/ `!check 2`(セクション2だけ)。`spec-out/spec.json`(`npm run spec -- 移植元HTML` で作成)と、いまの編集画面の文字・大きさ・太さ・色・行間・字間を比べる。コードは `checker.js`。
 - `!shot`: Codexを使わず、いまの画面を貼る(一番下までスクロールした画面も)。ただし、スクロールは、まだ効いていない(2枚が同じ)。
 - 環境変数: `SCREENSHOT=0`(画面の自動投稿を止める) `DIRECT_TOOLS=1`(道具の直接呼び。実測で効果なし)
+- 制作の流れ(#designer-chat): `!new`(会話リセット)→ `!build N`(仕様書から依頼文を作って制作)→ `!check N`(検査)→ `!fix N`(検査の違いから、直す依頼文を作って修正)→ `!progress`(全体の進み具合)。`!lessons`(Codexの「📝 学び」の記録 docs/lessons.md)、`!shot`(画面)。制作先は `BUILD_PROJECT`(既定: discord テスト)。
+- 仕様書(`npm run spec -- 移植元HTML`)は、文字を包む「箱」(背景・角丸・余白・枠)も記録する。

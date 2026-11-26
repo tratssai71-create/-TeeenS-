@@ -32,3 +32,10 @@ test("sectionPrompt: 長いセクションでも、最後の指示まで切れ�
   assert.match(sectionPrompt(spec, 2), /セクション1の直後/);
   assert.equal(sectionPrompt(spec, 9), null);
 });
+
+import { fixPrompt } from "./checker.js";
+test("fixPrompt: 違いが無ければ null、あれば、直す文になる", () => {
+  assert.equal(fixPrompt({ ok: [1], diffs: [], missing: [] }, 1), null);
+  const p = fixPrompt({ ok: [], diffs: [{ item: { text: "About" }, diffs: ["文字の大きさ: 仕様 16.5px / STUDIO 15px"] }], missing: [{ text: "Page" }] }, 1, { project: "T" });
+  assert.match(p, /「T」/); assert.match(p, /About/); assert.match(p, /Page/); assert.ok(p.endsWith("公開はしない。"));
+});
