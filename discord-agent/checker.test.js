@@ -39,3 +39,10 @@ test("fixPrompt: 違いが無ければ null、あれば、直す文になる", (
   const p = fixPrompt({ ok: [], diffs: [{ item: { text: "About" }, diffs: ["文字の大きさ: 仕様 16.5px / STUDIO 15px"] }], missing: [{ text: "Page" }] }, 1, { project: "T" });
   assert.match(p, /「T」/); assert.match(p, /About/); assert.match(p, /Page/); assert.ok(p.endsWith("公開はしない。"));
 });
+
+import { applyAccepted } from "./checker.js";
+test("applyAccepted: 許容した違いは、外れて、全部外れたら『合っている』に移る", () => {
+  const r = { ok: [], missing: [], diffs: [{ item: { text: "料金プラン" }, diffs: ["色: 仕様 a / STUDIO b"] }, { item: { text: "別" }, diffs: ["太さ: 仕様 800 / STUDIO 400"] }] };
+  const out = applyAccepted(r, [{ text: "料金プラン", field: "色" }]);
+  assert.equal(out.diffs.length, 1); assert.equal(out.ok.length, 1); assert.equal(out.diffs[0].item.text, "別");
+});

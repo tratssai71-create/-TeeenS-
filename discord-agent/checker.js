@@ -1,6 +1,7 @@
 // 検査役: 移植元の仕様書(spec.json)と、いまのSTUDIOの編集画面を、見比べて、違いを一覧にする。
 // 文字が有るか、大きさ・太さ・色・行間・字間・フォントが合っているか、を調べる(画面の操作はしない。読むだけ)。
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 import { cdpSession } from "./browser-guard.js";
 
 const norm = (t) => String(t ?? "").replace(/[\s　「」『』"'“”‘’]/g, "");
@@ -102,10 +103,30 @@ export function formatCheck(r, { section = null } = {}) {
   return lines.join("\n").slice(0, 1900);
 }
 
+/** 「この違いは、これでよい」と、人が決めた項目(spec-out/accepted.json)。[{text:"文字の一部", field:"色"}] */
+export function loadAccepted(path = "spec-out/accepted.json") { try { return JSON.parse(readFileSync(path, "utf8")); } catch { return []; } }
+export function addAccepted(text, field, path = "spec-out/accepted.json") {
+  const list = loadAccepted(path);
+  if (!list.some((a) => a.text === text && a.field === field)) list.push({ text, field });
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify(list, null, 2) + "\n");
+  return list;
+}
+/** 許容された違いを、結果から外す(違いが全部許容されたら、「合っている」に移す) */
+export function applyAccepted(result, accepted = []) {
+  if (!accepted.length) return result;
+  const ok = [...result.ok], diffs = [];
+  for (const d of result.diffs) {
+    const rest = d.diffs.filter((line) => !accepted.some((a) => String(d.item.text).includes(a.text) && line.startsWith(a.field)));
+    rest.length ? diffs.push({ ...d, diffs: rest }) : ok.push(d.item);
+  }
+  return { ...result, ok, diffs };
+}
+
 export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = "pc" } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
-  return compareSpec(specTextItems(spec, { section, device }), studio);
+  return applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
 }
 
 /** 仕様書の、1セクションから、Codexへの「作ってください」の依頼文を作る(!build N 用) */
@@ -134,7 +155,7 @@ export async function progressTable({ specPath = "spec-out/spec.json", cdp, devi
   const studio = await readStudioTexts({ cdp });
   const secs = spec?.[device]?.sections ?? [];
   const rows = secs.map((_, i) => {
-    const r = compareSpec(specTextItems(spec, { section: i + 1, device }), studio);
+    const r = applyAccepted(compareSpec(specTextItems(spec, { section: i + 1, device }), studio), loadAccepted());
     const total = r.ok.length + r.diffs.length + r.missing.length;
     const done = total > 0 && r.missing.length === 0 && r.diffs.length === 0;
     const none = total > 0 && r.ok.length + r.diffs.length === 0;

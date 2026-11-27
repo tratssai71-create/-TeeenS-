@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
-import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt } from "./checker.js";
+import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -491,6 +491,9 @@ client.on("messageCreate", async (msg) => {
     }).catch((e) => console.error(e));
     return;
   }
+  // 「この違いは、これでよい」と決める: !accept 料金プラン 色(文字の一部と、項目: 色/文字の大きさ/太さ/行間/字間/フォント)
+  const ac = text.match(/^!accept\s+(\S+)\s+(色|文字の大きさ|太さ|行間|字間|フォント)$/);
+  if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(`✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
