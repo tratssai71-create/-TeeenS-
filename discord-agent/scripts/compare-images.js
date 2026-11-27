@@ -24,6 +24,9 @@ const ROOT = `(() => { const find = (t) => { const w = document.createTreeWalker
   const a = find(${JSON.stringify(FIRST)}), b = find(${JSON.stringify(LAST)}); if (!a || !b) return null; let e = a; while (e && !e.contains(b)) e = e.parentElement; return e; })()`;
 const rectJs = `(() => { const e = ${ROOT}; if (!e) return JSON.stringify(null); const r = e.getBoundingClientRect(); return JSON.stringify({ x: r.x, y: r.y, w: r.width, h: r.height, ih: innerHeight, iw: innerWidth, dpr: devicePixelRatio }); })()`;
 const wheel = async (dy, x, y) => { await s.send("Input.dispatchMouseEvent", { type: "mouseWheel", x, y, deltaX: 0, deltaY: dy }); await sleep(450); };
+// 左側の「追加パネル」などが開いていると、キャンバスの左を隠してしまう。開いているパネルを、閉じる(閉じるだけ。ほかの操作はしない)
+await s.send("Runtime.evaluate", { expression: `document.querySelectorAll('button[aria-label$="パネルを閉じる"]').forEach((b) => b.click())` });
+await sleep(700);
 let R = await ev(s, rectJs);
 if (!R) { console.error("サイト本体が見つかりませんでした"); process.exit(1); }
 const cx = Math.round(R.x + R.w / 2), cy = Math.round(R.ih / 2);
