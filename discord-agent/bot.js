@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, AttachmentBuilder } from "discord.js";
-import { spawn } from "node:child_process";
+import { spawn, execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -507,6 +507,20 @@ client.on("messageCreate", async (msg) => {
   // 「この違いは、これでよい」と決める: !accept 料金プラン 色(文字の一部と、項目: 色/文字の大きさ/太さ/行間/字間/フォント)
   const ac = text.match(/^!accept\s+(\S+)\s+(色|文字の大きさ|太さ|行間|字間|フォント)$/);
   if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(`✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
+  // 元のサイトと、いまのSTUDIOを、並べた画像を作って貼る(Codexは使わない。画面は、スクロールだけする)
+  if (text === "!compare") {
+    let src; try { src = decodeURIComponent(new URL(JSON.parse(readFileSync("spec-out/spec.json", "utf8")).url).pathname); } catch { return void msg.reply("仕様書(spec-out/spec.json)が見つかりません"); }
+    await msg.reply("🖼️ 元のサイトと、いまのSTUDIOを、並べています。1〜2分かかります…");
+    execFile("node", ["scripts/compare-images.js", src, "spec-out/compare"], { timeout: 6 * 60 * 1000 }, async (err, stdout, stderr) => {
+      if (err) return void msg.channel.send(`並べる画像を作れませんでした: ${String(stderr || err.message).slice(0, 300)}(STUDIOの編集画面を、開いてから、もう一度)`);
+      try {
+        const { scores, files } = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8"));
+        const list = scores.map((v, i) => `${i + 1}枚目: 近さ ${v}%`).join(" / ");
+        await msg.channel.send({ content: `🖼️ 左=元のサイト / 右=いまのSTUDIO(上から順に${files.length}枚)\n見た目の近さ(目安): ${list}\n※近さは、位置のずれにも敏感なので、画像の中身を、目で見て確かめてください。`, files: files.slice(0, 10).map((f) => new AttachmentBuilder(join("spec-out/compare", f))) });
+      } catch (e) { await msg.channel.send(`画像の送信に失敗しました: ${e.message}`); }
+    });
+    return;
+  }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
