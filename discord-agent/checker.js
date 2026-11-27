@@ -20,7 +20,7 @@ export function diffStyle(spec, got, text = "") {
   const ca = rgb(spec.color), cb = rgb(got.color);
   if (ca && cb && ca.a > 0.05 && cb.a > 0.05 && Math.hypot(ca.r - cb.r, ca.g - cb.g, ca.b - cb.b) > 24) out.push(`色: 仕様 ${spec.color} / STUDIO ${got.color}`);
   const la = px(spec.lh), lb = px(got.lh);
-  if (la != null && lb != null && Math.abs(la - lb) > 3) out.push(`行間: 仕様 ${spec.lh} / STUDIO ${got.lh}`);
+  if (la != null && lb != null && Math.abs(la - lb) > Math.max(4, la * 0.15)) out.push(`行間: 仕様 ${spec.lh} / STUDIO ${got.lh}`);
   const sa = px(spec.ls) ?? 0, sb = px(got.ls) ?? 0;
   if (Math.abs(sa - sb) > 0.8) out.push(`字間: 仕様 ${spec.ls || "0"} / STUDIO ${got.ls || "0"}`);
   // 日本語の文字は、欧文フォント(Poppinsなど)の違いが見た目に出ないので、フォントは、日本語を含まない文字だけ比べる
