@@ -83,7 +83,8 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
 }
 
 /** 文字の色が透明(飾りの特大文字・グラデーション文字など)の項目は、検査と制作の対象外にする */
-const isDecor = (it) => { const c = rgb(it.style?.color); return !!c && c.a < 0.05; };
+const isOutline = (it) => { const c = rgb(it.style?.color); return !!c && c.a < 0.05; }; // 中が透明で、輪郭(縁取り)だけの文字。内容(見出しなど)なので、検査の対象。色の比較だけ、しない
+const isDecor = () => false;
 
 /** 仕様書(spec.json)の、文字の項目を、1つの配列にする。section を指定すると、そのセクション(1始まり)だけ */
 export function specTextItems(spec, { section = null, device = "pc" } = {}) {
@@ -143,10 +144,10 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
     "- 中身(上から順。文字は、一字一句、そのまま):",
   ];
   for (const it of sec.items ?? []) {
-    if (isDecor(it)) { lines.push(`  ・(飾りの文字「${String(it.text).slice(0, 20)}」は、色が透明で、画像のように見せている飾りなので、作らない)`); continue; }
+    const outline = isOutline(it) ? ` / 輪郭だけの文字(中は透明。縁取り${it.style?.stroke ?? ""}で見せている。STUDIOで縁取りが作れなければ、通常の色の文字で作り、そのことを報告する)` : "";
     if (it.kind === "image") { lines.push(`  ・画像 ${it.w}×${it.h}(代わりの画像「${it.alt || ""}」。画像ファイルの差し替えは、あとで人がやるので、画像の枠だけ作る)`); continue; }
     const st = it.style ?? {};
-    lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}` + (it.box ? ` / 文字を包む箱: 背景${it.box.bg} 角丸${it.box.radius} 余白${it.box.pad}${it.box.border ? " 枠" + it.box.border : ""} 大きさ${it.box.w}×${it.box.h}` : ""));
+    lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${isOutline(it) ? "(透明)" : st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}` + outline + (it.box ? ` / 文字を包む箱: 背景${it.box.bg} 角丸${it.box.radius} 余白${it.box.pad}${it.box.border ? " 枠" + it.box.border : ""} 大きさ${it.box.w}×${it.box.h}` : ""));
   }
   lines.push("制作ルール(手順書)を守って。作ったあとは、仕様書と合っているか自分で点検して、違う点・自信のない点を正直に報告して。公開はしない。");
   return lines.join("\n"); // Codexに渡す文なので、Discordの文字数の上限では切らない(切ると、後ろの項目と「公開しない」が消える)

@@ -29,9 +29,10 @@ const EXTRACT = `(() => {
   const px = (v) => v && v !== "normal" ? v : "";
   const sty = (el) => { const c = getComputedStyle(el); return {
     font: c.fontFamily.split(",")[0].replace(/["']/g, "").trim(), size: c.fontSize, weight: c.fontWeight, lh: px(c.lineHeight),
-    ls: px(c.letterSpacing), color: c.color, align: c.textAlign, transform: c.textTransform === "none" ? "" : c.textTransform }; };
+    ls: px(c.letterSpacing), color: c.color, align: c.textAlign, transform: c.textTransform === "none" ? "" : c.textTransform,
+    stroke: parseFloat(c.webkitTextStrokeWidth) > 0 ? c.webkitTextStrokeWidth + " " + c.webkitTextStrokeColor : undefined }; }; // 文字の縁取り(中が透明で、輪郭だけの文字など)
   const vis = (el) => { const r = el.getBoundingClientRect(); const c = getComputedStyle(el);
-    return r.width > 0 && r.height > 0 && c.visibility !== "hidden" && c.display !== "none" && c.opacity !== "0"; };
+    return r.width > 2 && r.height > 2 && c.visibility !== "hidden" && c.display !== "none" && !(c.opacity === "0" && c.pointerEvents === "none"); }; // opacity:0 は、スクロールで現れる前の状態のことがあるので、見えない扱いにしない(ホバー用の複製は、aria-hidden で除く)
   const own = (el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").replace(/\\s+/g, " ").trim();
   const layout = (el) => { const c = getComputedStyle(el); const o = { display: c.display };
     if (c.display.includes("flex")) { o.dir = c.flexDirection; o.gap = c.gap; o.justify = c.justifyContent; o.align = c.alignItems; o.wrap = c.flexWrap; }
@@ -54,9 +55,9 @@ const EXTRACT = `(() => {
         res.push({ kind: /^h[1-6]$/.test(t) ? "heading" : t === "a" || t === "button" ? "link" : "text", tag: t, text: txt.slice(0, 400), href: t === "a" ? el.getAttribute("href") : undefined,
           style: sty(el), box: boxOf(el, root), x: Math.round(r.x), w: Math.round(r.width), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }
     for (const ch of el.children) walk(ch); }; walk(root); return res; };
-  const roots = [...document.querySelectorAll("body > header, body > nav, body > main > *, body > section, body > footer, body > div")].filter(vis);
+  const roots = [...document.querySelectorAll("body > header, body > nav, body > main > *, body > section, body > footer, body > div, body > a")].filter((e) => vis(e) && e.getBoundingClientRect().height >= 40); // body直下の「a」(全面のリンクになった帯など)も、セクションとして拾う
   // 大きな包み(wrapper)の中に、セクションが並んでいたら、中身のセクションごとに分ける
-  const expand = (el, depth) => { const kids = [...el.children].filter((c) => vis(c) && c.getBoundingClientRect().height >= 60 && /^(section|div|header|footer|nav|article|main|aside)$/i.test(c.tagName));
+  const expand = (el, depth) => { const kids = [...el.children].filter((c) => vis(c) && c.getBoundingClientRect().height >= 60 && /^(section|div|header|footer|nav|article|main|aside|a)$/i.test(c.tagName));
     return depth < 3 && el.getBoundingClientRect().height > 1500 && kids.length >= 2 ? kids.flatMap((c) => expand(c, depth + 1)) : [el]; };
   const list = (roots.length ? roots : [document.body]).flatMap((r) => expand(r, 0));
   return JSON.stringify({ title: document.title, lang: document.documentElement.lang, totalH: document.documentElement.scrollHeight,
