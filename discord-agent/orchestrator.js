@@ -1,0 +1,335 @@
+import {
+  Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle,
+} from "discord.js";
+import { spawn } from "node:child_process";
+import { mkdtemp, readFile, rm, writeFile, rename } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { appendFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan, extractQuestions, normalizeCommand } from "./core.js";
+import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, fmtTime, stageTimes, buildReport } from "./messages.js";
+
+const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+const env = process.env;
+const ROLES = list(env.ROLES ?? "designer,writer,qa");
+const ALLOWED = new Set(list(env.ALLOWED_USER_IDS));
+const WORKERS = new Set(list(env.WORKER_BOT_IDS)); // 結果を受け付けるワーカーBot
+const MAX_TASKS = Number(env.MAX_TASKS ?? 8);
+const MAX_RETRY = Number(env.MAX_RETRY ?? 2);
+const TASK_TIMEOUT_MIN = Number(env.TASK_TIMEOUT_MIN ?? 30);
+const MAX_JOBS_PER_DAY = Number(env.MAX_JOBS_PER_DAY ?? 20);
+const STATE_FILE = env.STATE_FILE ?? "state.json";
+const WORKDIR = env.WORKDIR ?? process.cwd();
+const PLANNER_ARGS = (env.PLANNER_ARGS ?? "--sandbox read-only --skip-git-repo-check").split(/\s+/).filter(Boolean);
+const { DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET } = env;
+const PUBLISHER_ROLE = env.PUBLISHER_ROLE ?? ROLES[0]; // 既定: 編集担当(designer)が承認後に公開も行う
+const PUBLISH_INSTRUCTIONS = env.PUBLISH_INSTRUCTIONS ??
+  "【本番公開】承認済みの変更を、STUDIOの編集画面の右上にある「公開」ボタンから公開する。対象は、直前の作業で編集したプロジェクトだけ。公開ダイアログが出たら、公開先とプロジェクト名が、直前の作業のものと一致することを確認してから確定する。公開後に、公開URLを開いて表示を確認し、URLを報告する。公開以外の編集はしない。想定外の画面や、プロジェクトが違う場合は、公開せずに blocked として報告する。";
+
+for (const [k, v] of Object.entries({ DISCORD_TOKEN, COMMAND_CHANNEL_ID, TASKS_CHANNEL_ID, LOG_CHANNEL_ID, APPROVE_CHANNEL_ID, APPROVAL_SECRET })) {
+  if (!v) { console.error(`${k} が未設定です`); process.exit(1); }
+}
+if (!ALLOWED.size || !WORKERS.size) { console.error("ALLOWED_USER_IDS / WORKER_BOT_IDS を設定してください"); process.exit(1); }
+
+// ---------- 状態 ----------
+let state = { seq: 0, halted: false, day: "", jobsToday: 0, jobs: {} };
+if (existsSync(STATE_FILE)) {
+  try { state = JSON.parse(await readFile(STATE_FILE, "utf8")); }
+  catch (e) { console.error(`state.json を読めませんでした(${e.message})。壊れたファイルを state.json.broken に残して、空の状態で始めます`); try { await rename(STATE_FILE, `${STATE_FILE}.broken`); } catch {} }
+}
+// 同時に何度も保存しても、ファイルが壊れないよう、順番に、一時ファイルへ書いてから、置き換える
+let saving = Promise.resolve();
+const save = () => (saving = saving.then(async () => { const tmp = `${STATE_FILE}.tmp`; await writeFile(tmp, JSON.stringify(state, null, 2)); await rename(tmp, STATE_FILE); }).catch((e) => console.error("state.json の保存に失敗:", e.message)));
+
+process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
+process.on("uncaughtException", (e) => console.error("[uncaughtException]", e?.message ?? e));
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+});
+const ch = (id) => client.channels.fetch(id);
+const log = async (text) => { try { const c = await ch(LOG_CHANNEL_ID); for (let i = 0; i < text.length; i += 1900) await c.send(text.slice(i, i + 1900)); } catch (e) { console.error(e); } };
+
+// ---------- プランナー(codex exec) ----------
+function runPlanner(prompt) {
+  return new Promise(async (resolve, reject) => {
+    const dir = await mkdtemp(join(tmpdir(), "plan-"));
+    const out = join(dir, "last.txt");
+    const child = spawn("codex", ["exec", ...PLANNER_ARGS, "-C", WORKDIR, "--output-last-message", out, "-"],
+      { stdio: ["pipe", "ignore", "pipe"], shell: process.platform === "win32" });
+    child.stdin.end(prompt);
+    let err = "";
+    child.stderr.on("data", (d) => (err += d));
+    const timer = setTimeout(() => child.kill("SIGTERM"), 5 * 60_000);
+    child.on("error", reject);
+    child.on("close", async (code) => {
+      clearTimeout(timer);
+      try { resolve(await readFile(out, "utf8")); } catch { reject(new Error(`planner失敗 code=${code} ${err.slice(-300)}`)); }
+      finally { rm(dir, { recursive: true, force: true }); }
+    });
+  });
+}
+
+const ROLE_DESC = {
+  designer: "STUDIOエディタ(ブラウザ操作)での編集。文言・素材の用意や、完成後の見た目の確認(スクリーンショット)も兼ねる。同時に1タスクのみ。",
+  writer: "文言・記事・SEO文・素材の用意(STUDIOは触らない)。",
+  qa: "完成したページのスクリーンショット確認、リンク切れ、レスポンシブ、文言チェック(読み取りのみ)。",
+};
+let PROJECT_NAMES = [];
+try { PROJECT_NAMES = Object.keys(JSON.parse(await readFile(env.PROJECTS_FILE ?? "projects.json", "utf8"))); } catch {}
+const plannerPrompt = (request) => `あなたはWebサイト制作チームの司令塔です。次の依頼を、担当ロールごとのタスクに分解してください。
+
+使えるロール(これ以外の名前は絶対に使わない): ${ROLES.join(", ")}
+${ROLES.map((r) => `- ${r}: ${ROLE_DESC[r] ?? "担当作業"}`).join("\n")}
+制約: タスクは最大${MAX_TASKS}件。各 instructions は具体的に1000字以内。小さな依頼は1〜2タスクで足りる。${ROLES.includes("qa") ? "最後に必ずqaの検証タスクを置く。" : ""}
+あなたの仕事は計画の作成だけ。ブラウザやツールは使わず、依頼の作業は実行しない。
+${PROJECT_NAMES.length ? `STUDIOのプロジェクト一覧: ${PROJECT_NAMES.join(" / ")}` : ""}
+**依頼があいまいで、作業の対象や内容(どのプロジェクト、どのページのどこ、何と書くか、など)が決められない場合は、推測で計画を作らず、質問だけを返す**: {"questions":["質問1","質問2"]}(最大3問。短く。選べるように、選択肢を添える)。対象と内容が決まっているなら、質問せず、計画を作る。
+出力は次の形式のJSONのみ(説明文は不要):
+{"tasks":[{"key":"短い英数字ID","to":"ロール","title":"件名","instructions":"具体的な作業指示","acceptance":["受け入れ基準"],"deps":["先行タスクのkey"]}]}
+
+依頼:
+${request}`;
+
+// ---------- ジョブ進行 ----------
+async function createJob(request, replyTo) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (state.day !== today) { state.day = today; state.jobsToday = 0; }
+  if (state.jobsToday >= MAX_JOBS_PER_DAY) return replyTo.reply("本日のジョブ上限に達しました");
+  if (state.halted) return replyTo.reply("停止中です(`!resume` で再開)");
+  if (state.limitUntil && Date.now() < state.limitUntil) {
+    return replyTo.reply(`⏸ Codex(ChatGPT)の利用上限中です。**${fmtTime(state.limitUntil)}** 以降に、もう一度送ってください(依頼は、受け付けていません)。上限が解除されたはずのときは、\`!limit clear\` で、解除できます`);
+  }
+  state.jobsToday++;
+  const id = `j${++state.seq}`;
+  const quick = /^!quick(\s|$)/.test(request);
+  const receivedAt = replyTo.createdTimestamp ?? Date.now(); // 依頼がDiscordに投稿された時刻
+  await replyTo.reply(quick ? `⚡ [${id}] 受付しました(クイック: 計画を省いて、すぐ作業します)` : `📝 [${id}] 受付しました。計画を作っています…(1〜2分かかります)`);
+  try {
+    let tasks;
+    if (quick) tasks = quickPlan(request, ROLES[0]);
+    else {
+      const plan = extractJson(await runPlanner(plannerPrompt(request)));
+      const questions = extractQuestions(plan);
+      if (questions) { // あいまいな依頼: 作業は始めず、質問を返す(件数にも数えない)
+        state.jobsToday--; await save();
+        return void replyTo.reply(`❓ [${id}] 作業を始める前に、確認させてください:\n${questions.map((q, i) => `${i + 1}. ${q}`).join("\n")}\n\n👉 答えを書き足して、もう一度、依頼を送ってください(例: 「…」に変えて、まで書くと、そのまま進めます)`);
+      }
+      tasks = validatePlan(plan, { roles: ROLES, maxTasks: MAX_TASKS });
+    }
+    if (quick) {
+      state.jobs[id] = { id, request: request.replace(/^!quick\s*/, ""), status: "running", tasks, createdAt: Date.now(), receivedAt };
+      await save();
+      return void dispatch(state.jobs[id]);
+    }
+    state.jobs[id] = { id, request, status: "awaiting_plan_approval", tasks, createdAt: Date.now(), receivedAt };
+    await save();
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId(`plan:ok:${id}`).setLabel("実行").setStyle(ButtonStyle.Success),
+      new ButtonBuilder().setCustomId(`plan:ng:${id}`).setLabel("却下").setStyle(ButtonStyle.Danger),
+    );
+    await replyTo.channel.send({ content: formatPlan(state.jobs[id]).slice(0, 1900), components: [row] });
+  } catch (e) {
+    await save();
+    await replyTo.channel.send(`❌ [${id}] 計画を作れませんでした: ${e.message}\n👉 依頼を、もう少し具体的に書いて、もう一度送ってください。小さな依頼は、先頭に \`!quick\` を付けると、計画を省けます。`);
+  }
+}
+
+async function dispatch(job) {
+  if (state.halted || job.status !== "running") return;
+  const tc = await ch(TASKS_CHANNEL_ID);
+  for (const t of readyTasks(job)) {
+    t.attempt++;
+    t.sentId = `${job.id}-${t.key}-a${t.attempt}`;
+    t.status = "sent"; t.sentAt = Date.now();
+    try {
+      await tc.send(buildTaskMessage(job, t, TASK_TIMEOUT_MIN));
+    } catch (e) {
+      t.attempt--; t.status = "pending"; t.sentId = null;
+      await save();
+      const hint = e.code === 50001 || e.code === 50013 ? "権限がありません。#tasks で、ディレクターに「チャンネルを見る」「メッセージを送信」を許可してください" : e.message;
+      await log(`[${job.id}] ${t.to} への送信に失敗: ${hint}。直したら \`!resume\` で再開`);
+      state.halted = true; await save();
+      return;
+    }
+    await log(`🔄 [${job.id}] ${roleLabel(t.to)}に依頼しました: ${t.title}`);
+  }
+  await save();
+  await maybeFinish(job);
+}
+
+async function maybeFinish(job) {
+  if (job.status !== "running") return;
+  // 失敗したタスクに依存する未実行タスクは skipped
+  for (const t of job.tasks) if (t.status === "pending") {
+    const bad = t.deps.some((d) => ["failed", "skipped"].includes(job.tasks.find((x) => x.key === d).status));
+    if (bad) t.status = "skipped";
+  }
+  if (!jobFinished(job)) return;
+  const failed = job.tasks.filter((t) => t.status !== "done");
+  if (!failed.length && !job.approval) return awaitApproval(job); // 公開前に必ず人の承認
+  job.status = failed.length ? "failed" : "completed";
+  await save();
+  const c = await ch(COMMAND_CHANNEL_ID);
+  await c.send(formatDone(job).slice(0, 1900));
+}
+
+async function awaitApproval(job) {
+  job.status = "awaiting_approval";
+  await save();
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId(`pub:ok:${job.id}`).setLabel("公開する").setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId(`pub:ng:${job.id}`).setLabel("公開しない").setStyle(ButtonStyle.Danger),
+  );
+  const c = await ch(APPROVE_CHANNEL_ID);
+  await c.send({ content: formatApproval(job).slice(0, 1900), components: [row] });
+  await log(`🔔 [${job.id}] 作業が終わりました。#approve で、公開の承認をお願いします`);
+}
+
+// 段階ごとの所要時間を #log に出す(どこが遅いかを数字で見るため)
+const sec = (ms) => (ms == null || Number.isNaN(ms) ? "?" : (ms / 1000).toFixed(1) + "秒");
+// 段階ごとの秒数を timings.csv に追記する(あとで、遅くなった原因を比べるため)
+const CSV = env.TIMINGS_FILE ?? "timings.csv";
+async function appendCsv(job, t) {
+  const s = stageTimes(job, t); if (!s) return;
+  try {
+    if (!existsSync(CSV)) await appendFile(CSV, "時刻,job,タスク,状態,試行,受付送信,受信,ブラウザ整備,先開き,Codex,Bot確認,集約,合計(秒)\n");
+    const f = (x) => (x == null || Number.isNaN(x) ? "" : (x / 1000).toFixed(1));
+    await appendFile(CSV, [new Date().toISOString(), job.id, JSON.stringify(t.title ?? t.key), t.status, t.attempt, f(s.受付送信), f(s.受信), f(s.ブラウザ整備), f(s.先開き), f(s.Codex), f(s.Bot確認), f(s.集約), f(s.合計)].join(",") + "\n");
+  } catch (e) { console.error("[csv]", e.message); }
+}
+
+// 利用上限の解除時刻になったら、#log でお知らせする
+let limitTimer = null;
+function scheduleLimitNotice() {
+  clearTimeout(limitTimer);
+  if (!state.limitUntil) return;
+  const wait = state.limitUntil - Date.now();
+  if (wait <= 0) return;
+  limitTimer = setTimeout(async () => {
+    if (state.limitUntil && Date.now() >= state.limitUntil) {
+      state.limitUntil = 0; await save();
+      await log("✅ Codex(ChatGPT)の利用上限が、解除される時刻になりました。依頼を送れます(まだ上限なら、受付後に、もう一度、案内します)");
+    }
+  }, Math.min(wait + 1000, 2 ** 31 - 1));
+}
+
+async function logTiming(job, t) {
+  const m = t.timing;
+  if (!m) return;
+  await appendCsv(job, t);
+  const parts = [
+    ["受付→送信", t.sentAt - (job.receivedAt ?? job.createdAt)],
+    ["送信→ワーカー受信", m.recvAt - t.sentAt],
+    ["ブラウザ整備", m.guardMs],
+    ["Codex作業", m.codexMs],
+    ["Bot確認", m.verifyMs],
+    ["結果→集約", t.doneAt - m.endAt],
+  ];
+  const slow = parts.filter(([, v]) => v != null).sort((a, b) => b[1] - a[1])[0];
+  await log(`⏱️ [${job.id}] ${t.title}: ${parts.filter(([k, v]) => v != null || k !== "Bot確認").map(([k, v]) => `${k} ${sec(v)}`).join(" / ")} / 合計 ${sec(t.doneAt - (job.receivedAt ?? job.createdAt))}(最長: ${slow[0]})`);
+}
+
+async function onResult(r) {
+  const job = state.jobs[r.job] ?? Object.values(state.jobs).find((j) => j.tasks.some((t) => t.sentId === r.id));
+  const task = job?.tasks.find((t) => t.sentId === r.id && t.status === "sent");
+  if (!task) return; // 古い/重複した結果は無視
+  if (r.error === "usage_limit" && r.limitUntil) { state.limitUntil = r.limitUntil; scheduleLimitNotice(); } // 上限の再開時刻を覚えて、次の依頼を、受付の時点で止める
+  else if (r.status === "done") state.limitUntil = 0;
+  task.summary = r.summary ?? "";
+  task.timing = r.timing ?? null; task.doneAt = Date.now();
+  await logTiming(job, task);
+  task.error = r.error ?? null;
+  if (r.status === "done") { task.status = "done"; await log(`✅ [${job.id}] ${roleLabel(task.to)}が完了しました: ${task.title}`); }
+  else if (r.status === "blocked") { task.status = "failed"; await log(`⛔ [${job.id}] ${task.title}: 人の対応が必要です\n${hintFor(task.error, task.summary) || task.summary.slice(0, 200)}`); }
+  else if (task.attempt <= MAX_RETRY) { task.status = "pending"; await log(`🔁 [${job.id}] ${task.title}: やり直します(${task.attempt}/${MAX_RETRY})\n${hintFor(task.error, task.summary)}`.trim()); }
+  else { task.status = "failed"; await log(`❌ [${job.id}] ${task.title}: 失敗しました`); }
+  await save();
+  await dispatch(job);
+}
+
+// 応答のないタスクを検知
+setInterval(async () => {
+  for (const job of Object.values(state.jobs)) {
+    if (job.status !== "running") continue;
+    let changed = false;
+    for (const t of job.tasks) if (t.status === "sent" && Date.now() - t.sentAt > (TASK_TIMEOUT_MIN + 5) * 60_000) {
+      t.summary = "タイムアウト(ワーカー無応答)";
+      t.status = t.attempt <= MAX_RETRY ? "pending" : "failed"; changed = true;
+      await log(`⏱️ [${job.id}] ${t.title}: 応答がありません(${t.status === "pending" ? "やり直します" : "失敗にしました"})\n${hintFor(null, t.summary)}`.trim());
+    }
+    if (changed) { await save(); await dispatch(job); }
+  }
+}, 60_000);
+
+// ---------- Discord入口 ----------
+client.on("messageCreate", async (msg) => {
+  if (msg.author.id === client.user.id) return;
+  if (msg.channelId === TASKS_CHANNEL_ID) {
+    if (!msg.author.bot || !WORKERS.has(msg.author.id)) return;
+    try { const r = JSON.parse(msg.content); if (r?.type === "result") await onResult(r); } catch {}
+    return;
+  }
+  if (msg.channelId !== COMMAND_CHANNEL_ID || msg.author.bot || !ALLOWED.has(msg.author.id)) return;
+  const text = normalizeCommand(msg.content);
+  if (text === "!halt") { state.halted = true; await save(); return void msg.reply("停止しました。新規の割り当てを止めます(実行中タスクは各ワーカーで `!stop` )"); }
+  if (text === "!resume") { state.halted = false; await save(); for (const j of Object.values(state.jobs)) await dispatch(j); return void msg.reply("再開しました"); }
+  if (text === "!report") return void msg.reply(buildReport(state.jobs).slice(0, 1900));
+  if (text === "!limit clear") { state.limitUntil = 0; clearTimeout(limitTimer); await save(); return void msg.reply("利用上限の記録を、解除しました"); }
+  if (text === "!limit") return void msg.reply(state.limitUntil && Date.now() < state.limitUntil ? `利用上限中です(${fmtTime(state.limitUntil)} まで)` : "利用上限の記録は、ありません");
+  if (text === "!status") {
+    const rows = Object.values(state.jobs).slice(-5).map((j) => `${j.id}: ${j.status} (${j.tasks.filter((t) => t.status === "done").length}/${j.tasks.length})`);
+    const lim = state.limitUntil && Date.now() < state.limitUntil ? `\n⏸ Codexの利用上限中(${fmtTime(state.limitUntil)} まで)` : "";
+    return void msg.reply((rows.join("\n") || "ジョブなし") + lim);
+  }
+  if (text) await createJob(text, msg);
+});
+
+client.on("interactionCreate", async (i) => {
+  if (i.isButton() && i.customId.startsWith("pub:")) return onPublishButton(i);
+  if (!i.isButton() || !i.customId.startsWith("plan:")) return;
+  if (!ALLOWED.has(i.user.id)) return void i.reply({ content: "権限がありません", ephemeral: true });
+  const [, act, id] = i.customId.split(":");
+  const job = state.jobs[id];
+  if (!job || job.status !== "awaiting_plan_approval") return void i.reply({ content: "この計画は処理済みです", ephemeral: true });
+  if (act === "ok") {
+    job.status = "running"; await save();
+    await i.update({ content: `${i.message.content}\n\n✅ 実行開始`, components: [] });
+    await dispatch(job);
+  } else {
+    job.status = "rejected"; await save();
+    await i.update({ content: `${i.message.content}\n\n❌ 却下`, components: [] });
+  }
+});
+
+async function onPublishButton(i) {
+  if (!ALLOWED.has(i.user.id)) return void i.reply({ content: "権限がありません", ephemeral: true });
+  const [, act, id] = i.customId.split(":");
+  const job = state.jobs[id];
+  if (!job || job.status !== "awaiting_approval") return void i.reply({ content: "この承認は処理済みです", ephemeral: true });
+  if (act === "ng") {
+    job.status = "rejected"; await save();
+    await i.update({ content: `${i.message.content}\n\n❌ 公開しない(${i.user.username})`, components: [] });
+    return void log(`[${id}] 公開見送り。修正する場合は #command に新しい依頼として書いてください(例: 「${id} のヒーロー画像をやり直して」)`);
+  }
+  // 承認 → 署名付きトークンを発行し、publisherタスクを追加
+  job.approval = signApproval(APPROVAL_SECRET, job.id, i.user.id);
+  job.tasks.push({
+    key: "publish", to: PUBLISHER_ROLE, title: "本番公開", instructions: PUBLISH_INSTRUCTIONS,
+    acceptance: ["公開URLが開け、変更が反映されている"],
+    deps: job.tasks.map((t) => t.key), requiresApproval: true,
+    status: "pending", attempt: 0, sentId: null, sentAt: null, summary: null,
+  });
+  job.status = "running"; await save();
+  await i.update({ content: `${i.message.content}\n\n✅ 公開を承認(${i.user.username})`, components: [] });
+  await log(`[${id}] 公開承認 by ${i.user.username}`);
+  await dispatch(job);
+}
+
+client.once("ready", async () => {
+  console.log(`orchestrator logged in as ${client.user.tag}`);
+  scheduleLimitNotice();
+  for (const j of Object.values(state.jobs)) if (j.status === "running") await dispatch(j); // 再起動復帰
+});
+client.login(DISCORD_TOKEN);

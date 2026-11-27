@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.*.example
+state.json
+chat-sessions.json
+.lock-*
+spec-out/
+timings.csv
