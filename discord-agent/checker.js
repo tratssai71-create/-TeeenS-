@@ -22,7 +22,7 @@ export function diffStyle(spec, got, text = "") {
   const la = px(spec.lh), lb = px(got.lh);
   if (la != null && lb != null && Math.abs(la - lb) > Math.max(4, la * 0.15)) out.push(`行間: 仕様 ${spec.lh} / STUDIO ${got.lh}`);
   const sa = px(spec.ls) ?? 0, sb = px(got.ls) ?? 0;
-  if (Math.abs(sa - sb) > 0.8) out.push(`字間: 仕様 ${spec.ls || "0"} / STUDIO ${got.ls || "0"}`);
+  if (Math.abs(sa - sb) > 1.0) out.push(`字間: 仕様 ${spec.ls || "0"} / STUDIO ${got.ls || "0"}`);
   // 日本語の文字は、欧文フォント(Poppinsなど)の違いが見た目に出ないので、フォントは、日本語を含まない文字だけ比べる
   if (!/[\u3040-\u30ff\u3400-\u9fff]/.test(text) && spec.font && got.font && fam(spec.font) !== fam(got.font)) out.push(`フォント: 仕様 ${spec.font} / STUDIO ${fam(got.font)}`);
   return out;
@@ -44,7 +44,7 @@ export function compareSpec(specItems, studioItems) {
     let cands = exact;
     // 完全に同じ文字が無い、または、あっても、すべて違いがあるときは、ほぼ同じ文字(前に「○ 」が付いている、少し長い・短いなど)も、相手の候補に入れる。ただし、極端に短い・長いものは、除く
     if (!cands.length || cands.every((c) => diffStyle(it.style ?? {}, c, it.text).length)) {
-      const relaxed = pool.filter((s) => s.n !== n && n.length >= 6 && (s.n.includes(n) || (n.includes(s.n) && s.n.length >= n.length * 0.6)));
+      const relaxed = pool.filter((s) => s.n !== n && n.length >= 3 && ((s.n.includes(n) && (n.length >= 4 || s.n.length <= n.length * 3)) || (n.length >= 6 && n.includes(s.n) && s.n.length >= n.length * 0.6)));
       cands = [...exact, ...relaxed];
     }
     if (!cands.length) { result.missing.push(it); continue; }
@@ -52,7 +52,9 @@ export function compareSpec(specItems, studioItems) {
     let bestHit = null;
     for (const c of cands) { const d = diffStyle(it.style ?? {}, c, it.text); if (!best || d.length < best.length) { best = d; bestHit = c; } if (!d.length) break; }
     result.pairs.push({ item: it, hit: bestHit });
-    best.length ? result.diffs.push({ item: it, diffs: best }) : result.ok.push(it);
+    // 一部分だけが、ずっと長い文字(まとまった本文・リスト)の中に、入っているときは、大きさ・色は、比べられない(長い文字全体の値になる)ので、「ある」ことだけを、確認する
+    const inLonger = bestHit && bestHit.n !== n && bestHit.n.includes(n) && bestHit.n.length > n.length * 1.8;
+    (best.length && !inLonger) ? result.diffs.push({ item: it, diffs: best }) : result.ok.push(it);
   }
   return result;
 }
