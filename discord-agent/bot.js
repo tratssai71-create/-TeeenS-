@@ -3,7 +3,7 @@ import { spawn, execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { verifyApproval, extractExpectedText } from "./core.js";
+import { verifyApproval, extractExpectedText, normalizeCommand } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
 import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted } from "./checker.js";
@@ -470,7 +470,7 @@ client.on("messageCreate", async (msg) => {
   if (!CHANNELS.has(msg.channelId)) return;
   if (!ALLOWED.has(msg.author.id)) return; // 許可ユーザー以外は無視
 
-  const text = msg.content.trim();
+  const text = normalizeCommand(msg.content);
   if (!text) return;
 
   if (text === "!stop") {

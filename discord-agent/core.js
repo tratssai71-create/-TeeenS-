@@ -132,3 +132,13 @@ export function extractQuestions(plan) {
   const q = Array.isArray(plan?.questions) ? plan.questions.map((x) => String(x).trim()).filter(Boolean).slice(0, 3) : [];
   return q.length ? q : null;
 }
+
+// コマンドの打ち間違い(日本語入力のまま)を許す: 全角の「！」「０-９」「　」を半角にし、「!」で始まる短い文の、最後の「。」「、」「．」を取る
+export function normalizeCommand(raw) {
+  let t = String(raw ?? "").trim();
+  t = t.replace(/^！/, "!");
+  if (!t.startsWith("!")) return t;
+  t = t.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, " ");
+  if (t.length <= 60) t = t.replace(/[。．、,.\s]+$/, ""); // 長い依頼文(!quick の本文など)は、そのまま
+  return t;
+}

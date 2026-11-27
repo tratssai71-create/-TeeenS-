@@ -7,7 +7,7 @@ import { existsSync } from "node:fs";
 import { appendFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan, extractQuestions } from "./core.js";
+import { extractJson, validatePlan, readyTasks, buildTaskMessage, jobFinished, signApproval, quickPlan, extractQuestions, normalizeCommand } from "./core.js";
 import { formatPlan, formatDone, formatApproval, hintFor, roleLabel, fmtTime, stageTimes, buildReport } from "./messages.js";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -272,7 +272,7 @@ client.on("messageCreate", async (msg) => {
     return;
   }
   if (msg.channelId !== COMMAND_CHANNEL_ID || msg.author.bot || !ALLOWED.has(msg.author.id)) return;
-  const text = msg.content.trim();
+  const text = normalizeCommand(msg.content);
   if (text === "!halt") { state.halted = true; await save(); return void msg.reply("停止しました。新規の割り当てを止めます(実行中タスクは各ワーカーで `!stop` )"); }
   if (text === "!resume") { state.halted = false; await save(); for (const j of Object.values(state.jobs)) await dispatch(j); return void msg.reply("再開しました"); }
   if (text === "!report") return void msg.reply(buildReport(state.jobs).slice(0, 1900));

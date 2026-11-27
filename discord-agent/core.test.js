@@ -117,3 +117,14 @@ test("buildTaskMessage: 題や確認項目が長くても、切り詰めて、�
   const msg = buildTaskMessage({ id: "j1", tasks: [t] }, t, 30);
   assert.ok(msg.length <= 1900);
 });
+
+import { normalizeCommand } from "./core.js";
+test("normalizeCommand: 日本語入力のまま打ったコマンドも、通る", () => {
+  assert.equal(normalizeCommand("!fix 5 配置。"), "!fix 5 配置");
+  assert.equal(normalizeCommand("!compare。"), "!compare");
+  assert.equal(normalizeCommand("！fix　５"), "!fix 5");
+  assert.equal(normalizeCommand("!auto 3-5 "), "!auto 3-5");
+  assert.equal(normalizeCommand("普通の依頼です。"), "普通の依頼です。"); // コマンドでない文は、そのまま
+  const long = "!quick " + "あ".repeat(80) + "。";
+  assert.equal(normalizeCommand(long), long);
+});
