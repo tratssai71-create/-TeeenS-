@@ -5,7 +5,7 @@ import { dirname } from "node:path";
 import { inSpec, specDir } from "./spec-dir.js";
 import { cdpSession } from "./browser-guard.js";
 
-const norm = (t) => String(t ?? "").replace(/[\s　「」『』"'“”‘’]/g, "");
+const norm = (t) => String(t ?? "").replace(/[\s\u3000「」『』"'“”‘’()（）\[\]［］【】〔〕<>＜＞]/g, "").normalize("NFKC"); // 括弧・引用符・空白は、全角か半角かを、気にしない
 const px = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
 const rgb = (v) => { const m = String(v ?? "").match(/rgba?\(([^)]+)\)/); if (!m) return null; const [r, g, b, a = 1] = m[1].split(",").map((x) => parseFloat(x)); return { r, g, b, a }; };
 const fam = (v) => String(v ?? "").split(",")[0].replace(/["']/g, "").trim().toLowerCase();
@@ -40,8 +40,13 @@ export function compareSpec(specItems, studioItems) {
     if (!n) continue;
     // 完全一致を優先。なければ、一方がもう一方を含む(文の区切り方が違うとき)ものを探す
     // 同じ文字が、ページの中に、複数あるとき(例: 本文のリンクと、フッターのリンク)は、違いがいちばん少ないものを、相手にする
-    let cands = pool.filter((s) => s.n === n);
-    if (!cands.length) cands = pool.filter((s) => n.length >= 6 && (s.n.includes(n) || (s.n.length >= 6 && n.includes(s.n))));
+    const exact = pool.filter((s) => s.n === n);
+    let cands = exact;
+    // 完全に同じ文字が無い、または、あっても、すべて違いがあるときは、ほぼ同じ文字(前に「○ 」が付いている、少し長い・短いなど)も、相手の候補に入れる。ただし、極端に短い・長いものは、除く
+    if (!cands.length || cands.every((c) => diffStyle(it.style ?? {}, c, it.text).length)) {
+      const relaxed = pool.filter((s) => s.n !== n && n.length >= 6 && (s.n.includes(n) || (n.includes(s.n) && s.n.length >= n.length * 0.6)));
+      cands = [...exact, ...relaxed];
+    }
     if (!cands.length) { result.missing.push(it); continue; }
     let best = null;
     let bestHit = null;
@@ -66,7 +71,7 @@ const EXTRACT = `(() => {
 })()`;
 
 /** いまの編集画面(STUDIOのタブ)から、文字の要素を、すべて読む(入れ子の画面も含む) */
-export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
+export async function readStudioTexts({ cdp = "http://localhost:9222", first, last } = {}) {
   const pages = (await (await fetch(`${cdp}/json/list`, { signal: AbortSignal.timeout(3000) })).json()).filter((t) => t.type === "page" && /studio\.design/.test(t.url));
   const page = pages.find((p) => /\/editor/.test(p.url));
   if (!page) throw new Error("STUDIOの編集画面が、開かれていません");
@@ -90,7 +95,7 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
     // サイト本体(最初の文字「About」と最後の文字を、両方含む、いちばん小さい要素)の位置と幅。配置の検査で、拡大率を出すために使う
     try {
       const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
-        const a = find(${JSON.stringify(process.env.FIRST_TEXT ?? "About")}), b = find(${JSON.stringify(process.env.LAST_TEXT ?? "TeeenS Inc")}); if (!a || !b) return JSON.stringify(null); let e = a; while (e && !e.contains(b)) e = e.parentElement; if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x, y: q.y, w: q.width, h: q.height }); })()` });
+        const a = find(${JSON.stringify(first ?? process.env.FIRST_TEXT ?? "About")}), b = find(${JSON.stringify(last ?? process.env.LAST_TEXT ?? "TeeenS Inc")}); if (!a || !b) return JSON.stringify(null); let e = a; while (e && !e.contains(b)) e = e.parentElement; if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x, y: q.y, w: q.width, h: q.height }); })()` });
       all.root = JSON.parse(r.result.value ?? "null");
       // 編集画面の、ほかの部分(レイヤーの一覧・右パネルなど)の文字を、検査に混ぜない。キャンバス(サイト本体)の中に、収まる文字だけにする
       if (all.root) { const R = all.root; const keep = all.filter((i) => i.x == null || (i.x >= R.x - 2 && i.x + i.w <= R.x + R.w + 2 && i.y + i.h >= R.y - 2 && i.y <= R.y + R.h + 2)); all.length = 0; all.push(...keep); }
@@ -103,13 +108,24 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
 const isOutline = (it) => { const c = rgb(it.style?.color); return !!c && c.a < 0.05; }; // 中が透明で、輪郭(縁取り)だけの文字。内容(見出しなど)なので、検査の対象。色の比較だけ、しない
 const isDecor = () => false;
 
+/** サイトの、最初の文字と、最後の文字(キャンバスの場所を、見つけるための目印)。仕様書から、取る */
+export function siteAnchors(spec) {
+  const secs = spec?.pc?.sections ?? [];
+  const texts = (sec) => (sec?.items ?? []).filter((i) => i.kind !== "image" && i.text && !isFilename(i.text)).map((i) => String(i.text).replace(/\s+/g, " ").trim());
+  const firstSec = secs.find((x) => texts(x).length), lastSec = [...secs].reverse().find((x) => texts(x).length);
+  const first = texts(firstSec)[0] ?? "", last = texts(lastSec).slice(-1)[0] ?? "";
+  return { first: first.slice(0, 10), last: last.slice(0, 10) };
+}
+/** 画像の代わりに入っている、ファイル名の文字(例: img/hero.jpg)は、内容ではないので、検査しない */
+const isFilename = (t) => /^[\w./-]+\.(jpe?g|png|webp|gif|svg|avif)(\?\S*)?$/i.test(String(t).trim());
+
 /** 仕様書(spec.json)の、文字の項目を、1つの配列にする。section を指定すると、そのセクション(1始まり)だけ */
 export function specTextItems(spec, { section = null, device = "pc" } = {}) {
   const secs = spec?.[device]?.sections ?? [];
   const out = [];
   secs.forEach((sec, i) => {
     if (section && i + 1 !== section) return;
-    for (const it of sec.items ?? []) if (it.kind !== "image" && it.text && !isDecor(it)) out.push({ ...it, section: i + 1 });
+    for (const it of sec.items ?? []) if (it.kind !== "image" && it.text && !isDecor(it) && !isFilename(it.text)) out.push({ ...it, section: i + 1 });
   });
   return out;
 }
@@ -179,7 +195,8 @@ export function applyAccepted(result, accepted = []) {
 
 export async function checkStudio({ specPath = inSpec("spec.json"), section = null, cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
-  const studio = await readStudioTexts({ cdp });
+  const an = siteAnchors(spec);
+  const studio = await readStudioTexts({ cdp, first: an.first, last: an.last });
   const dw = studio.designW ?? 1280;
   device = device ?? (dw < 700 ? "sp" : "pc"); // 編集画面が、スマホ・タブレットの幅なら、スマホの仕様で検査する
   const accAll = loadAccepted();
@@ -220,7 +237,8 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
 /** !progress 用: 全セクションの検査結果を、1つの表にする */
 export async function progressTable({ specPath = inSpec("spec.json"), cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
-  const studio = await readStudioTexts({ cdp });
+  const an = siteAnchors(spec);
+  const studio = await readStudioTexts({ cdp, first: an.first, last: an.last });
   device = device ?? ((studio.designW ?? 1280) < 700 ? "sp" : "pc");
   const secs = spec?.[device]?.sections ?? [];
   const rows = secs.map((_, i) => {
@@ -244,6 +262,7 @@ export function fixPrompt(result, n, { project = "", layout = false } = {}) {
   const lines = [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(${specDir()}/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
   if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));
   if (result.missing.length) lines.push("【STUDIOに無い文字(追加するか、仕様書にある文字が正しく入っているか確認する)】", ...result.missing.map((m) => `・「${String(m.text).slice(0, 60)}」`));
+  if (result.missing.length >= 2) lines.push("足りない文字が、カードやリストの「1つ分」(見出しと説明など)のときは、すでにある、同じ形のものを、複製して、中身を差し替えると、確実です。画像がある形なら、画像の部品も、複製されるので、元の画像(仕様書の画像の項目)に、差し替えてください。");
   lines.push("直せない項目(その書体が選べない、など)は、無理に別の方法を探し回らず、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。");
   return lines.filter(Boolean).join("\n");
 }

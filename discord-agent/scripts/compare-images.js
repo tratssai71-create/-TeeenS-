@@ -19,7 +19,9 @@ const ev = async (s, expression) => JSON.parse((await s.send("Runtime.evaluate",
 const page = (await (await fetch("http://localhost:9222/json/list")).json()).filter((t) => t.type === "page" && /studio\.design\/projects\/[^/]+\/editor/.test(t.url))[0];
 if (!page) { console.error("STUDIOの編集画面が開かれていません"); process.exit(1); }
 const s = await cdpSession(page.webSocketDebuggerUrl, 20000);
-const FIRST = process.env.FIRST_TEXT ?? "About", LAST = process.env.LAST_TEXT ?? "TeeenS Inc";
+// キャンバスの場所を見つける目印(サイトの最初と最後の文字)。仕様書から、取る。無ければ、環境変数
+let FIRST = process.env.FIRST_TEXT ?? "About", LAST = process.env.LAST_TEXT ?? "TeeenS Inc";
+try { const { siteAnchors } = await import("../checker.js"); const sp = JSON.parse((await import("node:fs")).readFileSync(join(dirname(out), "spec.json"), "utf8")); const an = siteAnchors(sp); if (an.first && an.last) { FIRST = an.first; LAST = an.last; } } catch {}
 const ROOT = `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
   const a = find(${JSON.stringify(FIRST)}), b = find(${JSON.stringify(LAST)}); if (!a || !b) return null; let e = a; while (e && !e.contains(b)) e = e.parentElement; return e; })()`;
 const rectJs = `(() => { const e = ${ROOT}; if (!e) return JSON.stringify(null); const r = e.getBoundingClientRect(); return JSON.stringify({ x: r.x, y: r.y, w: r.width, h: r.height, ih: innerHeight, iw: innerWidth, dpr: devicePixelRatio }); })()`;
