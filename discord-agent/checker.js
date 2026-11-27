@@ -57,15 +57,18 @@ export function compareSpec(specItems, studioItems) {
   return result;
 }
 
-const EXTRACT = `(() => {
+const EXTRACT = (first, last) => `(() => {
   const out = [];
+  // サイト本体(最初の文字と最後の文字を、両方含む、いちばん小さい要素)。この中の文字だけを、「サイトの文字」とする(横にスクロールする、画面の外のカードも、含む)
+  const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
+  let root = null; try { const a = find(${JSON.stringify(first ?? "")}), b = find(${JSON.stringify(last ?? "")}); if (a && b) { let e = a; while (e && !e.contains(b)) e = e.parentElement; root = e; } } catch {}
   for (const el of document.querySelectorAll("body *")) {
     const own = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
     if (!own) continue;
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden") continue;
     const r = el.getBoundingClientRect();
-    out.push({ x: r.x, y: r.y, w: r.width, h: r.height, text: own, size: cs.fontSize, weight: cs.fontWeight, color: cs.color, lh: cs.lineHeight, ls: cs.letterSpacing === "normal" ? "" : cs.letterSpacing, font: cs.fontFamily });
+    out.push({ inRoot: root ? root.contains(el) : true, x: r.x, y: r.y, w: r.width, h: r.height, text: own, size: cs.fontSize, weight: cs.fontWeight, color: cs.color, lh: cs.lineHeight, ls: cs.letterSpacing === "normal" ? "" : cs.letterSpacing, font: cs.fontFamily });
   }
   return JSON.stringify(out);
 })()`;
@@ -83,7 +86,7 @@ export async function readStudioTexts({ cdp = "http://localhost:9222", first, la
     for (const fid of walk(tree.frameTree)) {
       try {
         const w = await s.send("Page.createIsolatedWorld", { frameId: fid });
-        const r = await s.send("Runtime.evaluate", { contextId: w.executionContextId, expression: EXTRACT, returnByValue: true });
+        const r = await s.send("Runtime.evaluate", { contextId: w.executionContextId, expression: EXTRACT(first ?? process.env.FIRST_TEXT, last ?? process.env.LAST_TEXT), returnByValue: true });
         all.push(...JSON.parse(r.result.value ?? "[]"));
       } catch {}
     }
@@ -97,8 +100,8 @@ export async function readStudioTexts({ cdp = "http://localhost:9222", first, la
       const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
         const a = find(${JSON.stringify(first ?? process.env.FIRST_TEXT ?? "About")}), b = find(${JSON.stringify(last ?? process.env.LAST_TEXT ?? "TeeenS Inc")}); if (!a || !b) return JSON.stringify(null); let e = a; while (e && !e.contains(b)) e = e.parentElement; if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x, y: q.y, w: q.width, h: q.height }); })()` });
       all.root = JSON.parse(r.result.value ?? "null");
-      // 編集画面の、ほかの部分(レイヤーの一覧・右パネルなど)の文字を、検査に混ぜない。キャンバス(サイト本体)の中に、収まる文字だけにする
-      if (all.root) { const R = all.root; const keep = all.filter((i) => i.x == null || (i.x >= R.x - 2 && i.x + i.w <= R.x + R.w + 2 && i.y + i.h >= R.y - 2 && i.y <= R.y + R.h + 2)); all.length = 0; all.push(...keep); }
+      // 編集画面の、ほかの部分(レイヤーの一覧・右パネルなど)の文字は、サイト本体の外にあるので、除く(DOMの中に、あるかで、判断する)
+      { const keep = all.filter((i) => i.inRoot !== false); all.length = 0; all.push(...keep); }
     } catch {}
   } finally { s.close(); }
   return all;
