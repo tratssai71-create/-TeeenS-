@@ -20,7 +20,7 @@
 **▼ 決める・育てる**
 `!accept 料金プラン 色` 「この違いは、これでよい」と記録(検査から外れる)
 `!lessons` エージェントが見つけた、コツの記録
-`!help` このコマンド表を貼る / `!session` 会話の番号 / `!ping` 生きているか
+`!health` 動かす前の点検(Chrome・STUDIO・仕様書・Codex) / `!help` このコマンド表 / `!session` 会話の番号 / `!ping` 生きているか
 `!limit clear` Codexの上限の記録を消す
 
 **📖 コマンド表(#command)**

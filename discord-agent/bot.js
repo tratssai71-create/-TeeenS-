@@ -7,7 +7,7 @@ import { verifyApproval, extractExpectedText } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
 import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted } from "./checker.js";
-import { readFileSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, appendFileSync, statSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -541,6 +541,28 @@ client.on("messageCreate", async (msg) => {
     const t = readIf("docs/commands.md");
     for (const c of chunks(t || "コマンド表が見つかりません(docs/commands.md)")) await msg.channel.send(c);
     return;
+  }
+  if (text === "!health") { // 動かす前の、点検(Codexは使わない)
+    const ok = (b) => (b ? "✅" : "❌");
+    const rows = [];
+    let pages = null;
+    try { pages = (await (await fetch(`${BROWSER_CDP}/json/list`, { signal: AbortSignal.timeout(3000) })).json()).filter((t) => t.type === "page"); } catch {}
+    rows.push(`${ok(pages)} 専用Chrome(${BROWSER_CDP})${pages ? "" : " … 起動していません。`npm run browser` で起動してください"}`);
+    if (pages) {
+      const st = pages.filter((t) => /studio\.design/.test(t.url));
+      rows.push(`${ok(st.length)} STUDIOのタブ ${st.length}個${st.some((t) => /\/login/.test(t.url)) ? "(ログインが切れています)" : ""}`);
+      rows.push(`${ok(st.some((t) => /\/editor/.test(t.url)))} 編集画面が開いている`);
+      if (pages.length > st.length) rows.push(`ℹ️ STUDIO以外のタブが ${pages.length - st.length}個 あります(作業の整え直しで、閉じられることがあります)`);
+    }
+    let specInfo = "❌ 仕様書(spec-out/spec.json)が、ありません。`npm run spec -- 元のHTML` で作ります";
+    try { const f = "spec-out/spec.json"; const sp = JSON.parse(readFileSync(f, "utf8")); const age = Math.round((Date.now() - statSync(f).mtimeMs) / 3600000); specInfo = `✅ 仕様書: ${sp.pc.sections.length}セクション(${age}時間前に作成)/ 元: ${decodeURIComponent(String(sp.url).split("/").slice(-2).join("/"))}`; } catch {}
+    rows.push(specInfo);
+    let proj = ""; try { proj = Object.keys(JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}")).includes(BUILD_PROJECT) ? "✅" : "❌"; } catch { proj = "❌"; }
+    rows.push(`${proj} 制作先「${BUILD_PROJECT}」が projects.json にある`);
+    rows.push(`${chatLimitUntil > Date.now() ? "⏸" : "✅"} Codex(ChatGPT): ${chatLimitUntil > Date.now() ? `利用上限中(${fmtTime(chatLimitUntil)} まで)` : "使えるはず(上限の記録なし)"}`);
+    let acc = 0, les = 0; try { acc = JSON.parse(readFileSync("spec-out/accepted.json", "utf8")).length; } catch {} try { les = readIf("docs/lessons.md").split("\n").filter((l) => l.startsWith("- ")).length; } catch {}
+    rows.push(`ℹ️ 「これでよい」の記録 ${acc}件 / 学び ${les}件 / 画面の自動投稿 ${process.env.SCREENSHOT === "0" ? "オフ" : "オン"}`);
+    return void msg.reply(`🩺 点検\n${rows.join("\n")}`.slice(0, 1900));
   }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
