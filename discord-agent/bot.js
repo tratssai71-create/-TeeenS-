@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { verifyApproval, extractExpectedText, normalizeCommand } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
-import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
+import { prepareBrowser, verifyText, openEditor, captureScreenshot, switchPage } from "./browser-guard.js";
 import { specDir, setSpecDir, slugFor, inSpec } from "./spec-dir.js";
 import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted, imagePrompt, readStudioTexts } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync, appendFileSync, statSync, mkdirSync } from "node:fs";
@@ -140,8 +140,11 @@ try {
 let BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
 // サイトごとの制作先プロジェクト(spec-out/<サイト>/project.json)。!project 名前 / !site の2つ目の引数で、決める
 const ENV_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト";
-const refreshProject = () => { try { const n = JSON.parse(readFileSync(inSpec("project.json"), "utf8")).name; BUILD_PROJECT = n || ENV_PROJECT; } catch { BUILD_PROJECT = ENV_PROJECT; } };
-const saveProject = (name) => { try { mkdirSync(specDir(), { recursive: true }); writeFileSync(inSpec("project.json"), JSON.stringify({ name }, null, 2)); } catch {} BUILD_PROJECT = name; };
+let BUILD_PAGE = "/"; // 編集するSTUDIOのページ(ホームは「/」、「私たちについて」は「/about」など)
+const refreshProject = () => { try { const j = JSON.parse(readFileSync(inSpec("project.json"), "utf8")); BUILD_PROJECT = j.name || ENV_PROJECT; BUILD_PAGE = j.page || "/"; } catch { BUILD_PROJECT = ENV_PROJECT; BUILD_PAGE = "/"; } };
+const saveProject = (name, page) => { try { mkdirSync(specDir(), { recursive: true }); writeFileSync(inSpec("project.json"), JSON.stringify({ name, page: page ?? BUILD_PAGE }, null, 2)); } catch {} BUILD_PROJECT = name; if (page) BUILD_PAGE = page; };
+// 元のサイトのURL(またはパス)から、STUDIOのページのパスを決める(index.html → /、about.html → /about)
+const pageFromSrc = (src) => { const m = String(src).replace(/[?#].*$/, "").match(/([^/]+)\.html?$/i); return !m || /^index$/i.test(m[1]) ? "/" : `/${m[1]}`; };
 const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。",
   "**話し方**: ユーザーは、気軽に、お願いする感じで話しかけます(「ここ、もうちょい濃くして」のような、くだけた言い方、ざっくりした頼み方)。あなたも、親しみやすい、やさしい口調で返す(です・ます調で、堅すぎない。専門用語は避け、使うときは、ひとこと説明する)。返事は、短く。次の形にする: ①やったこと(1〜2行) ②気になる点・できなかったこと(あれば) ③次にできること(1つだけ、提案)。頼みがざっくりしていても、仕様書や見本から、読み取れる範囲は、自分で決めて進める。本当に分からないときだけ、質問を1つだけする(選択肢を添える)。",
@@ -316,6 +319,26 @@ let autoCancel = false;
 let autoRounds = 0; // いま、何回目の検査か(記録用)
 let stopRequested = false; // !stop で止めたときに、会話の「やり直し」(再実行)をしないための印
 const AUTO_MAX_ROUNDS = Number(process.env.AUTO_MAX_ROUNDS ?? 3);
+// 制作先のプロジェクトの、制作するページの編集画面を、開いて、読み込みを待つ。すでに、開いていれば、開き直さない
+async function prepProject(ch) {
+  const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
+  const ready = async () => { for (let i = 0; i < 45; i++) { try { const tt = await readStudioTexts({ cdp: BROWSER_CDP }); if (tt.length > 20) return true; } catch {} await new Promise((r) => setTimeout(r, 1000)); } return false; };
+  let open = false;
+  try { // いま、そのプロジェクトの編集画面が開いていれば、開き直さない
+    const id = String(JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}")[BUILD_PROJECT] ?? "").match(/projects\/([^/]+)/)?.[1];
+    const pages = (await (await fetch(`${BROWSER_CDP}/json/list`, { signal: AbortSignal.timeout(3000) })).json()).filter((t) => t.type === "page");
+    open = !!id && pages.some((t) => t.url.includes(`/projects/${id}/editor`));
+  } catch {}
+  if (!open) {
+    if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return false; }
+    await ready();
+  }
+  const sw = await switchPage({ cdp: BROWSER_CDP, path: BUILD_PAGE });
+  if (!sw.ok) { await say(`ページ「${BUILD_PAGE}」に、切り替えられませんでした(${sw.detail})。STUDIOの「ページパネル」で、そのページが、あるかを、確認してください。ここで止めます。`); return false; }
+  await ready();
+  return true;
+}
+
 async function autoSection(ch, n) {
   const t0 = Date.now();
   autoRounds = 0;
@@ -728,4 +751,5 @@ client.on("messageCreate", async (msg) => {
 process.on("uncaughtException", (e) => console.error("[uncaughtException]", e?.message ?? e));
 process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
 client.once("ready", () => console.log(`[${AGENT_NAME}] logged in as ${client.user.tag}`));
-client.login(DISCORD_TOKEN);
+if (process.env.BOT_TEST_HOOK) globalThis.__bot = { prepProject, siteFlow, autoSection, chatTurn, pageFromSrc, saveProject, refreshProject }; // 試験用(Discordに接続しない)
+else client.login(DISCORD_TOKEN);
