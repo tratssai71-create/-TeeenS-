@@ -22,13 +22,13 @@ test("specTextItems: セクション指定と、画像の除外", () => {
 });
 
 import { sectionPrompt } from "./checker.js";
-test("sectionPrompt: 長いセクションでも、最後の指示まで切れない/ヘッダーは上/飾り文字は作らない", () => {
+test("sectionPrompt: 長いセクションでも、最後の指示まで切れない/ヘッダーは上/輪郭だけの文字は、その旨を添えて作る", () => {
   const items = Array.from({ length: 40 }, (_, i) => ({ kind: "text", text: `文字${i}`.padEnd(30, "あ"), style: { size: "14px", weight: "400", color: "rgb(1,1,1)", font: "Poppins" } }));
   items.push({ kind: "text", text: "Page", style: { size: "100px", color: "rgba(0, 0, 0, 0)" } });
   const spec = { pc: { sections: [{ tag: "header", h: 79, bg: "#fff", layout: {}, items }, { tag: "section", h: 500, bg: "#fff", layout: {}, items: items.slice(0, 2) }] } };
   const p1 = sectionPrompt(spec, 1, { project: "テスト" });
   assert.ok(p1.length > 1900); assert.ok(p1.endsWith("公開はしない。")); assert.match(p1, /一番上/); assert.match(p1, /「テスト」/);
-  assert.match(p1, /飾りの文字「Page」/);
+  assert.match(p1, /輪郭だけの文字/);
   assert.match(sectionPrompt(spec, 2), /セクション1の直後/);
   assert.equal(sectionPrompt(spec, 9), null);
 });
