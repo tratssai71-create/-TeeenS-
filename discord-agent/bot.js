@@ -529,9 +529,10 @@ client.on("messageCreate", async (msg) => {
     execFile("node", ["scripts/compare-images.js", src, "spec-out/compare"], { timeout: 6 * 60 * 1000 }, async (err, stdout, stderr) => {
       if (err) return void msg.channel.send(`並べる画像を作れませんでした: ${String(stderr || err.message).slice(0, 300)}(STUDIOの編集画面を、開いてから、もう一度)`);
       try {
-        const { scores, files } = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8"));
-        const list = scores.map((v, i) => `${i + 1}枚目: 近さ ${v}%`).join(" / ");
-        await msg.channel.send({ content: `🖼️ 左=元のサイト / 右=いまのSTUDIO(上から順に${files.length}枚)\n見た目の近さ(目安): ${list}\n※近さは、位置のずれにも敏感なので、画像の中身を、目で見て確かめてください。`, files: files.slice(0, 10).map((f) => new AttachmentBuilder(join("spec-out/compare", f))) });
+        const { sections = [], files } = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8"));
+        const mark = (v) => (v >= 80 ? "🟢" : v >= 50 ? "🟡" : "🔴");
+        const list = sections.map((x) => `${mark(x.score)}セクション${x.n}: ${x.score}`).join("\n");
+        await msg.channel.send({ content: `🖼️ 左=元のサイト / 右=いまのSTUDIO(上から順に${files.length}枚)\n見た目の近さ(0〜100・輪郭の重なり具合。🟢80以上 / 🟡50〜79 / 🔴50未満):\n${list}\n※画像(ロゴ・写真)が空の枠だと、下がります。数字は目安なので、画像の中身を、目で見て確かめてください。`, files: files.slice(0, 10).map((f) => new AttachmentBuilder(join("spec-out/compare", f))) });
       } catch (e) { await msg.channel.send(`画像の送信に失敗しました: ${e.message}`); }
     });
     return;
