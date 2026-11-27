@@ -220,11 +220,12 @@ export async function checkStudio({ specPath = inSpec("spec.json"), section = nu
 }
 
 /** 仕様書の、1セクションから、Codexへの「作ってください」の依頼文を作る(!build N 用) */
-export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
+export function sectionPrompt(spec, n, { device = "pc", project = "", page = "" } = {}) {
   const sec = spec?.[device]?.sections?.[n - 1];
   if (!sec) return null;
   const L = sec.layout ?? {};
-  const lines = [
+  const pageNote = page && page !== "/" ? `(編集するページは「${page}」です。ページパネルで、このページを開いてから、作ってください)` : "";
+  const lines = [pageNote, 
     `STUDIO${project ? "の「" + project + "」" : ""}の編集画面(別のプロジェクトが開いていたら、一覧から「" + (project || "対象") + "」を開き直す)で、${sec.tag === "header" ? "ページの**一番上**(ほかのセクションより上)" : sec.tag === "footer" ? "ページの**一番下**" : `すでに作ったセクションの下(セクション${n - 1}の直後)`}に、新しい${sec.tag === "header" ? "ヘッダー" : "セクション"}(セクション${n})を1つ作ってください。仕様書(${specDir()}/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
     `- 全体: 背景 ${sec.bg} / 高さの目安 ${sec.h}px / 並べ方 ${L.display ?? "block"}${L.dir ? " " + L.dir : ""}${L.gap && L.gap !== "normal" ? " 間隔" + L.gap : ""}${L.justify ? " 横:" + L.justify : ""}${L.align ? " 縦:" + L.align : ""} / 余白 ${L.pad ?? ""}`,
     "- 中身(上から順。文字は、一字一句、そのまま):",
@@ -236,7 +237,7 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
     lines.push(`  ・${it.kind === "heading" ? "見出し(" + it.tag + ")" : it.kind === "link" ? "リンク → " + (it.href ?? "") : "文字"}「${it.text}」 ${st.size ?? ""} / 太さ${st.weight ?? ""} / 色${isOutline(it) ? "(透明)" : st.color ?? ""}${st.lh ? " / 行間" + st.lh : ""}${st.ls ? " / 字間" + st.ls : ""} / ${fam(st.font)}${/[぀-ヿ㐀-鿿]/.test(it.text ?? "") ? "(日本語は Noto Sans JP)" : ""}` + outline + (it.box ? ` / 文字を包む箱: 背景${it.box.bg} 角丸${it.box.radius} 余白${it.box.pad}${it.box.border ? " 枠" + it.box.border : ""} 大きさ${it.box.w}×${it.box.h}` : ""));
   }
   lines.push("制作ルール(手順書)を守って。作ったあとは、仕様書と合っているか自分で点検して、違う点・自信のない点を正直に報告して。公開はしない。");
-  return lines.join("\n"); // Codexに渡す文なので、Discordの文字数の上限では切らない(切ると、後ろの項目と「公開しない」が消える)
+  return lines.filter(Boolean).join("\n"); // Codexに渡す文なので、Discordの文字数の上限では切らない(切ると、後ろの項目と「公開しない」が消える)
 }
 
 /** !progress 用: 全セクションの検査結果を、1つの表にする */
@@ -257,14 +258,15 @@ export async function progressTable({ specPath = inSpec("spec.json"), cdp, devic
 }
 
 /** !fix N 用: 検査の結果(違い・見つからない文字)から、「ここを直してください」の依頼文を作る。直すところがなければ null */
-export function fixPrompt(result, n, { project = "", layout = false } = {}) {
+export function fixPrompt(result, n, { project = "", layout = false, page = "" } = {}) {
+  const pageNote = page && page !== "/" ? `(編集するページは「${page}」です。ページパネルで、このページが開いているのを確認してください)` : "";
   const mobile = result.device === "sp" ? `**今は、モバイルサイズの画面(幅${result.designW}px)の話です。** 編集画面の下の「モバイルサイズに切り替える」ボタンで、モバイルサイズにしてから、直してください。PCサイズ(デフォルトサイズ)の見た目は、変えないでください。` : "";
   if (layout) {
     if (!result.layout?.length) return null;
-    return [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(${specDir()}/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
+    return [mobile, pageNote, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(${specDir()}/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
   }
   if (!result.diffs.length && !result.missing.length) return null;
-  const lines = [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(${specDir()}/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
+  const lines = [mobile, pageNote, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(${specDir()}/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
   if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));
   if (result.missing.length) lines.push("【STUDIOに無い文字(追加するか、仕様書にある文字が正しく入っているか確認する)】", ...result.missing.map((m) => `・「${String(m.text).slice(0, 60)}」`));
   if (result.missing.length >= 2) lines.push("足りない文字が、カードやリストの「1つ分」(見出しと説明など)のときは、すでにある、同じ形のものを、複製して、中身を差し替えると、確実です。画像がある形なら、画像の部品も、複製されるので、元の画像(仕様書の画像の項目)に、差し替えてください。");
@@ -273,16 +275,17 @@ export function fixPrompt(result, n, { project = "", layout = false } = {}) {
 }
 
 /** セクションの画像を、元のファイルから、アップロードして、空の枠に置く依頼文。画像が無いセクションは null */
-export function imagePrompt(spec, n, { project = "", device = "pc" } = {}) {
+export function imagePrompt(spec, n, { project = "", device = "pc", page = "" } = {}) {
   const sec = spec?.[device]?.sections?.[n - 1];
   const imgs = (sec?.items ?? []).filter((i) => i.kind === "image" && i.src);
   if (!imgs.length) return null;
-  const lines = [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}にある、**画像の空の枠(グレーの枠)**に、元のサイトの画像ファイルを、アップロードして置いてください。上から下、左から右の順に、次の${imgs.length}枚です。`];
+  const pageNote = page && page !== "/" ? `(編集するページは「${page}」です)` : "";
+  const lines = [pageNote, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}にある、**画像の空の枠(グレーの枠)**に、元のサイトの画像ファイルを、アップロードして置いてください。上から下、左から右の順に、次の${imgs.length}枚です。`];
   imgs.forEach((im, i) => {
     let path = im.src;
     if (/^file:/.test(path)) { try { path = decodeURIComponent(new URL(path).pathname); } catch {} }
     lines.push(`${i + 1}. ファイル: ${path} / 大きさ: 横${im.w}px × 縦${im.h}px${im.alt ? ` / 説明(alt): 「${im.alt}」` : ""}`);
   });
   lines.push("画像の部品が、まだ無い場所(ロゴなど)は、標準の画像部品を、置いてから、アップロードしてください。置いたら、枠の大きさを、上の大きさに合わせて、縦横の比率を、保ってください(引き伸ばさない)。画像の説明(alt)も、入れてください。ほかの部分は、変えないでください。ファイルを選ぶ操作ができなかったときは、どこまでできたか、教えてください。公開はしない。");
-  return lines.join("\n");
+  return lines.filter(Boolean).join("\n");
 }

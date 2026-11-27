@@ -217,3 +217,30 @@ export async function captureScreenshot({ cdp = "http://localhost:9222", studioP
     return Buffer.from(r.data, "base64");
   } catch { return null; } finally { s?.close(); }
 }
+
+/**
+ * STUDIOの編集画面で、ページ(例: /about、ホームは /)を切り替える。「ページパネル」を開いて、ページ名の行を、クリックして、パネルを閉じる。
+ * すでに、そのページが開いていれば、何もしない。
+ */
+export async function switchPage({ cdp = "http://localhost:9222", path = "/", timeoutMs = 20000 } = {}) {
+  let s;
+  try {
+    const pages = (await http(cdp, "/json/list")).filter((t) => t.type === "page" && /studio\.design\/projects\/[^/]+\/editor/.test(t.url));
+    const page = pages[0]; if (!page) return { ok: false, detail: "編集画面が開かれていません" };
+    const want = path === "/" ? /\/editor\/(%2F)?$/ : new RegExp(`/editor/${path.replace(/^\//, "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+    if (want.test(page.url)) return { ok: true, detail: "すでに、そのページです" };
+    s = await cdpSession(page.webSocketDebuggerUrl, 20000);
+    const ev = async (expression) => JSON.parse((await s.send("Runtime.evaluate", { expression, returnByValue: true })).result.value ?? "null");
+    // ページ名の行(例: 「私たちについて / /about」)の、ページのパス(/about)の部分が、一致する行を探す
+    const findRow = `(() => { const path = ${JSON.stringify(path)}; const e = [...document.querySelectorAll("li")].find((x) => x.innerText.replace(/\\s+/g, " ").trim().split(" ").includes(path)); if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x + 60, y: q.y + q.height / 2 }); })()`;
+    let pos = await ev(findRow);
+    if (!pos) { await s.send("Runtime.evaluate", { expression: `document.querySelector('[aria-label="ページパネルを開く"]')?.click()` }); await sleep(1200); pos = await ev(findRow); }
+    if (!pos) return { ok: false, detail: `ページ「${path}」が、ページパネルに見つかりません` };
+    for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) await s.send("Input.dispatchMouseEvent", { type, x: pos.x, y: pos.y, button: "left", clickCount: 1, buttons: type === "mousePressed" ? 1 : 0 });
+    const deadline = Date.now() + timeoutMs; let ok = false; // ページが変わると、タブの番号(id)が変わることがあるので、編集画面のタブを、毎回、探し直す
+    while (Date.now() < deadline) { await sleep(800); const now = (await http(cdp, "/json/list")).find((t) => t.type === "page" && /studio\.design\/projects\/[^/]+\/editor/.test(t.url)); if (now && want.test(now.url)) { ok = true; break; } }
+    await sleep(2500); // 画面の読み込みを、少し待つ
+    await s.send("Runtime.evaluate", { expression: `document.querySelectorAll('button[aria-label$="パネルを閉じる"]').forEach((b) => b.click())` });
+    return { ok, detail: ok ? "ページを切り替えました" : "切り替えを、確認できませんでした" };
+  } catch (e) { return { ok: false, detail: e.message }; } finally { s?.close(); }
+}

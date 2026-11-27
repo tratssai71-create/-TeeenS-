@@ -322,14 +322,12 @@ async function autoSection(ch, n) {
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   let spec;
   try { spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
-  const first = sectionPrompt(spec, n, { project: BUILD_PROJECT });
+  const first = sectionPrompt(spec, n, { project: BUILD_PROJECT, page: BUILD_PAGE });
   if (!first) { await say(`セクション${n}は、仕様書にありません`); return "stop"; }
   await say(`セクション${n}を、自動で作ります。「作る → 検査 → 違いがあれば直す」を、最大${AUTO_MAX_ROUNDS}回まで繰り返します。公開はしません。止めたいときは \`!stop\`。`);
   // 0) すでに、STUDIOに作ってある(途中まで)セクションは、作り直さず(重複を避ける)、仕様書との違いを直すだけにする
   const shot = specShot(n);
-  // 制作先のプロジェクトの編集画面を、先に開いて、読み込みを待つ(違うプロジェクトが開いていると、検査が、別のものを見てしまう)
-  if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return "stop"; }
-  for (let i = 0; i < 45; i++) { try { const tt = await readStudioTexts({ cdp: BROWSER_CDP }); if (tt.root && tt.length > 20) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
+  if (!(await prepProject(ch))) return "stop"; // 制作先のプロジェクト・ページの編集画面を、開いて、待つ(違うものが開いていると、検査が、別のものを見てしまう)
   let exists = false;
   try { const c0 = await checkStudio({ section: n, cdp: BROWSER_CDP }); const tot = c0.ok.length + c0.diffs.length + c0.missing.length; exists = tot > 0 && c0.ok.length + c0.diffs.length >= tot * 0.5; } catch {}
   let t = { ok: true };
@@ -367,7 +365,7 @@ async function autoSection(ch, n) {
     prev = sig;
     if (round === AUTO_MAX_ROUNDS) break;
     await say(`違いが${left}件あります。直します(${round}/${AUTO_MAX_ROUNDS - 1}回目)。`);
-    t = await chatTurn(ch, ch.id, fixPrompt(res, n, { project: BUILD_PROJECT }) + (shot ? SHOT_NOTE : ""), { images: shot ? [shot] : [] });
+    t = await chatTurn(ch, ch.id, fixPrompt(res, n, { project: BUILD_PROJECT, page: BUILD_PAGE }) + (shot ? SHOT_NOTE : ""), { images: shot ? [shot] : [] });
     if (t.why === "limit") return "limit";
     if (!t.ok) { await say("直す作業が、うまくいきませんでした。ここで止めます。人の確認が必要です。"); return "stop"; }
   }
@@ -389,7 +387,7 @@ async function siteFlow(ch, src, project) {
   const stopped = () => autoCancel || chatLimitUntil > Date.now();
   const dir = `spec-out/${slugFor(src)}`;
   if (specDir() !== dir) { mkdirSync(dir, { recursive: true }); setSpecDir(dir); } // サイトごとに、仕様書・許容・見比べ画像を、分ける
-  if (project) saveProject(project); else refreshProject();
+  if (project) saveProject(project, pageFromSrc(src)); else { refreshProject(); saveProject(BUILD_PROJECT, pageFromSrc(src)); }
   let st = loadSiteState();
   if (st.src !== src) st = { src, project: BUILD_PROJECT, imagesDone: [], started: new Date().toISOString() };
   st.project = BUILD_PROJECT;
@@ -406,9 +404,7 @@ async function siteFlow(ch, src, project) {
   const N = spec.pc.sections.length;
   const human = []; // 人の判断が必要なもの
   await say(`**${BUILD_PROJECT}** に、${N}セクションを、作っていきます。公開はしません。止めたいときは \`!stop\`(あとで、もう一度 \`!site\` を送ると、続きから動きます)。`);
-  // 制作先の編集画面を、先に開いて、読み込みを待つ(違うプロジェクトを、見てしまわないように)
-  if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return "stop"; }
-  for (let i = 0; i < 45; i++) { try { const tt = await readStudioTexts({ cdp: BROWSER_CDP }); if (tt.root && tt.length > 20) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
+  if (!(await prepProject(ch))) return "stop"; // 制作先のプロジェクト・ページの編集画面を、開いて、待つ
   // 2) 全セクションを作る(すでに合っているところは、飛ばす)
   for (let n = 1; n <= N; n++) {
     if (stopped()) return "stop";
@@ -422,7 +418,7 @@ async function siteFlow(ch, src, project) {
   for (let n = 1; n <= N; n++) {
     if (stopped()) return "stop";
     if (st.imagesDone.includes(n)) continue;
-    const ip = imagePrompt(spec, n, { project: BUILD_PROJECT }); if (!ip) continue;
+    const ip = imagePrompt(spec, n, { project: BUILD_PROJECT, page: BUILD_PAGE }); if (!ip) continue;
     await say(`セクション${n}の画像を、アップロードして、置きます。`);
     const t = await chatTurn(ch, ch.id, ip, { openProject: false });
     if (t.why === "limit") return "limit";
@@ -436,7 +432,7 @@ async function siteFlow(ch, src, project) {
       let c; try { c = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch { break; }
       if (!c.layout?.length) break;
       await say(`セクション${n}の配置を直します(${c.layout.length}件・${k + 1}/2回目)。`);
-      const t = await chatTurn(ch, ch.id, fixPrompt(c, n, { project: BUILD_PROJECT, layout: true }), {});
+      const t = await chatTurn(ch, ch.id, fixPrompt(c, n, { project: BUILD_PROJECT, layout: true, page: BUILD_PAGE }), {});
       if (t.why === "limit") return "limit";
       if (!t.ok) break;
     }
@@ -688,8 +684,8 @@ client.on("messageCreate", async (msg) => {
   }
   const pm = text.match(/^!project(?:\s+(.+))?$/); // 制作先のSTUDIOプロジェクト(いまのサイトに、紐づく)
   if (pm) {
-    if (pm[1]) { saveProject(pm[1].trim()); return void msg.reply(`✅ このサイト(${specDir()})の制作先を、「${BUILD_PROJECT}」にしました`); }
-    return void msg.reply(`制作先: 「${BUILD_PROJECT}」(サイト: ${specDir()})。変えるには \`!project プロジェクト名\``);
+    if (pm[1]) { const parts = pm[1].trim().split(/\s+(?=\/)/); saveProject(parts[0].trim(), parts[1]?.trim()); return void msg.reply(`✅ このサイト(${specDir()})の制作先を、「${BUILD_PROJECT}」のページ「${BUILD_PAGE}」にしました`); }
+    return void msg.reply(`制作先: 「${BUILD_PROJECT}」のページ「${BUILD_PAGE}」(サイト: ${specDir()})。変えるには \`!project プロジェクト名 /ページ\`(例: \`!project 株式会社フィリーズ HP /about\`)`);
   }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
@@ -701,7 +697,7 @@ client.on("messageCreate", async (msg) => {
   if (fm) { // 検査をして、見つかった違いから、直す依頼文を作って、会話に渡す(検査 → 直す の自動化)
     try {
       const n = Number(fm[1]);
-      const fp = fixPrompt(await checkStudio({ section: n, cdp: BROWSER_CDP }), n, { project: BUILD_PROJECT, layout: !!fm[2] });
+      const fp = fixPrompt(await checkStudio({ section: n, cdp: BROWSER_CDP }), n, { project: BUILD_PROJECT, layout: !!fm[2], page: BUILD_PAGE });
       if (!fp) return void msg.reply(fm[2] ? `✅ セクション${n}は、配置のずれが、ありません` : `✅ セクション${n}は、直すところが、ありません(文字は、すべて、仕様書と合っています)`);
       userText = fp;
       await msg.channel.send(`🔧 セクション${n}の違いを検査して、直す依頼文を作りました。このまま、作業に渡します。`).catch(() => {});
@@ -711,7 +707,7 @@ client.on("messageCreate", async (msg) => {
   if (bm) { // 仕様書から、そのセクションの依頼文を作って、そのまま会話に渡す
     try {
       const spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8"));
-      userText = sectionPrompt(spec, Number(bm[1]), { project: BUILD_PROJECT });
+      userText = sectionPrompt(spec, Number(bm[1]), { project: BUILD_PROJECT, page: BUILD_PAGE });
       if (!userText) return void msg.reply(`セクション${bm[1]}は、仕様書にありません(1〜${spec.pc.sections.length})`);
       await msg.channel.send(`🧱 セクション${bm[1]}の依頼文を、仕様書から作りました。このまま、作業に渡します。`).catch(() => {});
     } catch (e) { return void msg.reply(`仕様書を読めませんでした: ${e.message}(\`npm run spec -- 移植元のHTML\` で作ります)`); }
