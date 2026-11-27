@@ -31,6 +31,8 @@ const EXTRACT = `(() => {
     font: c.fontFamily.split(",")[0].replace(/["']/g, "").trim(), size: c.fontSize, weight: c.fontWeight, lh: px(c.lineHeight),
     ls: px(c.letterSpacing), color: c.color, align: c.textAlign, transform: c.textTransform === "none" ? "" : c.textTransform,
     stroke: parseFloat(c.webkitTextStrokeWidth) > 0 ? c.webkitTextStrokeWidth + " " + c.webkitTextStrokeColor : undefined }; }; // 文字の縁取り(中が透明で、輪郭だけの文字など)
+  // 確実に隠れているもの(表示なし・見えない・読み上げ除外・透明で触れない)。これの子は、たどらない
+  const hard = (el) => { const c = getComputedStyle(el); return c.display === "none" || c.visibility === "hidden" || el.getAttribute("aria-hidden") === "true" || (c.opacity === "0" && c.pointerEvents === "none"); };
   const vis = (el) => { const r = el.getBoundingClientRect(); const c = getComputedStyle(el);
     return r.width > 2 && r.height > 2 && c.visibility !== "hidden" && c.display !== "none" && !(c.opacity === "0" && c.pointerEvents === "none"); }; // opacity:0 は、スクロールで現れる前の状態のことがあるので、見えない扱いにしない(ホバー用の複製は、aria-hidden で除く)
   const own = (el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join(" ").replace(/\\s+/g, " ").trim();
@@ -45,12 +47,12 @@ const EXTRACT = `(() => {
       if (hasBg || hasBd) return { bg: c.backgroundImage !== "none" ? c.backgroundImage.slice(0, 120) : c.backgroundColor, radius: c.borderRadius, pad: c.padding, border: hasBd ? (c.borderTopWidth + " " + c.borderTopStyle + " " + c.borderTopColor) : "", w: Math.round(e.getBoundingClientRect().width), h: Math.round(e.getBoundingClientRect().height) };
       e = e.parentElement; } return null; };
   const items = (root) => { const res = []; const walk = (el) => {
-    if (!vis(el) || el.getAttribute("aria-hidden") === "true") return; // aria-hidden は、ホバー用の複製文字などなので除く
+    if (hard(el)) return; // 隠れているもの・ホバー用の複製文字(aria-hidden)は除く。高さ0の折りたたみ(FAQの答えなど)は、中身を拾うため、たどる
     const t = el.tagName.toLowerCase();
-    if (t === "img" || t === "video" || t === "svg" || t === "picture") { const r = el.getBoundingClientRect();
+    if (t === "img" || t === "video" || t === "svg" || t === "picture") { if (!vis(el)) return; const r = el.getBoundingClientRect();
       res.push({ kind: t === "img" ? "image" : t, src: (el.currentSrc || el.src || el.poster || "").replace(location.href.replace(/[^/]*$/, ""), ""), alt: el.alt || "", w: Math.round(r.width), h: Math.round(r.height) }); return; }
-    if (/^h[1-6]$/.test(t) || t === "p" || t === "a" || t === "button" || t === "li" || t === "span" || t === "dt" || t === "dd" || t === "label" || t === "summary" || t === "div" || t === "td" || t === "th" || t === "figcaption") {
-      const txt = own(el);
+    if (/^h[1-6]$/.test(t) || t === "p" || t === "a" || t === "button" || t === "li" || t === "span" || t === "dt" || t === "dd" || t === "label" || t === "summary" || t === "div" || t === "td" || t === "th" || t === "figcaption" || t === "b" || t === "strong" || t === "em" || t === "small" || t === "mark" || t === "sup" || t === "sub") {
+      const txt = vis(el) ? own(el) : "";
       if (txt) { const r = el.getBoundingClientRect();
         res.push({ kind: /^h[1-6]$/.test(t) ? "heading" : t === "a" || t === "button" ? "link" : "text", tag: t, text: txt.slice(0, 400), href: t === "a" ? el.getAttribute("href") : undefined,
           style: sty(el), box: boxOf(el, root), x: Math.round(r.x), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }

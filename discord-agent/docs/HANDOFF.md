@@ -75,3 +75,4 @@ AIで作ったホームページを、STUDIO(studio.design)に移植する「AI�
 - 注意: Botを再起動するときは、子のプロセス(`run.js designer` / `run.js director`)まで止めること(`pkill -INT -f run.js`)。止めたあと `ps` で残りがないことを確認する。
 - 次の複製(別のサイト)へ: `docs/studio-playbook.md`(操作手順+覚えたコツ)、`docs/lessons.md`(学びの記録)、`docs/director-log.csv`(セクションごとの所要時間)を引き継ぐ。
 - 配置の検査: `!check N` に「📐 配置のずれ(目安)」が出る(文字の左位置・幅・高さ(行数)・同じセクションの先頭の文字からの縦の距離を、幅1280pxの仕様書(`pc1280`)と、STUDIOの拡大率をそろえて比べる)。直すときは `!fix N 配置`。ディレクター(`!auto`)は、配置のずれを、完了の条件にしない(件数だけ知らせる)。許容は `!accept 文字の一部 位置(左)|幅|高さ(行数)|縦の位置(先頭の文字から)`。
+- 別サイトでの通し試験(2026-11-27): Bright Air(14セクション)/ origin-medaka(10)/ サロン予約(6)/ TeeenS LP(10)で、仕様書づくり13〜25秒、`node scripts/spec-coverage.js <HTML> <仕様書フォルダ>` の「文字の拾えた割合」は 100 / 100 / 96 / 100%。取りこぼしの直し: 折りたたみ(高さ0)の中身(FAQの答え)、インライン要素(b, strong など)。使い方: `npm run spec -- <HTML> [出力フォルダ]` → `node scripts/spec-coverage.js <HTML> [フォルダ]` で漏れを確認 → STUDIOに制作。
