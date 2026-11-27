@@ -246,3 +246,18 @@ export function fixPrompt(result, n, { project = "", layout = false } = {}) {
   lines.push("直せない項目(その書体が選べない、など)は、無理に別の方法を探し回らず、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。");
   return lines.filter(Boolean).join("\n");
 }
+
+/** セクションの画像を、元のファイルから、アップロードして、空の枠に置く依頼文。画像が無いセクションは null */
+export function imagePrompt(spec, n, { project = "", device = "pc" } = {}) {
+  const sec = spec?.[device]?.sections?.[n - 1];
+  const imgs = (sec?.items ?? []).filter((i) => i.kind === "image" && i.src);
+  if (!imgs.length) return null;
+  const lines = [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}にある、**画像の空の枠(グレーの枠)**に、元のサイトの画像ファイルを、アップロードして置いてください。上から下、左から右の順に、次の${imgs.length}枚です。`];
+  imgs.forEach((im, i) => {
+    let path = im.src;
+    if (/^file:/.test(path)) { try { path = decodeURIComponent(new URL(path).pathname); } catch {} }
+    lines.push(`${i + 1}. ファイル: ${path} / 大きさ: 横${im.w}px × 縦${im.h}px${im.alt ? ` / 説明(alt): 「${im.alt}」` : ""}`);
+  });
+  lines.push("画像の部品が、まだ無い場所(ロゴなど)は、標準の画像部品を、置いてから、アップロードしてください。置いたら、枠の大きさを、上の大きさに合わせて、縦横の比率を、保ってください(引き伸ばさない)。画像の説明(alt)も、入れてください。ほかの部分は、変えないでください。ファイルを選ぶ操作ができなかったときは、どこまでできたか、教えてください。公開はしない。");
+  return lines.join("\n");
+}

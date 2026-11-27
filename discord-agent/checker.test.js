@@ -84,3 +84,11 @@ test("fixPrompt: スマホ幅のときは、モバイルサイズで直す指示
   assert.match(p.split("\n")[0], /モバイルサイズ/); assert.match(p, /PCサイズ.*変えない/);
   assert.doesNotMatch(fixPrompt({ ...r, device: "pc" }, 5), /モバイルサイズ/);
 });
+
+import { imagePrompt } from "./checker.js";
+test("imagePrompt: 画像のあるセクションだけ、ファイルの場所つきの依頼文になる", () => {
+  const spec = { pc: { sections: [{ items: [{ kind: "text", text: "a" }] }, { items: [{ kind: "image", src: "file:///Users/x/%E3%83%86%E3%82%B9%E3%83%88/a.webp", w: 441, h: 468, alt: "説明" }] }] } };
+  assert.equal(imagePrompt(spec, 1), null);
+  const p = imagePrompt(spec, 2, { project: "T" });
+  assert.match(p, /\/Users\/x\/テスト\/a\.webp/); assert.match(p, /横441px/); assert.match(p, /「T」/); assert.ok(p.endsWith("公開はしない。"));
+});

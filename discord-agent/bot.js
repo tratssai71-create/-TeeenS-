@@ -2,11 +2,11 @@ import { Client, GatewayIntentBits, AttachmentBuilder } from "discord.js";
 import { spawn, execFile } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { verifyApproval, extractExpectedText, normalizeCommand } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
-import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted } from "./checker.js";
+import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted, imagePrompt } from "./checker.js";
 import { readFileSync, writeFileSync, existsSync, appendFileSync, statSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -136,7 +136,7 @@ try {
 } catch {}
 
 // チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
-const BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
+let BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
 const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。",
   "**話し方**: ユーザーは、気軽に、お願いする感じで話しかけます(「ここ、もうちょい濃くして」のような、くだけた言い方、ざっくりした頼み方)。あなたも、親しみやすい、やさしい口調で返す(です・ます調で、堅すぎない。専門用語は避け、使うときは、ひとこと説明する)。返事は、短く。次の形にする: ①やったこと(1〜2行) ②気になる点・できなかったこと(あれば) ③次にできること(1つだけ、提案)。頼みがざっくりしていても、仕様書や見本から、読み取れる範囲は、自分で決めて進める。本当に分からないときだけ、質問を1つだけする(選択肢を添える)。",
@@ -358,6 +358,91 @@ async function autoSection(ch, n) {
   return "stuck";
 }
 
+// ---- 1サイト・1回の指示で、完成まで: !site <元のHTML> [STUDIOのプロジェクト名] ----
+// 仕様書づくり → 全セクション制作(!auto) → 画像 → 配置 → 見た目の近さ(低いところを、見本の画像を見せて直す)→ 最終報告。
+// 止まるとき: 利用上限・!stop・同じ違いが残る(人の判断が必要)。もう一度 !site を送ると、済んだところを飛ばして、続きから動く。
+const SITE_STATE = "spec-out/site-state.json";
+const VISUAL_MIN = Number(process.env.VISUAL_MIN ?? 70); // 見た目の近さが、これ未満のセクションは、直す
+const SITE_VISUAL_ROUNDS = Number(process.env.SITE_VISUAL_ROUNDS ?? 2);
+const runNode = (args, ms = 6 * 60 * 1000) => new Promise((res) => execFile("node", args, { timeout: ms, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => res({ ok: !err, out: String(stdout ?? ""), err: String(stderr || err?.message || "") })));
+const loadSiteState = () => { try { return JSON.parse(readFileSync(SITE_STATE, "utf8")); } catch { return {}; } };
+const saveSiteState = (st) => { try { writeFileSync(SITE_STATE, JSON.stringify(st, null, 2)); } catch {} };
+async function siteFlow(ch, src, project) {
+  const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
+  const stopped = () => autoCancel || chatLimitUntil > Date.now();
+  if (project) BUILD_PROJECT = project;
+  let st = loadSiteState();
+  if (st.src !== src) st = { src, project: BUILD_PROJECT, imagesDone: [], started: new Date().toISOString() };
+  st.project = BUILD_PROJECT;
+  // 1) 仕様書(新しいサイトのとき、または、まだ無いとき)
+  if (!existsSync("spec-out/spec.json") || st.specFor !== src) {
+    await say(`仕様書を作ります(元: ${src})…`);
+    const r = await runNode(["scripts/make-spec.js", src]);
+    if (!r.ok) { await say(`仕様書を作れませんでした: ${r.err.slice(0, 200)}`); return "stop"; }
+    st.specFor = src; saveSiteState(st);
+    const cov = await runNode(["scripts/spec-coverage.js", src]);
+    await say(`仕様書ができました。${(cov.out.split("\n")[0] || "").trim()}`);
+  }
+  let spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+  const N = spec.pc.sections.length;
+  const human = []; // 人の判断が必要なもの
+  await say(`**${BUILD_PROJECT}** に、${N}セクションを、作っていきます。公開はしません。止めたいときは \`!stop\`(あとで、もう一度 \`!site\` を送ると、続きから動きます)。`);
+  // 2) 全セクションを作る(すでに合っているところは、飛ばす)
+  for (let n = 1; n <= N; n++) {
+    if (stopped()) return "stop";
+    try { const c = await checkStudio({ section: n, cdp: BROWSER_CDP }); if (c.ok.length > 0 && !c.diffs.length && !c.missing.length) continue; } catch {}
+    const t0 = Date.now(); const r = await autoSection(ch, n);
+    try { appendFileSync("docs/director-log.csv", `${new Date().toISOString()},${n},${r},${autoRounds},${Math.round((Date.now() - t0) / 1000)}\n`); } catch {}
+    if (r === "limit" || r === "cancel" || r === "stop") return r;
+    if (r === "stuck") human.push(`セクション${n}: 文字の違いが、自動では、直せませんでした`);
+  }
+  // 3) 画像
+  for (let n = 1; n <= N; n++) {
+    if (stopped()) return "stop";
+    if (st.imagesDone.includes(n)) continue;
+    const ip = imagePrompt(spec, n, { project: BUILD_PROJECT }); if (!ip) continue;
+    await say(`セクション${n}の画像を、アップロードして、置きます。`);
+    const t = await chatTurn(ch, ch.id, ip, { openProject: false });
+    if (t.why === "limit") return "limit";
+    if (!t.ok) { human.push(`セクション${n}: 画像を置けませんでした`); continue; }
+    st.imagesDone.push(n); saveSiteState(st);
+  }
+  // 4) 配置(2回まで)
+  for (let n = 1; n <= N; n++) {
+    for (let k = 0; k < 2; k++) {
+      if (stopped()) return "stop";
+      let c; try { c = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch { break; }
+      if (!c.layout?.length) break;
+      await say(`セクション${n}の配置を直します(${c.layout.length}件・${k + 1}/2回目)。`);
+      const t = await chatTurn(ch, ch.id, fixPrompt(c, n, { project: BUILD_PROJECT, layout: true }), {});
+      if (t.why === "limit") return "limit";
+      if (!t.ok) break;
+    }
+  }
+  // 5) 見た目の近さ(低いセクションを、見本の画像と、いまの画像を見せて、直す)
+  let scores = [];
+  for (let round = 0; round <= SITE_VISUAL_ROUNDS; round++) {
+    if (stopped()) return "stop";
+    const cr = await runNode(["scripts/compare-images.js", src, "spec-out/compare"]);
+    if (!cr.ok) { human.push(`見た目の近さを測れませんでした: ${cr.err.slice(0, 120)}`); break; }
+    try { scores = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8")).sections ?? []; } catch { scores = []; }
+    const low = scores.filter((x) => x.score < VISUAL_MIN);
+    if (!low.length || round === SITE_VISUAL_ROUNDS) break;
+    await say(`見た目の近さが ${VISUAL_MIN} 未満のセクションを、見本と見比べて直します(${round + 1}/${SITE_VISUAL_ROUNDS}回目): ${low.map((x) => `${x.n}(${x.score})`).join(", ")}`);
+    for (const x of low) {
+      if (stopped()) return "stop";
+      const t = await chatTurn(ch, ch.id, `STUDIOの「${BUILD_PROJECT}」の、セクション${x.n}を、見本に近づけてください。添付した画像は、左が見本(元のサイト)、右がいまのSTUDIOです。違うところ(余白・大きさ・並び・色・要素の足りなさ)を、画像から読み取って、標準部品で直してください。文字の中身・リンク・すでに合っている部分は、変えないでください。画像のファイル(写真など)が空の枠のままなら、それは、別の作業なので、触らないでください。直せないもの(背景の飾り・アニメーションなど)は、理由を書いて報告してください。公開はしない。`, { images: x.image && existsSync(x.image) ? [resolve(x.image)] : [] });
+      if (t.why === "limit") return "limit";
+    }
+  }
+  // 6) 最終報告
+  st.finished = new Date().toISOString(); saveSiteState(st);
+  const table = scores.map((x) => `${x.score >= 80 ? "🟢" : x.score >= VISUAL_MIN ? "🟡" : "🔴"}セクション${x.n}: ${x.score}`).join(" / ");
+  let textState = ""; try { textState = (await progressTable({ cdp: BROWSER_CDP })).split("\n").slice(1).filter((l) => !l.startsWith("✅")).join("\n"); } catch {}
+  await say(`**自動の作業が、終わりました**(${BUILD_PROJECT}・${N}セクション)。\n見た目の近さ: ${table || "(測れませんでした)"}\n${textState ? `文字が、まだ合っていないセクション:\n${textState}\n` : "文字は、すべてのセクションで、仕様書と合っています。\n"}${human.length ? `人の判断が必要なもの:\n${human.map((h) => `・${h}`).join("\n")}\n` : ""}\`!compare\` で、画像を見られます。気になるところは、普通の言葉で、伝えてください。`);
+  return "ok";
+}
+
 async function handleTask(msg, t) {
   if (seenTasks.has(t.id)) return;
   seenTasks.add(t.id);
@@ -495,6 +580,20 @@ client.on("messageCreate", async (msg) => {
   if (text === "!lessons") { // 貯まった「学び」を見る
     const t = readIf("docs/lessons.md");
     return void msg.reply(t ? `📝 学びの記録(新しい順に最大8件)\n${t.split("\n").filter(Boolean).slice(-8).reverse().join("\n")}`.slice(0, 1900) : "まだ、学びの記録は、ありません");
+  }
+  // 1サイト・1回の指示で、完成まで: !site <元のHTMLのパス> [STUDIOのプロジェクト名]
+  const sm = text.match(/^!site\s+("[^"]+"|'[^']+'|\S+)(?:\s+(.+))?$/); // パスに空白があるときは、"…" で囲む
+  if (sm) {
+    if (chatLimitUntil > Date.now()) return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。${fmtTime(chatLimitUntil)} 以降に、もう一度送ってください`);
+    const src = sm[1].replace(/^["']|["']$/g, "").replace(/^file:\/\//, "");
+    if (!/^https?:/.test(src) && !existsSync(src)) return void msg.reply(`元のHTMLが見つかりません: ${src}`);
+    autoCancel = false;
+    msg.react("🧭").catch(() => {});
+    chain = chain.then(async () => {
+      const r = await siteFlow(msg.channel, src, sm[2]?.trim());
+      if (r !== "ok") await msg.channel.send(`🧭 ディレクター: 途中で止まりました(${r === "limit" ? "利用上限。再開は、時刻のあとに、もう一度 !site" : r === "cancel" ? "中断" : "停止"})。同じ \`!site\` を、もう一度、送ると、済んだところを飛ばして、続きから動きます。`).catch(() => {});
+    }).catch((e) => console.error(e));
+    return;
   }
   const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/) ?? (text === "!auto all" ? ["", "1", String(Math.max(1, (() => { try { return JSON.parse(readFileSync("spec-out/spec.json", "utf8")).pc.sections.length; } catch { return 1; } })()))] : null); // !auto 3 / !auto 3-5 / !auto all(すでに文字が全部合っているセクションは、飛ばす)
   if (am) {

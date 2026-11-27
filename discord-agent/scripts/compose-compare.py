@@ -59,7 +59,12 @@ try:
         if sec["h"] < 20: continue
         a = orig.crop((0, int(sec["y"] * ko), W, min(orig.height, int((sec["y"] + sec["h"]) * ko))))
         b = studio.crop((0, int(sec["y"] * ks), W, min(studio.height, int((sec["y"] + sec["h"]) * ks))))
-        sec_scores.append({"n": i + 1, "tag": sec.get("tag"), "score": sim(a, b)})
+        os.makedirs(os.path.join(out, "sections"), exist_ok=True)
+        hh = max(a.height, b.height, 10)
+        pair = Image.new("RGB", (W * 2 + 24, hh), (200, 200, 200)); pair.paste(a, (0, 0)); pair.paste(b, (W + 24, 0))
+        pair = pair.resize((int(pair.width * 0.5), int(pair.height * 0.5)))
+        img_path = os.path.join(out, "sections", f"sec-{i + 1:02d}.png"); pair.save(img_path)
+        sec_scores.append({"n": i + 1, "tag": sec.get("tag"), "score": sim(a, b), "image": img_path})
 except Exception as e:
     print("セクションごとの近さは、出せませんでした:", e)
 json.dump({"scores": scores, "sections": sec_scores, "files": [f"compare-{i+1:02d}.png" for i in range(n)]}, open(os.path.join(out, "scores.json"), "w"))
