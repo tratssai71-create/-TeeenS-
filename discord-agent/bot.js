@@ -6,8 +6,9 @@ import { join, resolve } from "node:path";
 import { verifyApproval, extractExpectedText, normalizeCommand } from "./core.js";
 import { roleLabel, detectUsageLimit, fmtTime } from "./messages.js";
 import { prepareBrowser, verifyText, openEditor, captureScreenshot } from "./browser-guard.js";
-import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted, imagePrompt } from "./checker.js";
-import { readFileSync, writeFileSync, existsSync, appendFileSync, statSync } from "node:fs";
+import { specDir, setSpecDir, slugFor, inSpec } from "./spec-dir.js";
+import { checkStudio, formatCheck, sectionPrompt, progressTable, fixPrompt, addAccepted, imagePrompt, readStudioTexts } from "./checker.js";
+import { readFileSync, writeFileSync, existsSync, appendFileSync, statSync, mkdirSync } from "node:fs";
 
 const list = (v) => (v ?? "").split(",").map((s) => s.trim()).filter(Boolean);
 const {
@@ -146,7 +147,7 @@ const CHAT_PREAMBLE = [
   "このチャットでは、公開は行わない(右上の「公開」ボタンは押さない)。公開が必要なときは、#command で依頼して、承認ボタンを使うよう案内する。",
   "**必須(編集を伴う作業)**: 完了を報告する前に、必ず、ページを再読み込み(browser_evaluate で `() => location.reload()` を実行する。F5キーは効かない。URLを開き直さない)して、変更が保存されていることを確かめる。報告には「再読み込み後に、○○と表示されていた」と、確認した内容を書く。再読み込みで確認できなかったら、完了にせず、`RESULT: FAILED` と書く。",
   "**すでに編集画面が開いているとき(前の会話の続き)**は、一覧に戻さず、そのタブでそのまま作業を続ける。開いていなければ、一覧から「デザインエディタ」を押して開く。",
-  `**セクションを作るとき(制作)**: 移植元の仕様書(${process.cwd()}/spec-out/spec.md、見本画像は ${process.cwd()}/spec-out/shots/)があれば、先に読む。作るのは、1回の依頼につき、1セクションだけ。STUDIOの制作ルール(手順書の「制作ルール」。標準装備・blank を避ける・リッチテキストと絶対位置は必要なときだけ)を守る。作り終えたら、文字・大きさ・色・余白・配置が、仕様書と合っているかを自分で点検して、合っていない点を直してから報告する。画面のスクリーンショットは、報告のあとに、Botが自動で貼る(自分で撮らなくてよい)。報告には、「仕様書と違う点・自信のない点」を、正直に書く。`,
+  `**セクションを作るとき(制作)**: 移植元の仕様書(依頼文に書いてある spec.md。見本画像は、同じフォルダの shots/)があれば、先に読む。作るのは、1回の依頼につき、1セクションだけ。STUDIOの制作ルール(手順書の「制作ルール」。標準装備・blank を避ける・リッチテキストと絶対位置は必要なときだけ)を守る。作り終えたら、文字・大きさ・色・余白・配置が、仕様書と合っているかを自分で点検して、合っていない点を直してから報告する。画面のスクリーンショットは、報告のあとに、Botが自動で貼る(自分で撮らなくてよい)。報告には、「仕様書と違う点・自信のない点」を、正直に書く。`,
   "作業のあとは、何をしたかを1〜3行で報告する。分からないことは、推測で進めず、質問する。",
   "**育てるための記録**: 作業の最後に、STUDIOの操作で「次からは、こうすると速い・確実」と分かったことが、あれば、1行だけ「📝 学び: …」と書く(なければ書かない)。うまくいかなかった操作と、その代わりに、うまくいった操作を、具体的に書く。",
 ].filter(Boolean).join("\n\n");
@@ -226,12 +227,13 @@ const BROWSER_ERR = {
   cdp_error: "専用Chromeとの接続に失敗しました。もう一度送ってください。続く場合は、専用Chromeを終了して `npm run browser` で開き直してください。",
 };
 
-async function chatTurn(ch, channelId, userText, { openProject = false, images = [] } = {}) {
+async function chatTurn(ch, channelId, userText, { openProject = false, images = [], skipCodex = false } = {}) {
   stopRequested = false;
   await ch.send("🧹 ブラウザを整えています…").catch(() => {});
   const br = await ensureBrowser(() => {}, { keepEditor: !openProject }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
   if (!br.ok) { await ch.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`); return { ok: false, why: "browser" }; }
   if (openProject) { const o = await openEditor({ cdp: BROWSER_CDP, name: BUILD_PROJECT }); await ch.send(o.clicked ? `🚪 「${BUILD_PROJECT}」の編集画面を先に開きました` : `ℹ️ 「${BUILD_PROJECT}」の先開きは、できませんでした(${o.detail})`).catch(() => {}); }
+  if (skipCodex) return { ok: true }; // 準備(ブラウザを整えて、編集画面を開く)だけで、Codexは使わない
   const buf = []; let sentN = 0;
   let opCount = 0, statusMsg = null;
   const flush = async () => {
@@ -284,9 +286,9 @@ async function chatTurn(ch, channelId, userText, { openProject = false, images =
 // 見本の画面(仕様書を作ったときの、そのセクションの画像)の場所。無ければ null
 function specShot(n) {
   try {
-    const spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+    const spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8"));
     const rel = spec?.pc?.sections?.[n - 1]?.shot;
-    const f = rel ? join("spec-out", rel) : null;
+    const f = rel ? join(specDir(), rel) : null;
     return f && existsSync(f) ? join(process.cwd(), f) : null;
   } catch { return null; }
 }
@@ -315,20 +317,31 @@ async function autoSection(ch, n) {
   autoRounds = 0;
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   let spec;
-  try { spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
+  try { spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
   const first = sectionPrompt(spec, n, { project: BUILD_PROJECT });
   if (!first) { await say(`セクション${n}は、仕様書にありません`); return "stop"; }
   await say(`セクション${n}を、自動で作ります。「作る → 検査 → 違いがあれば直す」を、最大${AUTO_MAX_ROUNDS}回まで繰り返します。公開はしません。止めたいときは \`!stop\`。`);
-  // 1) 作る(失敗したら、理由を聞いて、別のやり方で、もう1回だけ)
+  // 0) すでに、STUDIOに作ってある(途中まで)セクションは、作り直さず(重複を避ける)、仕様書との違いを直すだけにする
   const shot = specShot(n);
-  let t = await chatTurn(ch, ch.id, shot ? first + SHOT_NOTE : first, { openProject: true, images: shot ? [shot] : [] });
-  if (t.why === "limit") return "limit";
-  if (!t.ok) {
-    if (autoCancel) return "cancel";
-    await say("うまくいかなかったようです。理由を聞いて、別のやり方で、もう1回だけ試します。");
-    t = await chatTurn(ch, ch.id, "さっきの作業は、うまくいきませんでした。何がうまくいかなかったかを1行で言ってから、別のやり方で、もう一度、やってください。公開はしないでください。", {});
+  // 制作先のプロジェクトの編集画面を、先に開いて、読み込みを待つ(違うプロジェクトが開いていると、検査が、別のものを見てしまう)
+  if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return "stop"; }
+  for (let i = 0; i < 45; i++) { try { const tt = await readStudioTexts({ cdp: BROWSER_CDP }); if (tt.root && tt.length > 20) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
+  let exists = false;
+  try { const c0 = await checkStudio({ section: n, cdp: BROWSER_CDP }); const tot = c0.ok.length + c0.diffs.length + c0.missing.length; exists = tot > 0 && c0.ok.length + c0.diffs.length >= tot * 0.5; } catch {}
+  let t = { ok: true };
+  if (exists) {
+    await say(`セクション${n}は、すでに、STUDIOに作ってあります。作り直さず、仕様書との違いを、直します。`);
+  } else {
+  // 1) 作る(失敗したら、理由を聞いて、別のやり方で、もう1回だけ)
+    t = await chatTurn(ch, ch.id, shot ? first + SHOT_NOTE : first, { openProject: true, images: shot ? [shot] : [] });
     if (t.why === "limit") return "limit";
-    if (!t.ok) { await say(`**ここで止めます。人の確認が必要です。** 2回続けて、うまくいきませんでした。画面を見て、どこで詰まっているか、教えてください。`); return "stop"; }
+    if (!t.ok) {
+      if (autoCancel) return "cancel";
+      await say("うまくいかなかったようです。理由を聞いて、別のやり方で、もう1回だけ試します。");
+      t = await chatTurn(ch, ch.id, "さっきの作業は、うまくいきませんでした。何がうまくいかなかったかを1行で言ってから、別のやり方で、もう一度、やってください。公開はしないでください。", {});
+      if (t.why === "limit") return "limit";
+      if (!t.ok) { await say(`**ここで止めます。人の確認が必要です。** 2回続けて、うまくいきませんでした。画面を見て、どこで詰まっているか、教えてください。`); return "stop"; }
+    }
   }
   // 2) 検査 → 直す
   let prev = null;
@@ -361,32 +374,37 @@ async function autoSection(ch, n) {
 // ---- 1サイト・1回の指示で、完成まで: !site <元のHTML> [STUDIOのプロジェクト名] ----
 // 仕様書づくり → 全セクション制作(!auto) → 画像 → 配置 → 見た目の近さ(低いところを、見本の画像を見せて直す)→ 最終報告。
 // 止まるとき: 利用上限・!stop・同じ違いが残る(人の判断が必要)。もう一度 !site を送ると、済んだところを飛ばして、続きから動く。
-const SITE_STATE = "spec-out/site-state.json";
+const siteStateFile = () => inSpec("site-state.json");
 const VISUAL_MIN = Number(process.env.VISUAL_MIN ?? 70); // 見た目の近さが、これ未満のセクションは、直す
 const SITE_VISUAL_ROUNDS = Number(process.env.SITE_VISUAL_ROUNDS ?? 2);
 const runNode = (args, ms = 6 * 60 * 1000) => new Promise((res) => execFile("node", args, { timeout: ms, maxBuffer: 8 * 1024 * 1024 }, (err, stdout, stderr) => res({ ok: !err, out: String(stdout ?? ""), err: String(stderr || err?.message || "") })));
-const loadSiteState = () => { try { return JSON.parse(readFileSync(SITE_STATE, "utf8")); } catch { return {}; } };
-const saveSiteState = (st) => { try { writeFileSync(SITE_STATE, JSON.stringify(st, null, 2)); } catch {} };
+const loadSiteState = () => { try { return JSON.parse(readFileSync(siteStateFile(), "utf8")); } catch { return {}; } };
+const saveSiteState = (st) => { try { writeFileSync(siteStateFile(), JSON.stringify(st, null, 2)); } catch {} };
 async function siteFlow(ch, src, project) {
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   const stopped = () => autoCancel || chatLimitUntil > Date.now();
   if (project) BUILD_PROJECT = project;
+  const dir = `spec-out/${slugFor(src)}`;
+  if (specDir() !== dir) { mkdirSync(dir, { recursive: true }); setSpecDir(dir); } // サイトごとに、仕様書・許容・見比べ画像を、分ける
   let st = loadSiteState();
   if (st.src !== src) st = { src, project: BUILD_PROJECT, imagesDone: [], started: new Date().toISOString() };
   st.project = BUILD_PROJECT;
   // 1) 仕様書(新しいサイトのとき、または、まだ無いとき)
-  if (!existsSync("spec-out/spec.json") || st.specFor !== src) {
+  if (!existsSync(inSpec("spec.json")) || st.specFor !== src) {
     await say(`仕様書を作ります(元: ${src})…`);
-    const r = await runNode(["scripts/make-spec.js", src]);
+    const r = await runNode(["scripts/make-spec.js", src, specDir()]);
     if (!r.ok) { await say(`仕様書を作れませんでした: ${r.err.slice(0, 200)}`); return "stop"; }
     st.specFor = src; saveSiteState(st);
-    const cov = await runNode(["scripts/spec-coverage.js", src]);
+    const cov = await runNode(["scripts/spec-coverage.js", src, specDir()]);
     await say(`仕様書ができました。${(cov.out.split("\n")[0] || "").trim()}`);
   }
-  let spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+  let spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8"));
   const N = spec.pc.sections.length;
   const human = []; // 人の判断が必要なもの
   await say(`**${BUILD_PROJECT}** に、${N}セクションを、作っていきます。公開はしません。止めたいときは \`!stop\`(あとで、もう一度 \`!site\` を送ると、続きから動きます)。`);
+  // 制作先の編集画面を、先に開いて、読み込みを待つ(違うプロジェクトを、見てしまわないように)
+  if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return "stop"; }
+  for (let i = 0; i < 45; i++) { try { const tt = await readStudioTexts({ cdp: BROWSER_CDP }); if (tt.root && tt.length > 20) break; } catch {} await new Promise((r) => setTimeout(r, 1000)); }
   // 2) 全セクションを作る(すでに合っているところは、飛ばす)
   for (let n = 1; n <= N; n++) {
     if (stopped()) return "stop";
@@ -423,9 +441,9 @@ async function siteFlow(ch, src, project) {
   let scores = [];
   for (let round = 0; round <= SITE_VISUAL_ROUNDS; round++) {
     if (stopped()) return "stop";
-    const cr = await runNode(["scripts/compare-images.js", src, "spec-out/compare"]);
+    const cr = await runNode(["scripts/compare-images.js", src, inSpec("compare")]);
     if (!cr.ok) { human.push(`見た目の近さを測れませんでした: ${cr.err.slice(0, 120)}`); break; }
-    try { scores = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8")).sections ?? []; } catch { scores = []; }
+    try { scores = JSON.parse(readFileSync(inSpec("compare", "scores.json"), "utf8")).sections ?? []; } catch { scores = []; }
     const low = scores.filter((x) => x.score < VISUAL_MIN);
     if (!low.length || round === SITE_VISUAL_ROUNDS) break;
     await say(`見た目の近さが ${VISUAL_MIN} 未満のセクションを、見本と見比べて直します(${round + 1}/${SITE_VISUAL_ROUNDS}回目): ${low.map((x) => `${x.n}(${x.score})`).join(", ")}`);
@@ -595,7 +613,7 @@ client.on("messageCreate", async (msg) => {
     }).catch((e) => console.error(e));
     return;
   }
-  const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/) ?? (text === "!auto all" ? ["", "1", String(Math.max(1, (() => { try { return JSON.parse(readFileSync("spec-out/spec.json", "utf8")).pc.sections.length; } catch { return 1; } })()))] : null); // !auto 3 / !auto 3-5 / !auto all(すでに文字が全部合っているセクションは、飛ばす)
+  const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/) ?? (text === "!auto all" ? ["", "1", String(Math.max(1, (() => { try { return JSON.parse(readFileSync(inSpec("spec.json"), "utf8")).pc.sections.length; } catch { return 1; } })()))] : null); // !auto 3 / !auto 3-5 / !auto all(すでに文字が全部合っているセクションは、飛ばす)
   if (am) {
     if (chatLimitUntil > Date.now()) return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。${fmtTime(chatLimitUntil)} 以降に、もう一度送ってください`);
     const from = Number(am[1]), to = Number(am[2] ?? am[1]);
@@ -623,15 +641,15 @@ client.on("messageCreate", async (msg) => {
   if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(ac[2] === "画像" ? `✅ 「${ac[1]}」は、画像で代用する、と記録しました。文字として無くても、検査では、見つからない扱いにしません。` : `✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
   // 元のサイトと、いまのSTUDIOを、並べた画像を作って貼る(Codexは使わない。画面は、スクロールだけする)
   if (text === "!compare") {
-    let src; try { src = decodeURIComponent(new URL(JSON.parse(readFileSync("spec-out/spec.json", "utf8")).url).pathname); } catch { return void msg.reply("仕様書(spec-out/spec.json)が見つかりません"); }
+    let src; try { const u = JSON.parse(readFileSync(inSpec("spec.json"), "utf8")).url; src = /^https?:/.test(u) ? u : decodeURIComponent(new URL(u).pathname); } catch { return void msg.reply("仕様書(spec-out/spec.json)が見つかりません"); }
     await msg.reply("🖼️ 元のサイトと、いまのSTUDIOを、並べています。1〜2分かかります…");
-    execFile("node", ["scripts/compare-images.js", src, "spec-out/compare"], { timeout: 6 * 60 * 1000 }, async (err, stdout, stderr) => {
+    execFile("node", ["scripts/compare-images.js", src, inSpec("compare")], { timeout: 6 * 60 * 1000 }, async (err, stdout, stderr) => {
       if (err) return void msg.channel.send(`並べる画像を作れませんでした: ${String(stderr || err.message).slice(0, 300)}(STUDIOの編集画面を、開いてから、もう一度)`);
       try {
-        const { sections = [], files } = JSON.parse(readFileSync("spec-out/compare/scores.json", "utf8"));
+        const { sections = [], files } = JSON.parse(readFileSync(inSpec("compare", "scores.json"), "utf8"));
         const mark = (v) => (v >= 80 ? "🟢" : v >= 50 ? "🟡" : "🔴");
         const list = sections.map((x) => `${mark(x.score)}セクション${x.n}: ${x.score}`).join("\n");
-        await msg.channel.send({ content: `🖼️ 左=元のサイト / 右=いまのSTUDIO(上から順に${files.length}枚)\n見た目の近さ(0〜100・輪郭の重なり具合。🟢80以上 / 🟡50〜79 / 🔴50未満):\n${list}\n※画像(ロゴ・写真)が空の枠だと、下がります。数字は目安なので、画像の中身を、目で見て確かめてください。`, files: files.slice(0, 10).map((f) => new AttachmentBuilder(join("spec-out/compare", f))) });
+        await msg.channel.send({ content: `🖼️ 左=元のサイト / 右=いまのSTUDIO(上から順に${files.length}枚)\n見た目の近さ(0〜100・輪郭の重なり具合。🟢80以上 / 🟡50〜79 / 🔴50未満):\n${list}\n※画像(ロゴ・写真)が空の枠だと、下がります。数字は目安なので、画像の中身を、目で見て確かめてください。`, files: files.slice(0, 10).map((f) => new AttachmentBuilder(join(specDir(), "compare", f))) });
       } catch (e) { await msg.channel.send(`画像の送信に失敗しました: ${e.message}`); }
     });
     return;
@@ -653,13 +671,13 @@ client.on("messageCreate", async (msg) => {
       rows.push(`${ok(st.some((t) => /\/editor/.test(t.url)))} 編集画面が開いている`);
       if (pages.length > st.length) rows.push(`ℹ️ STUDIO以外のタブが ${pages.length - st.length}個 あります(作業の整え直しで、閉じられることがあります)`);
     }
-    let specInfo = "❌ 仕様書(spec-out/spec.json)が、ありません。`npm run spec -- 元のHTML` で作ります";
-    try { const f = "spec-out/spec.json"; const sp = JSON.parse(readFileSync(f, "utf8")); const age = Math.round((Date.now() - statSync(f).mtimeMs) / 3600000); specInfo = `✅ 仕様書: ${sp.pc.sections.length}セクション(${age}時間前に作成)/ 元: ${decodeURIComponent(String(sp.url).split("/").slice(-2).join("/"))}`; } catch {}
+    let specInfo = `❌ 仕様書(${inSpec("spec.json")})が、ありません。npm run spec -- 元のHTML で作ります`;
+    try { const f = inSpec("spec.json"); const sp = JSON.parse(readFileSync(f, "utf8")); const age = Math.round((Date.now() - statSync(f).mtimeMs) / 3600000); specInfo = `✅ 仕様書: ${sp.pc.sections.length}セクション(${age}時間前に作成)/ 元: ${decodeURIComponent(String(sp.url).split("/").slice(-2).join("/"))}`; } catch {}
     rows.push(specInfo);
     let proj = ""; try { proj = Object.keys(JSON.parse(readIf(process.env.PROJECTS_FILE ?? "projects.json") || "{}")).includes(BUILD_PROJECT) ? "✅" : "❌"; } catch { proj = "❌"; }
     rows.push(`${proj} 制作先「${BUILD_PROJECT}」が projects.json にある`);
     rows.push(`${chatLimitUntil > Date.now() ? "⏸" : "✅"} Codex(ChatGPT): ${chatLimitUntil > Date.now() ? `利用上限中(${fmtTime(chatLimitUntil)} まで)` : "使えるはず(上限の記録なし)"}`);
-    let acc = 0, les = 0; try { acc = JSON.parse(readFileSync("spec-out/accepted.json", "utf8")).length; } catch {} try { les = readIf("docs/lessons.md").split("\n").filter((l) => l.startsWith("- ")).length; } catch {}
+    let acc = 0, les = 0; try { acc = JSON.parse(readFileSync(inSpec("accepted.json"), "utf8")).length; } catch {} try { les = readIf("docs/lessons.md").split("\n").filter((l) => l.startsWith("- ")).length; } catch {}
     rows.push(`ℹ️ 「これでよい」の記録 ${acc}件 / 学び ${les}件 / 画面の自動投稿 ${process.env.SCREENSHOT === "0" ? "オフ" : "オン"}`);
     return void msg.reply(`🩺 点検\n${rows.join("\n")}`.slice(0, 1900));
   }
@@ -682,7 +700,7 @@ client.on("messageCreate", async (msg) => {
   const bm = text.match(/^!build\s+(\d+)$/);
   if (bm) { // 仕様書から、そのセクションの依頼文を作って、そのまま会話に渡す
     try {
-      const spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+      const spec = JSON.parse(readFileSync(inSpec("spec.json"), "utf8"));
       userText = sectionPrompt(spec, Number(bm[1]), { project: BUILD_PROJECT });
       if (!userText) return void msg.reply(`セクション${bm[1]}は、仕様書にありません(1〜${spec.pc.sections.length})`);
       await msg.channel.send(`🧱 セクション${bm[1]}の依頼文を、仕様書から作りました。このまま、作業に渡します。`).catch(() => {});

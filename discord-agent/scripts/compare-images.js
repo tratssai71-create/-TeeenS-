@@ -59,7 +59,7 @@ try {
   const o = await cdpSession(ws, 30000);
   await o.send("Page.enable"); await o.send("Runtime.enable");
   await o.send("Emulation.setDeviceMetricsOverride", { width: CANVAS_W, height: 900, deviceScaleFactor: (w0 * dpr) / CANVAS_W, mobile: false }); // 画像の画素の幅を、STUDIOの画像と、そろえる
-  await o.send("Page.navigate", { url: pathToFileURL(resolve(html)).href }); await sleep(2500);
+  await o.send("Page.navigate", { url: /^https?:/.test(html) ? html : pathToFileURL(resolve(html)).href }); await sleep(2500);
   const H = await ev(o, "JSON.stringify(document.documentElement.scrollHeight)");
   for (let y = 0; y < H; y += 900) { await o.send("Runtime.evaluate", { expression: `scrollTo(0,${y})` }); await sleep(200); } // 遅延読み込みの画像を出す
   await o.send("Runtime.evaluate", { expression: "scrollTo(0,0)" }); await sleep(500);

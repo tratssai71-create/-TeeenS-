@@ -2,6 +2,7 @@
 // 文字が有るか、大きさ・太さ・色・行間・字間・フォントが合っているか、を調べる(画面の操作はしない。読むだけ)。
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { inSpec, specDir } from "./spec-dir.js";
 import { cdpSession } from "./browser-guard.js";
 
 const norm = (t) => String(t ?? "").replace(/[\s　「」『』"'“”‘’]/g, "");
@@ -157,8 +158,8 @@ export function layoutDiffs(result, spec1280, root, designW = 1280) {
 }
 
 /** 「この違いは、これでよい」と、人が決めた項目(spec-out/accepted.json)。[{text:"文字の一部", field:"色"}] */
-export function loadAccepted(path = "spec-out/accepted.json") { try { return JSON.parse(readFileSync(path, "utf8")); } catch { return []; } }
-export function addAccepted(text, field, path = "spec-out/accepted.json") {
+export function loadAccepted(path = inSpec("accepted.json")) { try { return JSON.parse(readFileSync(path, "utf8")); } catch { return []; } }
+export function addAccepted(text, field, path = inSpec("accepted.json")) {
   const list = loadAccepted(path);
   if (!list.some((a) => a.text === text && a.field === field)) list.push({ text, field });
   mkdirSync(dirname(path), { recursive: true });
@@ -176,7 +177,7 @@ export function applyAccepted(result, accepted = []) {
   return { ...result, ok, diffs };
 }
 
-export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = null } = {}) {
+export async function checkStudio({ specPath = inSpec("spec.json"), section = null, cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
   const dw = studio.designW ?? 1280;
@@ -202,7 +203,7 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
   if (!sec) return null;
   const L = sec.layout ?? {};
   const lines = [
-    `STUDIO${project ? "の「" + project + "」" : ""}の編集画面(別のプロジェクトが開いていたら、一覧から「" + (project || "対象") + "」を開き直す)で、${sec.tag === "header" ? "ページの**一番上**(ほかのセクションより上)" : sec.tag === "footer" ? "ページの**一番下**" : `すでに作ったセクションの下(セクション${n - 1}の直後)`}に、新しい${sec.tag === "header" ? "ヘッダー" : "セクション"}(セクション${n})を1つ作ってください。仕様書(spec-out/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
+    `STUDIO${project ? "の「" + project + "」" : ""}の編集画面(別のプロジェクトが開いていたら、一覧から「" + (project || "対象") + "」を開き直す)で、${sec.tag === "header" ? "ページの**一番上**(ほかのセクションより上)" : sec.tag === "footer" ? "ページの**一番下**" : `すでに作ったセクションの下(セクション${n - 1}の直後)`}に、新しい${sec.tag === "header" ? "ヘッダー" : "セクション"}(セクション${n})を1つ作ってください。仕様書(${specDir()}/spec.md)の「${device === "pc" ? "PC" : "スマホ"}」の ${n} 番目と同じ内容です。見本画像は spec-out/shots/ にあります。`,
     `- 全体: 背景 ${sec.bg} / 高さの目安 ${sec.h}px / 並べ方 ${L.display ?? "block"}${L.dir ? " " + L.dir : ""}${L.gap && L.gap !== "normal" ? " 間隔" + L.gap : ""}${L.justify ? " 横:" + L.justify : ""}${L.align ? " 縦:" + L.align : ""} / 余白 ${L.pad ?? ""}`,
     "- 中身(上から順。文字は、一字一句、そのまま):",
   ];
@@ -217,7 +218,7 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
 }
 
 /** !progress 用: 全セクションの検査結果を、1つの表にする */
-export async function progressTable({ specPath = "spec-out/spec.json", cdp, device = null } = {}) {
+export async function progressTable({ specPath = inSpec("spec.json"), cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
   device = device ?? ((studio.designW ?? 1280) < 700 ? "sp" : "pc");
@@ -237,10 +238,10 @@ export function fixPrompt(result, n, { project = "", layout = false } = {}) {
   const mobile = result.device === "sp" ? `**今は、モバイルサイズの画面(幅${result.designW}px)の話です。** 編集画面の下の「モバイルサイズに切り替える」ボタンで、モバイルサイズにしてから、直してください。PCサイズ(デフォルトサイズ)の見た目は、変えないでください。` : "";
   if (layout) {
     if (!result.layout?.length) return null;
-    return [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(spec-out/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
+    return [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(${specDir()}/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
   }
   if (!result.diffs.length && !result.missing.length) return null;
-  const lines = [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(spec-out/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
+  const lines = [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(${specDir()}/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
   if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));
   if (result.missing.length) lines.push("【STUDIOに無い文字(追加するか、仕様書にある文字が正しく入っているか確認する)】", ...result.missing.map((m) => `・「${String(m.text).slice(0, 60)}」`));
   lines.push("直せない項目(その書体が選べない、など)は、無理に別の方法を探し回らず、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。");
