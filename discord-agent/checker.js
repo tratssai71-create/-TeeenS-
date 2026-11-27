@@ -162,7 +162,7 @@ export function applyAccepted(result, accepted = []) {
   if (!accepted.length) return result;
   const ok = [...result.ok], diffs = [];
   for (const d of result.diffs) {
-    const rest = d.diffs.filter((line) => !accepted.some((a) => String(d.item.text).includes(a.text) && line.startsWith(a.field)));
+    const rest = d.diffs.filter((line) => !accepted.some((a) => norm(d.item.text).includes(norm(a.text)) && line.startsWith(a.field)));
     rest.length ? diffs.push({ ...d, diffs: rest }) : ok.push(d.item);
   }
   return { ...result, ok, diffs };
@@ -173,7 +173,8 @@ export async function checkStudio({ specPath = "spec-out/spec.json", section = n
   const studio = await readStudioTexts({ cdp });
   const res = applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
   const acc = loadAccepted();
-  res.layout = layoutDiffs(res, spec.pc1280, studio.root).map((d) => ({ ...d, diffs: d.diffs.filter((line) => !acc.some((a) => String(d.item.text).includes(a.text) && line.startsWith(a.field))) })).filter((d) => d.diffs.length);
+  const sameSections = spec.pc1280?.sections?.length === spec.pc?.sections?.length; // 幅1440と1280で、セクションの数が違うときは、番号が合わないので、配置は比べない
+  res.layout = (sameSections ? layoutDiffs(res, spec.pc1280, studio.root) : []).map((d) => ({ ...d, diffs: d.diffs.filter((line) => !acc.some((a) => norm(d.item.text).includes(norm(a.text)) && line.startsWith(a.field))) })).filter((d) => d.diffs.length);
   return res;
 }
 

@@ -74,7 +74,7 @@ export function buildTaskMessage(job, task, timeoutMin) {
   const make = (p) => JSON.stringify({
     v: 1, type: "task", id: task.sentId, job: job.id, to: task.to,
     requiresApproval: task.requiresApproval ? true : undefined,
-    title: task.title, instructions: task.instructions, acceptance: task.acceptance,
+    title: String(task.title ?? "").slice(0, 200), instructions: task.instructions, acceptance: (task.acceptance ?? []).slice(0, 5).map((x) => String(x).slice(0, 120)), // 長すぎて、全体が止まらないよう、題と確認項目は、切り詰める
     inputs: (p.length || task.requiresApproval)
       ? { previous: p.length ? p : undefined, approval: task.requiresApproval ? job.approval : undefined }
       : undefined,

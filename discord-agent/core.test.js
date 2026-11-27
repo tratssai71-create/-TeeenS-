@@ -111,3 +111,9 @@ test("extractQuestions: 質問だけのプランを見分ける", async () => {
   assert.equal(extractQuestions({ questions: [] }), null);
   assert.equal(extractQuestions({}), null);
 });
+
+test("buildTaskMessage: 題や確認項目が長くても、切り詰めて、止まらない", () => {
+  const t = { key: "a", to: "designer", sentId: "j1-a-1", title: "題".repeat(900), instructions: "指示".repeat(400), acceptance: Array.from({ length: 12 }, () => "確認".repeat(200)), deps: [], attempt: 1 };
+  const msg = buildTaskMessage({ id: "j1", tasks: [t] }, t, 30);
+  assert.ok(msg.length <= 1900);
+});

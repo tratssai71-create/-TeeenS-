@@ -2,7 +2,7 @@ import {
   Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle,
 } from "discord.js";
 import { spawn } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile, rename } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { appendFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -34,8 +34,13 @@ if (!ALLOWED.size || !WORKERS.size) { console.error("ALLOWED_USER_IDS / WORKER_B
 
 // ---------- 状態 ----------
 let state = { seq: 0, halted: false, day: "", jobsToday: 0, jobs: {} };
-if (existsSync(STATE_FILE)) state = JSON.parse(await readFile(STATE_FILE, "utf8"));
-const save = () => writeFile(STATE_FILE, JSON.stringify(state, null, 2));
+if (existsSync(STATE_FILE)) {
+  try { state = JSON.parse(await readFile(STATE_FILE, "utf8")); }
+  catch (e) { console.error(`state.json を読めませんでした(${e.message})。壊れたファイルを state.json.broken に残して、空の状態で始めます`); try { await rename(STATE_FILE, `${STATE_FILE}.broken`); } catch {} }
+}
+// 同時に何度も保存しても、ファイルが壊れないよう、順番に、一時ファイルへ書いてから、置き換える
+let saving = Promise.resolve();
+const save = () => (saving = saving.then(async () => { const tmp = `${STATE_FILE}.tmp`; await writeFile(tmp, JSON.stringify(state, null, 2)); await rename(tmp, STATE_FILE); }).catch((e) => console.error("state.json の保存に失敗:", e.message)));
 
 process.on("unhandledRejection", (e) => console.error("[unhandledRejection]", e?.message ?? e));
 process.on("uncaughtException", (e) => console.error("[uncaughtException]", e?.message ?? e));

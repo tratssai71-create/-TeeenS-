@@ -227,6 +227,7 @@ const BROWSER_ERR = {
 };
 
 async function chatTurn(ch, channelId, userText, { openProject = false, images = [] } = {}) {
+  stopRequested = false;
   await ch.send("🧹 ブラウザを整えています…").catch(() => {});
   const br = await ensureBrowser(() => {}, { keepEditor: !openProject }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
   if (!br.ok) { await ch.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`); return { ok: false, why: "browser" }; }
@@ -261,7 +262,7 @@ async function chatTurn(ch, channelId, userText, { openProject = false, images =
     await ch.send(`⏸ Codex(ChatGPT)の利用上限に達しました。再開できる時刻: **${limHit.at ?? fmtTime(chatLimitUntil)}**。それまでは、\`!check\` \`!progress\` \`!shot\` だけ使えます。`);
     return { ok: false, why: "limit" };
   }
-  if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
+  if (sid && r.code !== 0 && !r.sig && !stopRequested) { // 前の会話を引き継げなかったときだけ、新しく始める(!stop や時間切れで止めたときは、やり直さない)
     buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
     delete sessions[channelId];
     r = await runCodex(fresh(userText), mkProg(), undefined, images);
@@ -306,10 +307,12 @@ async function downloadImages(msg) {
 }
 // ---- ディレクター(自動): 作る → 検査 → 違いがあれば直す を、自動で繰り返す。公開は、しない ----
 let autoCancel = false;
+let autoRounds = 0; // いま、何回目の検査か(記録用)
+let stopRequested = false; // !stop で止めたときに、会話の「やり直し」(再実行)をしないための印
 const AUTO_MAX_ROUNDS = Number(process.env.AUTO_MAX_ROUNDS ?? 3);
 async function autoSection(ch, n) {
   const t0 = Date.now();
-  const logStat = (result, rounds) => { try { appendFileSync("docs/director-log.csv", `${new Date().toISOString()},${n},${result},${rounds},${Math.round((Date.now() - t0) / 1000)}\n`); } catch {} };
+  autoRounds = 0;
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   let spec;
   try { spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
@@ -331,11 +334,12 @@ async function autoSection(ch, n) {
   let prev = null;
   for (let round = 1; round <= AUTO_MAX_ROUNDS; round++) {
     if (autoCancel) return "cancel";
+    autoRounds = round;
     let res;
     try { res = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch (e) { await say(`検査できませんでした(${e.message})。ここで止めます。`); return "stop"; }
     const left = res.diffs.length + res.missing.length;
     await ch.send(formatCheck(res, { section: n })).catch(() => {});
-    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。(${Math.round((Date.now() - t0) / 60000 * 10) / 10}分)` + (res.layout?.length ? `\n📐 配置のずれが ${res.layout.length}件 あります(目安)。直すなら \`!fix ${n} 配置\` を送ってください。` : "")); logStat("ok", round); return "ok"; }
+    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。(${Math.round((Date.now() - t0) / 60000 * 10) / 10}分)` + (res.layout?.length ? `\n📐 配置のずれが ${res.layout.length}件 あります(目安)。直すなら \`!fix ${n} 配置\` を送ってください。` : "")); return "ok"; }
     const sig = JSON.stringify([res.diffs.map((d) => d.item.text + d.diffs.join()), res.missing.map((m) => m.text)]);
     if (sig === prev) {
       const field = (d) => d.diffs[0].split(/[:：]/)[0];
@@ -351,7 +355,6 @@ async function autoSection(ch, n) {
     if (!t.ok) { await say("直す作業が、うまくいきませんでした。ここで止めます。人の確認が必要です。"); return "stop"; }
   }
   await say(`${AUTO_MAX_ROUNDS}回まで試しましたが、まだ違いが残っています。人の判断が必要です。`);
-  logStat("stuck", AUTO_MAX_ROUNDS);
   return "stuck";
 }
 
@@ -367,10 +370,15 @@ async function handleTask(msg, t) {
     }));
     return;
   }
+  // ほかの作業(会話・!build・!auto)と、同じ専用Chromeを使うので、順番待ちの列に入れてから、ブラウザを整える
+  chain = chain.then(() => runTask(msg, t, isPublish)).catch((e) => console.error(e));
+}
+
+async function runTask(msg, t, isPublish) {
   const timing = { recvAt: Date.now() }; // 段階ごとの所要時間(ms)。結果JSONに載せて、ディレクターが #log に出す
   const logCh = LOG_CHANNEL_ID ? await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null) : null;
   await logCh?.send(`🧹 [${roleLabel(AGENT_NAME)}] ブラウザを整えています(古いタブを閉じて、STUDIOの一覧を開きます)…`);
-  const br = await ensureBrowser((m) => logCh?.send(`🔧 ${m}`).catch(() => {}));
+  const br = await ensureBrowser((m) => logCh?.send(`🔧 ${m}`).catch(() => {}), { keepEditor: isPublish }); // 公開は、直前の編集画面から行うので、一覧に戻さない
   timing.guardMs = Date.now() - timing.recvAt;
   if (!br.ok) {
     await logCh?.send(`⛔ [${roleLabel(AGENT_NAME)}] 作業できません\n👉 ${BROWSER_ERR[br.code] ?? br.code}`);
@@ -382,67 +390,71 @@ async function handleTask(msg, t) {
     return;
   }
   await logCh?.send(`🛠️ [${roleLabel(AGENT_NAME)}] 作業を始めました: ${t.title ?? t.id}`);
-  chain = chain.then(async () => {
-    // 作業の様子を、数秒ごとに #log へ流す(裏で動いていても、何をしているか分かるように)
-    const buf = []; let sentN = 0;
-    const flush = async () => {
-      if (!buf.length || !logCh) return;
-      const text = compress(buf.splice(0)).join("\n").slice(0, 1900);
-      if (sentN++ < 40) await logCh.send(text).catch(() => {});
-    };
-    const timer = setInterval(flush, 4000);
-    timing.codexStartAt = Date.now();
-    const knownExpected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
-    // 依頼に「○○」に変えて、がなくても、Codexに CHANGED_TO: を書かせて、Botが確認する(Codexに再読み込みさせない)
-    const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0";
-    // Botが先に、対象プロジェクトの「デザインエディタ」を押しておく(読み込みの待ちを、Codexの起動と並行させる)。EDITOR_PREOPEN=0 で無効
-    let editorOpening = false;
-    const projName = (t.instructions ?? t.title ?? "").match(/STUDIOの「([^」]+)」/)?.[1];
-    if (!isPublish && process.env.EDITOR_PREOPEN !== "0" && process.env.BROWSER_CHECK !== "0" && projName) {
-      const t0 = Date.now();
-      const o = await openEditor({ cdp: BROWSER_CDP, name: projName });
-      timing.preopenMs = Date.now() - t0;
-      editorOpening = o.clicked;
-      await logCh?.send(o.clicked ? `🚪 [${roleLabel(AGENT_NAME)}] 編集画面を先に開きました: ${o.detail}` : `ℹ️ 編集画面の先開きは、しませんでした(${o.detail}。Codexが自分で開きます)`).catch(() => {});
-    }
-    const r = await runCodex(buildPrompt(t, botVerifies, !knownExpected, editorOpening), makeProgress((x) => buf.push(x)));
-    timing.codexMs = Date.now() - timing.codexStartAt;
-    clearInterval(timer);
-    await flush();
-    // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
-    const lim = r.code !== 0 ? detectUsageLimit(r.text) : null;
-    const mk = [...r.text.matchAll(/RESULT:\s*(OK|FAILED|BLOCKED)/gi)].pop()?.[1]?.toUpperCase();
-    const status = lim ? "blocked" : r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
-    const why = lim ? "usage_limit" : r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
-    // Bot自身の確認: Codexが「完了」と言っても、再読み込みして、変更後の文字が本当にあるかを見る。VERIFY_MODE=off で無効 / strict で、見つからなければ失敗にする(既定: warn=警告だけ)
-    let finalStatus = status, verifyNote = null;
-    const VERIFY_MODE = process.env.VERIFY_MODE ?? "warn";
-    const expected = isPublish ? null : (knownExpected ?? r.text.match(/CHANGED_TO:\s*(.+)/)?.[1]?.trim().replace(/^[「"']|[」"']$/g, "") ?? null);
-    if (status === "done" && expected && VERIFY_MODE !== "off" && process.env.BROWSER_CHECK !== "0") {
-      await logCh?.send(`🔍 [${roleLabel(AGENT_NAME)}] Bot自身で、再読み込みして「${expected}」を確認しています…`).catch(() => {});
-      const t0 = Date.now();
-      const v = await verifyText({ cdp: BROWSER_CDP, expected });
-      timing.verifyMs = Date.now() - t0;
-      if (v.status === "verified") verifyNote = `Botが再読み込み後に「${expected}」を確認しました`;
-      else if (v.status === "not_found") {
-        verifyNote = `⚠️ ${v.detail}`;
-        if (VERIFY_MODE === "strict") finalStatus = "failed";
-      } else verifyNote = `(Botでの確認はできませんでした: ${v.detail})`;
-      await logCh?.send(`${v.status === "verified" ? "✅" : v.status === "not_found" ? "⚠️" : "ℹ️"} ${verifyNote}`).catch(() => {});
-    }
-    timing.endAt = Date.now();
-    if (finalStatus === "done" && !isPublish) await postShot(logCh, `[${t.id}] 作業後のSTUDIOの画面`);
-    if (finalStatus !== "done") needDeep = true; // 失敗の後は、次に念入りに整える
-    const result = {
-      v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
-      summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").replace(/CHANGED_TO:.*\n?/g, "").trim().slice(0, 1500),
-      error: finalStatus !== status ? "verify_failed" : why, timing,
-      ...(lim?.atMs ? { limitUntil: lim.atMs } : {}),
-    };
-    if (verifyNote) result.summary = `${result.summary}\n${verifyNote}`.slice(0, 1500);
-    await msg.channel.send(JSON.stringify(result));
-    await logCh?.send(`${finalStatus === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${finalStatus === "done" ? "完了" : finalStatus === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);
-  }).catch((e) => console.error(e));
+  try {
+      // 作業の様子を、数秒ごとに #log へ流す(裏で動いていても、何をしているか分かるように)
+      const buf = []; let sentN = 0;
+      const flush = async () => {
+        if (!buf.length || !logCh) return;
+        const text = compress(buf.splice(0)).join("\n").slice(0, 1900);
+        if (sentN++ < 40) await logCh.send(text).catch(() => {});
+      };
+      const timer = setInterval(flush, 4000);
+      timing.codexStartAt = Date.now();
+      const knownExpected = isPublish ? null : extractExpectedText(t.instructions ?? t.title ?? "");
+      // 依頼に「○○」に変えて、がなくても、Codexに CHANGED_TO: を書かせて、Botが確認する(Codexに再読み込みさせない)
+      const botVerifies = !isPublish && (process.env.VERIFY_MODE ?? "warn") !== "off" && process.env.BROWSER_CHECK !== "0";
+      // Botが先に、対象プロジェクトの「デザインエディタ」を押しておく(読み込みの待ちを、Codexの起動と並行させる)。EDITOR_PREOPEN=0 で無効
+      let editorOpening = false;
+      const projName = (t.instructions ?? t.title ?? "").match(/STUDIOの「([^」]+)」/)?.[1];
+      if (!isPublish && process.env.EDITOR_PREOPEN !== "0" && process.env.BROWSER_CHECK !== "0" && projName) {
+        const t0 = Date.now();
+        const o = await openEditor({ cdp: BROWSER_CDP, name: projName });
+        timing.preopenMs = Date.now() - t0;
+        editorOpening = o.clicked;
+        await logCh?.send(o.clicked ? `🚪 [${roleLabel(AGENT_NAME)}] 編集画面を先に開きました: ${o.detail}` : `ℹ️ 編集画面の先開きは、しませんでした(${o.detail}。Codexが自分で開きます)`).catch(() => {});
+      }
+      const r = await runCodex(buildPrompt(t, botVerifies, !knownExpected, editorOpening), makeProgress((x) => buf.push(x)));
+      timing.codexMs = Date.now() - timing.codexStartAt;
+      clearInterval(timer);
+      await flush();
+      // 完了の判定: 終了コードだけでなく、Codex自身の「RESULT: OK/FAILED/BLOCKED」を見る(未実施なのに完了扱いを防ぐ)
+      const lim = r.code !== 0 ? detectUsageLimit(r.text) : null;
+      const mk = [...r.text.matchAll(/RESULT:\s*(OK|FAILED|BLOCKED)/gi)].pop()?.[1]?.toUpperCase();
+      const status = lim ? "blocked" : r.code !== 0 ? "failed" : mk === "OK" ? "done" : mk === "BLOCKED" ? "blocked" : "failed";
+      const why = lim ? "usage_limit" : r.code !== 0 ? `code=${r.code}${r.sig ? " " + r.sig : ""}` : mk ? (mk === "OK" ? null : `reported_${mk.toLowerCase()}`) : "no_result_marker";
+      // Bot自身の確認: Codexが「完了」と言っても、再読み込みして、変更後の文字が本当にあるかを見る。VERIFY_MODE=off で無効 / strict で、見つからなければ失敗にする(既定: warn=警告だけ)
+      let finalStatus = status, verifyNote = null;
+      const VERIFY_MODE = process.env.VERIFY_MODE ?? "warn";
+      const expected = isPublish ? null : (knownExpected ?? r.text.match(/CHANGED_TO:\s*(.+)/)?.[1]?.trim().replace(/^[「"']|[」"']$/g, "") ?? null);
+      if (status === "done" && expected && VERIFY_MODE !== "off" && process.env.BROWSER_CHECK !== "0") {
+        await logCh?.send(`🔍 [${roleLabel(AGENT_NAME)}] Bot自身で、再読み込みして「${expected}」を確認しています…`).catch(() => {});
+        const t0 = Date.now();
+        const v = await verifyText({ cdp: BROWSER_CDP, expected });
+        timing.verifyMs = Date.now() - t0;
+        if (v.status === "verified") verifyNote = `Botが再読み込み後に「${expected}」を確認しました`;
+        else if (v.status === "not_found") {
+          verifyNote = `⚠️ ${v.detail}`;
+          if (VERIFY_MODE === "strict") finalStatus = "failed";
+        } else verifyNote = `(Botでの確認はできませんでした: ${v.detail})`;
+        await logCh?.send(`${v.status === "verified" ? "✅" : v.status === "not_found" ? "⚠️" : "ℹ️"} ${verifyNote}`).catch(() => {});
+      }
+      timing.endAt = Date.now();
+      if (finalStatus === "done" && !isPublish) await postShot(logCh, `[${t.id}] 作業後のSTUDIOの画面`);
+      if (finalStatus !== "done") needDeep = true; // 失敗の後は、次に念入りに整える
+      const result = {
+        v: 1, type: "result", id: t.id, from: AGENT_NAME, status: finalStatus,
+        summary: lim ? `Codexの利用上限に達しました。再開できる時刻: ${lim.at ?? "不明"}` : r.text.replace(/RESULT:\s*(OK|FAILED|BLOCKED)/gi, "").replace(/CHANGED_TO:.*\n?/g, "").trim().slice(0, 1500),
+        error: finalStatus !== status ? "verify_failed" : why, timing,
+        ...(lim?.atMs ? { limitUntil: lim.atMs } : {}),
+      };
+      if (verifyNote) result.summary = `${result.summary}\n${verifyNote}`.slice(0, 1500);
+      await msg.channel.send(JSON.stringify(result));
+      await logCh?.send(`${finalStatus === "done" ? "✅" : "❌"} [${roleLabel(AGENT_NAME)}] 作業を終えました(${finalStatus === "done" ? "完了" : finalStatus === "blocked" ? "要対応" : "失敗"}): ${t.title ?? t.id}`);
+  
+  } catch (e) { // どこかで例外が出ても、ディレクターに「失敗」を返す(返さないと、30分以上、待たされる)
+    console.error(e);
+    await msg.channel.send(JSON.stringify({ v: 1, type: "result", id: t.id, from: AGENT_NAME, status: "failed", summary: `作業中にエラーが出ました: ${String(e?.message ?? e).slice(0, 200)}`, error: "worker_exception" })).catch(() => {});
+  }
 }
 
 client.on("messageCreate", async (msg) => {
@@ -463,6 +475,7 @@ client.on("messageCreate", async (msg) => {
 
   if (text === "!stop") {
     autoCancel = true; // 自動作業(!auto)も、次の区切りで止める
+    stopRequested = true;
     if (current) { current.kill("SIGTERM"); return void msg.reply(`[${AGENT_NAME}] 中断しました`); }
     return void msg.reply(`[${AGENT_NAME}] 実行中のタスクはありません`);
   }
@@ -496,7 +509,9 @@ client.on("messageCreate", async (msg) => {
           const cr = await checkStudio({ section: n, cdp: BROWSER_CDP });
           if (cr.ok.length > 0 && !cr.diffs.length && !cr.missing.length) { await msg.channel.send(`🧭 ディレクター: セクション${n}は、すでに、文字が、すべて合っているので、飛ばします。`).catch(() => {}); continue; }
         } catch {}
+        const t0 = Date.now();
         const r = await autoSection(msg.channel, n);
+        try { appendFileSync("docs/director-log.csv", `${new Date().toISOString()},${n},${r},${autoRounds},${Math.round((Date.now() - t0) / 1000)}\n`); } catch {} // どの終わり方でも、記録する
         if (r === "limit" || r === "cancel" || r === "stop") { await msg.channel.send(`🧭 ディレクター: 自動作業を止めました(セクション${n}で${r === "limit" ? "利用上限" : r === "cancel" ? "中断" : "停止"})。`).catch(() => {}); return; }
         if (r === "stuck" && n < to) { await msg.channel.send(`🧭 ディレクター: セクション${n}に、直せない違いが残っているので、ここで一度止めます。判断をいただいたら、\`!auto ${n + 1}-${to}\` で続けられます。`).catch(() => {}); return; }
       }

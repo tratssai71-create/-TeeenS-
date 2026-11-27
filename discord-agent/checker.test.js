@@ -71,3 +71,9 @@ test("layoutDiffs: 拡大率をそろえて、位置・幅・高さ・縦の間�
   assert.ok(out[0].diffs.some((d) => d.startsWith("位置(左)")));
   assert.ok(out[0].diffs.some((d) => d.startsWith("縦の位置")));
 });
+
+test("applyAccepted: 空白が入った文字でも、許容が効く", () => {
+  const r = { ok: [], missing: [], diffs: [{ item: { text: "Our Services" }, diffs: ["色: 仕様 a / STUDIO b"] }] };
+  const out = applyAccepted(r, [{ text: "OurServi", field: "色" }]);
+  assert.equal(out.diffs.length, 0);
+});
