@@ -110,10 +110,11 @@ try {
   const s = await cdpSession(ws, 30000);
   await s.send("Page.enable"); await s.send("Runtime.enable");
   const pc = await capture(s, 1440, 900, "pc");
-  const sp = await capture(s, 390, 844, "sp");
+  const SP_WIDTH = Number(process.env.SP_WIDTH ?? 540); // STUDIOの「モバイル」のベース幅(編集画面の下に出る。既定は540px)。この幅で取る
+  const sp = await capture(s, SP_WIDTH, 844, "sp");
   const pc1280 = await capture(s, 1280, 900, "pc1280", true); // STUDIOの編集画面の、デフォルトの幅。配置の検査に使う(画像は撮らない)
   mkdirSync(out, { recursive: true });
-  writeFileSync(join(out, "spec.json"), JSON.stringify({ url, pc, sp, pc1280 }, null, 2));
+  writeFileSync(join(out, "spec.json"), JSON.stringify({ url, pc, sp, pc1280, spWidth: SP_WIDTH }, null, 2));
   const md = [
     `# 移植仕様書: ${pc.title || url}`,
     `元: ${url}`,

@@ -81,6 +81,11 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
         all.push(...JSON.parse(r.result.value ?? "[]"));
       } catch {}
     }
+    // 編集画面の下に出ている、いま表示している幅(例: 「1280 px」「540 px」)。PCかスマホかの判定と、拡大率に使う
+    try {
+      const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const e = document.querySelector('[aria-label="ベース幅を編集"]'); const m = e ? e.textContent.match(/\\d{3,4}/) : null; return JSON.stringify(m ? parseInt(m[0], 10) : null); })()` });
+      all.designW = JSON.parse(r.result.value ?? "null");
+    } catch {}
     // サイト本体(最初の文字「About」と最後の文字を、両方含む、いちばん小さい要素)の位置と幅。配置の検査で、拡大率を出すために使う
     try {
       const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
@@ -108,11 +113,12 @@ export function specTextItems(spec, { section = null, device = "pc" } = {}) {
 
 export function formatCheck(r, { section = null } = {}) {
   const total = r.ok.length + r.missing.length + r.diffs.length;
-  const head = `🔍 検査の結果${section ? `(セクション${section})` : ""}: 文字 ${total}件のうち、**合っている ${r.ok.length}** / **スタイルの違い ${r.diffs.length}** / **見つからない ${r.missing.length}**`;
+  const head = `🔍 検査の結果${r.device === "sp" ? "【スマホ・タブレット幅】" : ""}${section ? `(セクション${section})` : ""}: 文字 ${total}件のうち、**合っている ${r.ok.length}** / **スタイルの違い ${r.diffs.length}** / **見つからない ${r.missing.length}**`;
   const lines = [head];
   if (r.missing.length) lines.push("", "❌ 見つからない文字:", ...r.missing.slice(0, 12).map((m) => `・「${String(m.text).slice(0, 40)}」`));
   if (r.diffs.length) lines.push("", "⚠️ スタイルの違い:", ...r.diffs.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 24)}」 ${d.diffs.join(" / ")}`));
   if (!r.missing.length && !r.diffs.length) lines.push("", "✅ 文字は、すべて、仕様書と合っています(余白・画像は、この検査の対象外です。画面で見てください)");
+  if (r.layoutNote) lines.push("", `ℹ️ ${r.layoutNote}`);
   if (r.layout?.length) lines.push("", `📐 配置のずれ(目安・${r.layout.length}件。直したいときは \`!fix ${section ?? "N"} 配置\`):`, ...r.layout.slice(0, 8).map((d) => `・「${String(d.item.text).slice(0, 18)}」 ${d.diffs.join(" / ")}`));
   return lines.join("\n").slice(0, 1900);
 }
@@ -168,13 +174,20 @@ export function applyAccepted(result, accepted = []) {
   return { ...result, ok, diffs };
 }
 
-export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = "pc" } = {}) {
+export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
+  const dw = studio.designW ?? 1280;
+  device = device ?? (dw < 700 ? "sp" : "pc"); // 編集画面が、スマホ・タブレットの幅なら、スマホの仕様で検査する
   const res = applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
+  res.device = device; res.designW = dw;
+  // 配置: 仕様書を取ったときの幅と、STUDIOの表示幅が、同じときだけ比べる(PCは1280px、スマホは spec.spWidth)
+  const specW = device === "sp" ? spec.spWidth ?? 390 : 1280;
+  const specLayout = device === "sp" ? spec.sp : spec.pc1280;
+  const sameSections = specLayout?.sections?.length === spec[device]?.sections?.length; // セクションの数が違うときは、番号が合わないので、比べない
   const acc = loadAccepted();
-  const sameSections = spec.pc1280?.sections?.length === spec.pc?.sections?.length; // 幅1440と1280で、セクションの数が違うときは、番号が合わないので、配置は比べない
-  res.layout = (sameSections ? layoutDiffs(res, spec.pc1280, studio.root) : []).map((d) => ({ ...d, diffs: d.diffs.filter((line) => !acc.some((a) => norm(d.item.text).includes(norm(a.text)) && line.startsWith(a.field))) })).filter((d) => d.diffs.length);
+  if (dw !== specW) res.layoutNote = `STUDIOの表示幅(${dw}px)と、仕様書の幅(${specW}px)が違うので、配置は比べていません。仕様書を \`SP_WIDTH=${dw} npm run spec -- …\` で、取り直すと、比べられます`;
+  res.layout = (dw === specW && sameSections ? layoutDiffs(res, specLayout, studio.root, dw) : []).map((d) => ({ ...d, diffs: d.diffs.filter((line) => !acc.some((a) => norm(d.item.text).includes(norm(a.text)) && line.startsWith(a.field))) })).filter((d) => d.diffs.length);
   return res;
 }
 
@@ -199,9 +212,10 @@ export function sectionPrompt(spec, n, { device = "pc", project = "" } = {}) {
 }
 
 /** !progress 用: 全セクションの検査結果を、1つの表にする */
-export async function progressTable({ specPath = "spec-out/spec.json", cdp, device = "pc" } = {}) {
+export async function progressTable({ specPath = "spec-out/spec.json", cdp, device = null } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
+  device = device ?? ((studio.designW ?? 1280) < 700 ? "sp" : "pc");
   const secs = spec?.[device]?.sections ?? [];
   const rows = secs.map((_, i) => {
     const r = applyAccepted(compareSpec(specTextItems(spec, { section: i + 1, device }), studio), loadAccepted());
@@ -210,19 +224,20 @@ export async function progressTable({ specPath = "spec-out/spec.json", cdp, devi
     const none = total > 0 && r.ok.length + r.diffs.length === 0;
     return `${done ? "✅" : none ? "⬜" : "🔶"} セクション${i + 1}: 合っている${r.ok.length} / 違い${r.diffs.length} / 無い${r.missing.length}`;
   });
-  return `📋 進み具合(✅=文字がすべて合っている / 🔶=作業中 / ⬜=未着手)\n${rows.join("\n")}`;
+  return `📋 進み具合${device === "sp" ? "【スマホ・タブレット幅】" : ""}(✅=文字がすべて合っている / 🔶=作業中 / ⬜=未着手)\n${rows.join("\n")}`;
 }
 
 /** !fix N 用: 検査の結果(違い・見つからない文字)から、「ここを直してください」の依頼文を作る。直すところがなければ null */
 export function fixPrompt(result, n, { project = "", layout = false } = {}) {
+  const mobile = result.device === "sp" ? `**今は、モバイルサイズの画面(幅${result.designW}px)の話です。** 編集画面の下の「モバイルサイズに切り替える」ボタンで、モバイルサイズにしてから、直してください。PCサイズ(デフォルトサイズ)の見た目は、変えないでください。` : "";
   if (layout) {
     if (!result.layout?.length) return null;
-    return [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(spec-out/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
+    return [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(spec-out/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
   }
   if (!result.diffs.length && !result.missing.length) return null;
-  const lines = [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(spec-out/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
+  const lines = [mobile, `STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(spec-out/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
   if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));
   if (result.missing.length) lines.push("【STUDIOに無い文字(追加するか、仕様書にある文字が正しく入っているか確認する)】", ...result.missing.map((m) => `・「${String(m.text).slice(0, 60)}」`));
   lines.push("直せない項目(その書体が選べない、など)は、無理に別の方法を探し回らず、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。");
-  return lines.join("\n");
+  return lines.filter(Boolean).join("\n");
 }

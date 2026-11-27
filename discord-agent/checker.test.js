@@ -77,3 +77,10 @@ test("applyAccepted: 空白が入った文字でも、許容が効く", () => {
   const out = applyAccepted(r, [{ text: "OurServi", field: "色" }]);
   assert.equal(out.diffs.length, 0);
 });
+
+test("fixPrompt: スマホ幅のときは、モバイルサイズで直す指示が、先頭に入る", () => {
+  const r = { device: "sp", designW: 540, ok: [], diffs: [{ item: { text: "あ" }, diffs: ["文字の大きさ: 仕様 18px / STUDIO 24px"] }], missing: [] };
+  const p = fixPrompt(r, 5);
+  assert.match(p.split("\n")[0], /モバイルサイズ/); assert.match(p, /PCサイズ.*変えない/);
+  assert.doesNotMatch(fixPrompt({ ...r, device: "pc" }, 5), /モバイルサイズ/);
+});
