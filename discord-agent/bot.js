@@ -537,6 +537,11 @@ client.on("messageCreate", async (msg) => {
     });
     return;
   }
+  if (text === "!help") { // コマンド表(docs/commands.md)を貼る
+    const t = readIf("docs/commands.md");
+    for (const c of chunks(t || "コマンド表が見つかりません(docs/commands.md)")) await msg.channel.send(c);
+    return;
+  }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
   if (text === "!new") { delete sessions[msg.channelId]; saveSessions(); return void msg.reply(`[${AGENT_NAME}] 会話をリセットしました。次のメッセージから、新しい会話を始めます`); }
