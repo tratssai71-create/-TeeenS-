@@ -91,6 +91,8 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
       const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
         const a = find(${JSON.stringify(process.env.FIRST_TEXT ?? "About")}), b = find(${JSON.stringify(process.env.LAST_TEXT ?? "TeeenS Inc")}); if (!a || !b) return JSON.stringify(null); let e = a; while (e && !e.contains(b)) e = e.parentElement; if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x, y: q.y, w: q.width, h: q.height }); })()` });
       all.root = JSON.parse(r.result.value ?? "null");
+      // 編集画面の、ほかの部分(レイヤーの一覧・右パネルなど)の文字を、検査に混ぜない。キャンバス(サイト本体)の中に、収まる文字だけにする
+      if (all.root) { const R = all.root; const keep = all.filter((i) => i.x == null || (i.x >= R.x - 2 && i.x + i.w <= R.x + R.w + 2 && i.y + i.h >= R.y - 2 && i.y <= R.y + R.h + 2)); all.length = 0; all.push(...keep); }
     } catch {}
   } finally { s.close(); }
   return all;
@@ -179,7 +181,10 @@ export async function checkStudio({ specPath = "spec-out/spec.json", section = n
   const studio = await readStudioTexts({ cdp });
   const dw = studio.designW ?? 1280;
   device = device ?? (dw < 700 ? "sp" : "pc"); // 編集画面が、スマホ・タブレットの幅なら、スマホの仕様で検査する
-  const res = applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
+  const accAll = loadAccepted();
+  // 「画像で代用」と決めた文字は、STUDIOに文字として無くてよい(検査の対象から外す)
+  const specItems = specTextItems(spec, { section, device }).filter((it) => !accAll.some((x) => x.field === "画像" && norm(it.text).includes(norm(x.text))));
+  const res = applyAccepted(compareSpec(specItems, studio), accAll);
   res.device = device; res.designW = dw;
   // 配置: 仕様書を取ったときの幅と、STUDIOの表示幅が、同じときだけ比べる(PCは1280px、スマホは spec.spWidth)
   const specW = device === "sp" ? spec.spWidth ?? 390 : 1280;

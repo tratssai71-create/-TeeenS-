@@ -19,6 +19,7 @@
 
 **▼ 決める・育てる**
 `!accept 料金プラン 色` 「この違いは、これでよい」と記録(検査から外れる)
+`!accept Landing 画像` 「文字ではなく、画像で代用した」と記録(「無い」扱いにしない)
 `!lessons` エージェントが見つけた、コツの記録
 `!health` 動かす前の点検(Chrome・STUDIO・仕様書・Codex) / `!help` このコマンド表 / `!session` 会話の番号 / `!ping` 生きているか
 `!limit clear` Codexの上限の記録を消す

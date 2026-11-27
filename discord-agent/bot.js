@@ -520,8 +520,8 @@ client.on("messageCreate", async (msg) => {
     return;
   }
   // 「この違いは、これでよい」と決める: !accept 料金プラン 色(文字の一部と、項目: 色/文字の大きさ/太さ/行間/字間/フォント)
-  const ac = text.match(/^!accept\s+(\S+)\s+(色|文字の大きさ|太さ|行間|字間|フォント|位置\(左\)|幅|高さ\(行数\)|縦の位置\(先頭の文字から\))$/);
-  if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(`✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
+  const ac = text.match(/^!accept\s+(\S+)\s+(色|画像|文字の大きさ|太さ|行間|字間|フォント|位置\(左\)|幅|高さ\(行数\)|縦の位置\(先頭の文字から\))$/);
+  if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(ac[2] === "画像" ? `✅ 「${ac[1]}」は、画像で代用する、と記録しました。文字として無くても、検査では、見つからない扱いにしません。` : `✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
   // 元のサイトと、いまのSTUDIOを、並べた画像を作って貼る(Codexは使わない。画面は、スクロールだけする)
   if (text === "!compare") {
     let src; try { src = decodeURIComponent(new URL(JSON.parse(readFileSync("spec-out/spec.json", "utf8")).url).pathname); } catch { return void msg.reply("仕様書(spec-out/spec.json)が見つかりません"); }
