@@ -46,3 +46,9 @@ test("applyAccepted: 許容した違いは、外れて、全部外れたら『�
   const out = applyAccepted(r, [{ text: "料金プラン", field: "色" }]);
   assert.equal(out.diffs.length, 1); assert.equal(out.ok.length, 1); assert.equal(out.diffs[0].item.text, "別");
 });
+
+test("compareSpec: 同じ文字が複数あるとき、違いが少ないほうを相手にする", () => {
+  const st2 = { size: "14px", weight: "400", color: "rgb(1, 1, 1)", lh: "20px", ls: "", font: "x" };
+  const r = compareSpec([{ text: "料金プラン", style: st2 }], [{ text: "料金プラン", ...st2, size: "12.5px" }, { text: "料金プラン", ...st2 }]);
+  assert.equal(r.ok.length, 1); assert.equal(r.diffs.length, 0);
+});

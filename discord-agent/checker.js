@@ -38,10 +38,13 @@ export function compareSpec(specItems, studioItems) {
     const n = norm(it.text);
     if (!n) continue;
     // 完全一致を優先。なければ、一方がもう一方を含む(文の区切り方が違うとき)ものを探す
-    const hit = pool.find((s) => s.n === n) ?? pool.find((s) => n.length >= 6 && (s.n.includes(n) || (s.n.length >= 6 && n.includes(s.n))));
-    if (!hit) { result.missing.push(it); continue; }
-    const d = diffStyle(it.style ?? {}, hit, it.text);
-    d.length ? result.diffs.push({ item: it, diffs: d }) : result.ok.push(it);
+    // 同じ文字が、ページの中に、複数あるとき(例: 本文のリンクと、フッターのリンク)は、違いがいちばん少ないものを、相手にする
+    let cands = pool.filter((s) => s.n === n);
+    if (!cands.length) cands = pool.filter((s) => n.length >= 6 && (s.n.includes(n) || (s.n.length >= 6 && n.includes(s.n))));
+    if (!cands.length) { result.missing.push(it); continue; }
+    let best = null;
+    for (const c of cands) { const d = diffStyle(it.style ?? {}, c, it.text); if (!best || d.length < best.length) best = d; if (!d.length) break; }
+    best.length ? result.diffs.push({ item: it, diffs: best }) : result.ok.push(it);
   }
   return result;
 }
