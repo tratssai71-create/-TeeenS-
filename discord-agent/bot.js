@@ -308,6 +308,8 @@ async function downloadImages(msg) {
 let autoCancel = false;
 const AUTO_MAX_ROUNDS = Number(process.env.AUTO_MAX_ROUNDS ?? 3);
 async function autoSection(ch, n) {
+  const t0 = Date.now();
+  const logStat = (result, rounds) => { try { appendFileSync("docs/director-log.csv", `${new Date().toISOString()},${n},${result},${rounds},${Math.round((Date.now() - t0) / 1000)}\n`); } catch {} };
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   let spec;
   try { spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8")); } catch (e) { await say(`仕様書を読めませんでした(${e.message})`); return "stop"; }
@@ -333,9 +335,14 @@ async function autoSection(ch, n) {
     try { res = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch (e) { await say(`検査できませんでした(${e.message})。ここで止めます。`); return "stop"; }
     const left = res.diffs.length + res.missing.length;
     await ch.send(formatCheck(res, { section: n })).catch(() => {});
-    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。`); return "ok"; }
+    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。(${Math.round((Date.now() - t0) / 60000 * 10) / 10}分)`); logStat("ok", round); return "ok"; }
     const sig = JSON.stringify([res.diffs.map((d) => d.item.text + d.diffs.join()), res.missing.map((m) => m.text)]);
-    if (sig === prev) { await say(`**これ以上は、自動では、直せませんでした。** 同じ違いが、${left}件、残っています。人の判断が必要です(例: 仕様書にあるが、STUDIOで作れない・作らないと決めた文字)。`); return "stuck"; }
+    if (sig === prev) {
+      const field = (d) => d.diffs[0].split(/[:：]/)[0];
+      const cmds = res.diffs.slice(0, 5).map((d) => `\`!accept ${String(d.item.text).replace(/\s+/g, "").slice(0, 8)} ${field(d)}\``);
+      await say(`**これ以上は、自動では、直せませんでした。** 同じ違いが、${left}件、残っています。人の判断が必要です。\n・「これでよい」なら、次を送ってください(検査から外れます): ${cmds.join(" / ") || "(文字が見つからない項目です。STUDIOに入れるか、省くか、教えてください)"}\n・直したいなら、やり方を、普通の言葉で教えてください(手順書に入れます)。`);
+      return "stuck";
+    }
     prev = sig;
     if (round === AUTO_MAX_ROUNDS) break;
     await say(`違いが${left}件あります。直します(${round}/${AUTO_MAX_ROUNDS - 1}回目)。`);
@@ -344,6 +351,7 @@ async function autoSection(ch, n) {
     if (!t.ok) { await say("直す作業が、うまくいきませんでした。ここで止めます。人の確認が必要です。"); return "stop"; }
   }
   await say(`${AUTO_MAX_ROUNDS}回まで試しましたが、まだ違いが残っています。人の判断が必要です。`);
+  logStat("stuck", AUTO_MAX_ROUNDS);
   return "stuck";
 }
 
@@ -475,7 +483,7 @@ client.on("messageCreate", async (msg) => {
     const t = readIf("docs/lessons.md");
     return void msg.reply(t ? `📝 学びの記録(新しい順に最大8件)\n${t.split("\n").filter(Boolean).slice(-8).reverse().join("\n")}`.slice(0, 1900) : "まだ、学びの記録は、ありません");
   }
-  const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/); // !auto 3 / !auto 3-5
+  const am = text.match(/^!auto\s+(\d+)(?:\s*-\s*(\d+))?$/) ?? (text === "!auto all" ? ["", "1", String(Math.max(1, (() => { try { return JSON.parse(readFileSync("spec-out/spec.json", "utf8")).pc.sections.length; } catch { return 1; } })()))] : null); // !auto 3 / !auto 3-5 / !auto all(すでに文字が全部合っているセクションは、飛ばす)
   if (am) {
     if (chatLimitUntil > Date.now()) return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。${fmtTime(chatLimitUntil)} 以降に、もう一度送ってください`);
     const from = Number(am[1]), to = Number(am[2] ?? am[1]);
@@ -483,6 +491,11 @@ client.on("messageCreate", async (msg) => {
     msg.react("🧭").catch(() => {});
     chain = chain.then(async () => {
       for (let n = from; n <= to; n++) {
+        // すでに、文字が、すべて合っているセクションは、飛ばす(重複して作らないため)
+        try {
+          const cr = await checkStudio({ section: n, cdp: BROWSER_CDP });
+          if (cr.ok.length > 0 && !cr.diffs.length && !cr.missing.length) { await msg.channel.send(`🧭 ディレクター: セクション${n}は、すでに、文字が、すべて合っているので、飛ばします。`).catch(() => {}); continue; }
+        } catch {}
         const r = await autoSection(msg.channel, n);
         if (r === "limit" || r === "cancel" || r === "stop") { await msg.channel.send(`🧭 ディレクター: 自動作業を止めました(セクション${n}で${r === "limit" ? "利用上限" : r === "cancel" ? "中断" : "停止"})。`).catch(() => {}); return; }
         if (r === "stuck" && n < to) { await msg.channel.send(`🧭 ディレクター: セクション${n}に、直せない違いが残っているので、ここで一度止めます。判断をいただいたら、\`!auto ${n + 1}-${to}\` で続けられます。`).catch(() => {}); return; }
