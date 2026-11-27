@@ -247,7 +247,7 @@ export async function progressTable({ specPath = inSpec("spec.json"), cdp, devic
   device = device ?? ((studio.designW ?? 1280) < 700 ? "sp" : "pc");
   const secs = spec?.[device]?.sections ?? [];
   const rows = secs.map((_, i) => {
-    const r = applyAccepted(compareSpec(specTextItems(spec, { section: i + 1, device }), studio), loadAccepted());
+    const accP = loadAccepted(); const r = applyAccepted(compareSpec(specTextItems(spec, { section: i + 1, device }).filter((it) => !accP.some((x) => x.field === "画像" && norm(it.text).includes(norm(x.text)))), studio), accP);
     const total = r.ok.length + r.diffs.length + r.missing.length;
     const done = total > 0 && r.missing.length === 0 && r.diffs.length === 0;
     const none = total > 0 && r.ok.length + r.diffs.length === 0;
