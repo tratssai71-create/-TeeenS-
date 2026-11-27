@@ -52,3 +52,22 @@ test("compareSpec: 同じ文字が複数あるとき、違いが少ないほう�
   const r = compareSpec([{ text: "料金プラン", style: st2 }], [{ text: "料金プラン", ...st2, size: "12.5px" }, { text: "料金プラン", ...st2 }]);
   assert.equal(r.ok.length, 1); assert.equal(r.diffs.length, 0);
 });
+
+import { layoutDiffs } from "./checker.js";
+test("layoutDiffs: 拡大率をそろえて、位置・幅・高さ・縦の間隔のずれを出す", () => {
+  const spec1280 = { sections: [{ items: [
+    { kind: "text", text: "見出しです", x: 100, y: 1000, w: 600, h: 50 },
+    { kind: "text", text: "本文です", x: 100, y: 1100, w: 600, h: 80 },
+  ] }] };
+  // STUDIOは、0.5倍で表示。キャンバスの左端 x=50。見出しは、仕様どおり。本文は、右に40px(仕様の尺度で)・下に60pxずれている
+  const root = { x: 50, y: 0, w: 640 };
+  const result = { pairs: [
+    { item: { text: "見出しです", section: 1 }, hit: { x: 50 + 100 * 0.5, y: 500, w: 300, h: 25 } },
+    { item: { text: "本文です", section: 1 }, hit: { x: 50 + 140 * 0.5, y: 500 + 160 * 0.5, w: 300, h: 40 } },
+  ] };
+  const out = layoutDiffs(result, spec1280, root);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].item.text, "本文です");
+  assert.ok(out[0].diffs.some((d) => d.startsWith("位置(左)")));
+  assert.ok(out[0].diffs.some((d) => d.startsWith("縦の位置")));
+});

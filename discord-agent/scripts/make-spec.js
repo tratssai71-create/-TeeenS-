@@ -53,7 +53,7 @@ const EXTRACT = `(() => {
       const txt = own(el);
       if (txt) { const r = el.getBoundingClientRect();
         res.push({ kind: /^h[1-6]$/.test(t) ? "heading" : t === "a" || t === "button" ? "link" : "text", tag: t, text: txt.slice(0, 400), href: t === "a" ? el.getAttribute("href") : undefined,
-          style: sty(el), box: boxOf(el, root), x: Math.round(r.x), w: Math.round(r.width), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }
+          style: sty(el), box: boxOf(el, root), x: Math.round(r.x), y: Math.round(r.top + scrollY), w: Math.round(r.width), h: Math.round(r.height), bg: t === "a" || t === "button" ? getComputedStyle(el).backgroundColor : undefined }); } }
     for (const ch of el.children) walk(ch); }; walk(root); return res; };
   const roots = [...document.querySelectorAll("body > header, body > nav, body > main > *, body > section, body > footer, body > div, body > a")].filter((e) => vis(e) && e.getBoundingClientRect().height >= 40); // body直下の「a」(全面のリンクになった帯など)も、セクションとして拾う
   // 大きな包み(wrapper)の中に、セクションが並んでいたら、中身のセクションごとに分ける
@@ -67,7 +67,7 @@ const EXTRACT = `(() => {
       y: Math.round(r.top + scrollY), h: Math.round(r.height), bg: bgOf(el), layout: layout(el), items: items(el) }; }) });
 })()`;
 
-async function capture(s, width, height, label) {
+async function capture(s, width, height, label, noShots = false) {
   await s.send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 600 });
   await s.send("Page.navigate", { url });
   await sleep(2500);
@@ -78,7 +78,7 @@ async function capture(s, width, height, label) {
   const data = JSON.parse((await s.send("Runtime.evaluate", { expression: EXTRACT, returnByValue: true })).result.value);
   mkdirSync(join(out, "shots"), { recursive: true });
   for (const sec of data.sections) {
-    if (sec.h < 20) continue;
+    if (sec.h < 20 || noShots) continue;
     const name = `${label}-${String(sec.i + 1).padStart(2, "0")}-${sec.id || sec.tag}.png`;
     try {
       const shot = await s.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true, clip: { x: 0, y: sec.y, width, height: Math.min(sec.h, 6000), scale: 1 } });
@@ -109,8 +109,9 @@ try {
   await s.send("Page.enable"); await s.send("Runtime.enable");
   const pc = await capture(s, 1440, 900, "pc");
   const sp = await capture(s, 390, 844, "sp");
+  const pc1280 = await capture(s, 1280, 900, "pc1280", true); // STUDIOの編集画面の、デフォルトの幅。配置の検査に使う(画像は撮らない)
   mkdirSync(out, { recursive: true });
-  writeFileSync(join(out, "spec.json"), JSON.stringify({ url, pc, sp }, null, 2));
+  writeFileSync(join(out, "spec.json"), JSON.stringify({ url, pc, sp, pc1280 }, null, 2));
   const md = [
     `# 移植仕様書: ${pc.title || url}`,
     `元: ${url}`,

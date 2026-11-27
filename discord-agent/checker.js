@@ -33,7 +33,7 @@ export function diffStyle(spec, got, text = "") {
  */
 export function compareSpec(specItems, studioItems) {
   const pool = studioItems.map((s) => ({ ...s, n: norm(s.text) })).filter((s) => s.n);
-  const result = { ok: [], missing: [], diffs: [] };
+  const result = { ok: [], missing: [], diffs: [], pairs: [] };
   for (const it of specItems) {
     const n = norm(it.text);
     if (!n) continue;
@@ -43,7 +43,9 @@ export function compareSpec(specItems, studioItems) {
     if (!cands.length) cands = pool.filter((s) => n.length >= 6 && (s.n.includes(n) || (s.n.length >= 6 && n.includes(s.n))));
     if (!cands.length) { result.missing.push(it); continue; }
     let best = null;
-    for (const c of cands) { const d = diffStyle(it.style ?? {}, c, it.text); if (!best || d.length < best.length) best = d; if (!d.length) break; }
+    let bestHit = null;
+    for (const c of cands) { const d = diffStyle(it.style ?? {}, c, it.text); if (!best || d.length < best.length) { best = d; bestHit = c; } if (!d.length) break; }
+    result.pairs.push({ item: it, hit: bestHit });
     best.length ? result.diffs.push({ item: it, diffs: best }) : result.ok.push(it);
   }
   return result;
@@ -56,7 +58,8 @@ const EXTRACT = `(() => {
     if (!own) continue;
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden") continue;
-    out.push({ text: own, size: cs.fontSize, weight: cs.fontWeight, color: cs.color, lh: cs.lineHeight, ls: cs.letterSpacing === "normal" ? "" : cs.letterSpacing, font: cs.fontFamily });
+    const r = el.getBoundingClientRect();
+    out.push({ x: r.x, y: r.y, w: r.width, h: r.height, text: own, size: cs.fontSize, weight: cs.fontWeight, color: cs.color, lh: cs.lineHeight, ls: cs.letterSpacing === "normal" ? "" : cs.letterSpacing, font: cs.fontFamily });
   }
   return JSON.stringify(out);
 })()`;
@@ -78,6 +81,12 @@ export async function readStudioTexts({ cdp = "http://localhost:9222" } = {}) {
         all.push(...JSON.parse(r.result.value ?? "[]"));
       } catch {}
     }
+    // サイト本体(最初の文字「About」と最後の文字を、両方含む、いちばん小さい要素)の位置と幅。配置の検査で、拡大率を出すために使う
+    try {
+      const r = await s.send("Runtime.evaluate", { returnByValue: true, expression: `(() => { const find = (t) => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (n.textContent.includes(t)) return n.parentElement; return null; };
+        const a = find(${JSON.stringify(process.env.FIRST_TEXT ?? "About")}), b = find(${JSON.stringify(process.env.LAST_TEXT ?? "TeeenS Inc")}); if (!a || !b) return JSON.stringify(null); let e = a; while (e && !e.contains(b)) e = e.parentElement; if (!e) return JSON.stringify(null); const q = e.getBoundingClientRect(); return JSON.stringify({ x: q.x, y: q.y, w: q.width, h: q.height }); })()` });
+      all.root = JSON.parse(r.result.value ?? "null");
+    } catch {}
   } finally { s.close(); }
   return all;
 }
@@ -103,8 +112,40 @@ export function formatCheck(r, { section = null } = {}) {
   const lines = [head];
   if (r.missing.length) lines.push("", "❌ 見つからない文字:", ...r.missing.slice(0, 12).map((m) => `・「${String(m.text).slice(0, 40)}」`));
   if (r.diffs.length) lines.push("", "⚠️ スタイルの違い:", ...r.diffs.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 24)}」 ${d.diffs.join(" / ")}`));
-  if (!r.missing.length && !r.diffs.length) lines.push("", "✅ 文字は、すべて、仕様書と合っています(配置・余白・画像は、この検査の対象外です。画面で見てください)");
+  if (!r.missing.length && !r.diffs.length) lines.push("", "✅ 文字は、すべて、仕様書と合っています(余白・画像は、この検査の対象外です。画面で見てください)");
+  if (r.layout?.length) lines.push("", `📐 配置のずれ(目安・${r.layout.length}件。直したいときは \`!fix ${section ?? "N"} 配置\`):`, ...r.layout.slice(0, 8).map((d) => `・「${String(d.item.text).slice(0, 18)}」 ${d.diffs.join(" / ")}`));
   return lines.join("\n").slice(0, 1900);
+}
+
+/**
+ * 配置のずれ(目安)。仕様書の幅1280pxのときの、文字の位置・幅・高さ(行数)と、STUDIOの編集画面(拡大・縮小されている)を、同じ尺度にそろえて比べる。
+ * 縦の位置は、同じセクションの、最初の文字からの距離で比べる(上の方のずれが、下に響かないように)。
+ */
+export function layoutDiffs(result, spec1280, root, designW = 1280) {
+  if (!root || !spec1280?.sections) return [];
+  const scale = root.w / designW, out = [];
+  const bySec = new Map();
+  for (const p of result.pairs ?? []) { if (!p.hit || p.hit.x == null) continue; (bySec.get(p.item.section) ?? bySec.set(p.item.section, []).get(p.item.section)).push(p); }
+  for (const [sec, pairs] of bySec) {
+    const specItems = (spec1280.sections[sec - 1]?.items ?? []).filter((i) => i.kind !== "image" && i.text);
+    const find = (it) => specItems.find((x) => norm(x.text) === norm(it.text) && x.y != null);
+    const first = pairs.map((p) => ({ p, s: find(p.item) })).find((q) => q.s);
+    if (!first) continue;
+    for (const p of pairs) {
+      const sp = find(p.item); if (!sp) continue;
+      const d = [];
+      const x = (p.hit.x - root.x) / scale, w = p.hit.w / scale, h = p.hit.h / scale;
+      if (Math.abs(x - sp.x) > 12) d.push(`位置(左): 仕様 ${Math.round(sp.x)}px / STUDIO ${Math.round(x)}px`);
+      if (Math.abs(w - sp.w) > Math.max(30, sp.w * 0.12)) d.push(`幅: 仕様 ${Math.round(sp.w)}px / STUDIO ${Math.round(w)}px`);
+      if (Math.abs(h - sp.h) > Math.max(10, sp.h * 0.25)) d.push(`高さ(行数): 仕様 ${Math.round(sp.h)}px / STUDIO ${Math.round(h)}px`);
+      if (p !== first.p) {
+        const dySpec = sp.y - first.s.y, dyHit = (p.hit.y - first.p.hit.y) / scale;
+        if (Math.abs(dySpec - dyHit) > 24) d.push(`縦の位置(先頭の文字から): 仕様 ${Math.round(dySpec)}px / STUDIO ${Math.round(dyHit)}px`);
+      }
+      if (d.length) out.push({ item: p.item, diffs: d });
+    }
+  }
+  return out;
 }
 
 /** 「この違いは、これでよい」と、人が決めた項目(spec-out/accepted.json)。[{text:"文字の一部", field:"色"}] */
@@ -130,7 +171,10 @@ export function applyAccepted(result, accepted = []) {
 export async function checkStudio({ specPath = "spec-out/spec.json", section = null, cdp, device = "pc" } = {}) {
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
   const studio = await readStudioTexts({ cdp });
-  return applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
+  const res = applyAccepted(compareSpec(specTextItems(spec, { section, device }), studio), loadAccepted());
+  const acc = loadAccepted();
+  res.layout = layoutDiffs(res, spec.pc1280, studio.root).map((d) => ({ ...d, diffs: d.diffs.filter((line) => !acc.some((a) => String(d.item.text).includes(a.text) && line.startsWith(a.field))) })).filter((d) => d.diffs.length);
+  return res;
 }
 
 /** 仕様書の、1セクションから、Codexへの「作ってください」の依頼文を作る(!build N 用) */
@@ -169,7 +213,11 @@ export async function progressTable({ specPath = "spec-out/spec.json", cdp, devi
 }
 
 /** !fix N 用: 検査の結果(違い・見つからない文字)から、「ここを直してください」の依頼文を作る。直すところがなければ null */
-export function fixPrompt(result, n, { project = "" } = {}) {
+export function fixPrompt(result, n, { project = "", layout = false } = {}) {
+  if (layout) {
+    if (!result.layout?.length) return null;
+    return [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}の、**配置**を、仕様書(spec-out/spec.md)と、見本画像に合わせて直してください。検査の結果、次のずれがありました(幅1280pxの画面で比べた、おおよその数字です)。ここだけを直し、ほかは変えないでください。`, ...result.layout.slice(0, 12).map((d) => `・「${String(d.item.text).slice(0, 30)}」 ${d.diffs.join(" / ")}`), "余白(パディング・マージン)や、並べ方(縦横・間隔・幅)で合わせて、絶対位置は使わないでください。直せない項目は、理由を書いて報告してください。直したあとは、画面で確かめて、正直に報告してください。公開はしない。"].join("\n");
+  }
   if (!result.diffs.length && !result.missing.length) return null;
   const lines = [`STUDIO${project ? "の「" + project + "」" : ""}の、セクション${n}を、仕様書(spec-out/spec.md)に合わせて直してください。検査の結果、次の違いがありました。ここだけを直し、ほかは変えないでください。`];
   if (result.diffs.length) lines.push("【スタイルの違い】", ...result.diffs.map((d) => `・「${String(d.item.text).slice(0, 40)}」 ${d.diffs.join(" / ")}`));

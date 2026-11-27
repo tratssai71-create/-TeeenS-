@@ -335,7 +335,7 @@ async function autoSection(ch, n) {
     try { res = await checkStudio({ section: n, cdp: BROWSER_CDP }); } catch (e) { await say(`検査できませんでした(${e.message})。ここで止めます。`); return "stop"; }
     const left = res.diffs.length + res.missing.length;
     await ch.send(formatCheck(res, { section: n })).catch(() => {});
-    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。(${Math.round((Date.now() - t0) / 60000 * 10) / 10}分)`); logStat("ok", round); return "ok"; }
+    if (!left) { await say(`✅ セクション${n}は、文字が、すべて、仕様書と合いました。(${Math.round((Date.now() - t0) / 60000 * 10) / 10}分)` + (res.layout?.length ? `\n📐 配置のずれが ${res.layout.length}件 あります(目安)。直すなら \`!fix ${n} 配置\` を送ってください。` : "")); logStat("ok", round); return "ok"; }
     const sig = JSON.stringify([res.diffs.map((d) => d.item.text + d.diffs.join()), res.missing.map((m) => m.text)]);
     if (sig === prev) {
       const field = (d) => d.diffs[0].split(/[:：]/)[0];
@@ -505,7 +505,7 @@ client.on("messageCreate", async (msg) => {
     return;
   }
   // 「この違いは、これでよい」と決める: !accept 料金プラン 色(文字の一部と、項目: 色/文字の大きさ/太さ/行間/字間/フォント)
-  const ac = text.match(/^!accept\s+(\S+)\s+(色|文字の大きさ|太さ|行間|字間|フォント)$/);
+  const ac = text.match(/^!accept\s+(\S+)\s+(色|文字の大きさ|太さ|行間|字間|フォント|位置\(左\)|幅|高さ\(行数\)|縦の位置\(先頭の文字から\))$/);
   if (ac) { addAccepted(ac[1], ac[2]); return void msg.reply(`✅ 「${ac[1]}」の${ac[2]}の違いは、これでよい、と記録しました。検査では、違いに数えません。`); }
   // 元のサイトと、いまのSTUDIOを、並べた画像を作って貼る(Codexは使わない。画面は、スクロールだけする)
   if (text === "!compare") {
@@ -527,12 +527,12 @@ client.on("messageCreate", async (msg) => {
   if (text === "!session") return void msg.reply(sessions[msg.channelId] ? `セッション: \`${sessions[msg.channelId]}\`(\`codex resume ${sessions[msg.channelId]}\` で、Codexで続きを見られます)` : "まだ会話が始まっていません");
 
   let userText = text;
-  const fm = text.match(/^!fix\s+(\d+)$/);
+  const fm = text.match(/^!fix\s+(\d+)(\s+配置)?$/);
   if (fm) { // 検査をして、見つかった違いから、直す依頼文を作って、会話に渡す(検査 → 直す の自動化)
     try {
       const n = Number(fm[1]);
-      const fp = fixPrompt(await checkStudio({ section: n, cdp: BROWSER_CDP }), n, { project: BUILD_PROJECT });
-      if (!fp) return void msg.reply(`✅ セクション${n}は、直すところが、ありません(文字は、すべて、仕様書と合っています)`);
+      const fp = fixPrompt(await checkStudio({ section: n, cdp: BROWSER_CDP }), n, { project: BUILD_PROJECT, layout: !!fm[2] });
+      if (!fp) return void msg.reply(fm[2] ? `✅ セクション${n}は、配置のずれが、ありません` : `✅ セクション${n}は、直すところが、ありません(文字は、すべて、仕様書と合っています)`);
       userText = fp;
       await msg.channel.send(`🔧 セクション${n}の違いを検査して、直す依頼文を作りました。このまま、作業に渡します。`).catch(() => {});
     } catch (e) { return void msg.reply(`検査できませんでした: ${e.message}(編集画面を開いてから、もう一度)`); }
