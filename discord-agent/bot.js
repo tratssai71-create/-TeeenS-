@@ -138,6 +138,10 @@ try {
 
 // チャット用: 最初のメッセージにだけ添える前提(会話の続きでは、すでに伝わっている)
 let BUILD_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト"; // !build で、制作する先のSTUDIOプロジェクト名
+// サイトごとの制作先プロジェクト(spec-out/<サイト>/project.json)。!project 名前 / !site の2つ目の引数で、決める
+const ENV_PROJECT = process.env.BUILD_PROJECT ?? "discord テスト";
+const refreshProject = () => { try { const n = JSON.parse(readFileSync(inSpec("project.json"), "utf8")).name; BUILD_PROJECT = n || ENV_PROJECT; } catch { BUILD_PROJECT = ENV_PROJECT; } };
+const saveProject = (name) => { try { mkdirSync(specDir(), { recursive: true }); writeFileSync(inSpec("project.json"), JSON.stringify({ name }, null, 2)); } catch {} BUILD_PROJECT = name; };
 const CHAT_PREAMBLE = [
   "あなたは、Webサイト制作チームの『デザイナー』です。Discordのチャットで、ユーザーと会話しながら、STUDIOの編集作業を進めます。",
   "**話し方**: ユーザーは、気軽に、お願いする感じで話しかけます(「ここ、もうちょい濃くして」のような、くだけた言い方、ざっくりした頼み方)。あなたも、親しみやすい、やさしい口調で返す(です・ます調で、堅すぎない。専門用語は避け、使うときは、ひとこと説明する)。返事は、短く。次の形にする: ①やったこと(1〜2行) ②気になる点・できなかったこと(あれば) ③次にできること(1つだけ、提案)。頼みがざっくりしていても、仕様書や見本から、読み取れる範囲は、自分で決めて進める。本当に分からないときだけ、質問を1つだけする(選択肢を添える)。",
@@ -383,9 +387,9 @@ const saveSiteState = (st) => { try { writeFileSync(siteStateFile(), JSON.string
 async function siteFlow(ch, src, project) {
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
   const stopped = () => autoCancel || chatLimitUntil > Date.now();
-  if (project) BUILD_PROJECT = project;
   const dir = `spec-out/${slugFor(src)}`;
   if (specDir() !== dir) { mkdirSync(dir, { recursive: true }); setSpecDir(dir); } // サイトごとに、仕様書・許容・見比べ画像を、分ける
+  if (project) saveProject(project); else refreshProject();
   let st = loadSiteState();
   if (st.src !== src) st = { src, project: BUILD_PROJECT, imagesDone: [], started: new Date().toISOString() };
   st.project = BUILD_PROJECT;
@@ -572,6 +576,7 @@ client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
   if (!CHANNELS.has(msg.channelId)) return;
   if (!ALLOWED.has(msg.author.id)) return; // 許可ユーザー以外は無視
+  refreshProject();
 
   const text = normalizeCommand(msg.content);
   if (!text) return;
@@ -680,6 +685,11 @@ client.on("messageCreate", async (msg) => {
     let acc = 0, les = 0; try { acc = JSON.parse(readFileSync(inSpec("accepted.json"), "utf8")).length; } catch {} try { les = readIf("docs/lessons.md").split("\n").filter((l) => l.startsWith("- ")).length; } catch {}
     rows.push(`ℹ️ 「これでよい」の記録 ${acc}件 / 学び ${les}件 / 画面の自動投稿 ${process.env.SCREENSHOT === "0" ? "オフ" : "オン"}`);
     return void msg.reply(`🩺 点検\n${rows.join("\n")}`.slice(0, 1900));
+  }
+  const pm = text.match(/^!project(?:\s+(.+))?$/); // 制作先のSTUDIOプロジェクト(いまのサイトに、紐づく)
+  if (pm) {
+    if (pm[1]) { saveProject(pm[1].trim()); return void msg.reply(`✅ このサイト(${specDir()})の制作先を、「${BUILD_PROJECT}」にしました`); }
+    return void msg.reply(`制作先: 「${BUILD_PROJECT}」(サイト: ${specDir()})。変えるには \`!project プロジェクト名\``);
   }
   if (text === "!ping") return void msg.reply(`[${AGENT_NAME}] online`);
 
