@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits, AttachmentBuilder } from "discord.js";
 import { spawn } from "node:child_process";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { verifyApproval, extractExpectedText } from "./core.js";
@@ -79,7 +79,7 @@ function makeProgress(push, { session = true } = {}) {
   };
 }
 
-function runCodex(prompt, onLine, resumeId) {
+function runCodex(prompt, onLine, resumeId, images = []) {
   return new Promise(async (resolve) => {
     const dir = await mkdtemp(join(tmpdir(), "codex-"));
     const outFile = join(dir, "last.txt");
@@ -90,7 +90,9 @@ function runCodex(prompt, onLine, resumeId) {
     const base = ["exec", ...CODEX_ARGS.split(/\s+/).filter(Boolean), ...approve, ...(DIRECT_TOOLS ? ["-c", "features.deferred_tool_world_state=false"] : []),
       "-C", WORKDIR, "--output-last-message", outFile];
     // 通常: 指示文は stdin("-")。会話の続き(resume): 前のセッションに続けて実行する
-    const args = resumeId ? [...base, "resume", resumeId, win ? "-" : (prompt.startsWith("-") ? " " + prompt : prompt)] : [...base, "-"];
+    // 画像(見本の画面・ユーザーが貼った画像)を、Codexに見せる。通常は -i をオプションの手前に(複数指定の形)、resume は、1枚ごとに -i
+    const imgsTop = images.flatMap((f) => ["-i", f]);
+    const args = resumeId ? [...base, "resume", ...imgsTop, resumeId, win ? "-" : (prompt.startsWith("-") ? " " + prompt : prompt)] : ["exec", ...imgsTop, ...base.slice(1), "-"];
     // Windowsでは codex が .cmd のため shell 経由。その場合は、指示文を引数に載せずstdinで渡す(コマンド注入を避ける)
     const child = spawn("codex", args, { stdio: ["pipe", "pipe", "pipe"], shell: win });
     if (!resumeId || win) child.stdin.end(prompt); else child.stdin.end();
@@ -224,7 +226,7 @@ const BROWSER_ERR = {
   cdp_error: "専用Chromeとの接続に失敗しました。もう一度送ってください。続く場合は、専用Chromeを終了して `npm run browser` で開き直してください。",
 };
 
-async function chatTurn(ch, channelId, userText, { openProject = false } = {}) {
+async function chatTurn(ch, channelId, userText, { openProject = false, images = [] } = {}) {
   await ch.send("🧹 ブラウザを整えています…").catch(() => {});
   const br = await ensureBrowser(() => {}, { keepEditor: !openProject }); // !build は、制作先のプロジェクトを、確実に開くため、一覧から始める
   if (!br.ok) { await ch.send(`⛔ ${BROWSER_ERR[br.code] ?? br.code}`); return { ok: false, why: "browser" }; }
@@ -251,7 +253,7 @@ async function chatTurn(ch, channelId, userText, { openProject = false } = {}) {
   const sid = sessions[channelId];
   let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
   const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
-  let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid);
+  let r = await runCodex(sid ? userText : fresh(userText), mkProg(), sid, images);
   const limHit = r.code !== 0 ? detectUsageLimit(r.text) : null;
   if (limHit) { // 上限のときは、会話を作り直さず(余計に消費するため)、再開の時刻だけ案内する
     clearInterval(timer); clearInterval(typing);
@@ -262,7 +264,7 @@ async function chatTurn(ch, channelId, userText, { openProject = false } = {}) {
   if (sid && r.code !== 0) { // 前の会話を引き継げなかったときは、新しく始める
     buf.push("(前の会話を引き継げなかったので、新しい会話で続けます)");
     delete sessions[channelId];
-    r = await runCodex(fresh(userText), mkProg());
+    r = await runCodex(fresh(userText), mkProg(), undefined, images);
   }
   clearInterval(timer); clearInterval(typing);
   if (r.sessionId) { sessions[channelId] = r.sessionId; saveSessions(); }
@@ -278,6 +280,30 @@ async function chatTurn(ch, channelId, userText, { openProject = false } = {}) {
   return { ok: r.code === 0, r };
 }
 
+// 見本の画面(仕様書を作ったときの、そのセクションの画像)の場所。無ければ null
+function specShot(n) {
+  try {
+    const spec = JSON.parse(readFileSync("spec-out/spec.json", "utf8"));
+    const rel = spec?.pc?.sections?.[n - 1]?.shot;
+    const f = rel ? join("spec-out", rel) : null;
+    return f && existsSync(f) ? join(process.cwd(), f) : null;
+  } catch { return null; }
+}
+const SHOT_NOTE = "\n\n添付した画像は、移植元(参考サイト)の、このセクションの見た目です。文字だけでなく、大きさ・余白・配置・背景の飾りも、この画像に合わせてください(飾りの図形など、標準部品で作れないものは、無理に作らず、理由を報告してください)。";
+// ユーザーが、Discordに貼った画像を、一時フォルダに保存して、Codexに見せる
+async function downloadImages(msg) {
+  const out = [];
+  for (const a of msg.attachments?.values?.() ?? []) {
+    if (!/^image\//.test(a.contentType ?? "")) continue;
+    try {
+      const r = await fetch(a.url, { signal: AbortSignal.timeout(15000) });
+      const f = join(await mkdtemp(join(tmpdir(), "discord-img-")), (a.name || "image.png").replace(/[^\w.\-]/g, "_"));
+      await writeFile(f, Buffer.from(await r.arrayBuffer()));
+      out.push(f);
+    } catch {}
+  }
+  return out;
+}
 // ---- ディレクター(自動): 作る → 検査 → 違いがあれば直す を、自動で繰り返す。公開は、しない ----
 let autoCancel = false;
 const AUTO_MAX_ROUNDS = Number(process.env.AUTO_MAX_ROUNDS ?? 3);
@@ -289,7 +315,8 @@ async function autoSection(ch, n) {
   if (!first) { await say(`セクション${n}は、仕様書にありません`); return "stop"; }
   await say(`セクション${n}を、自動で作ります。「作る → 検査 → 違いがあれば直す」を、最大${AUTO_MAX_ROUNDS}回まで繰り返します。公開はしません。止めたいときは \`!stop\`。`);
   // 1) 作る(失敗したら、理由を聞いて、別のやり方で、もう1回だけ)
-  let t = await chatTurn(ch, ch.id, first, { openProject: true });
+  const shot = specShot(n);
+  let t = await chatTurn(ch, ch.id, shot ? first + SHOT_NOTE : first, { openProject: true, images: shot ? [shot] : [] });
   if (t.why === "limit") return "limit";
   if (!t.ok) {
     if (autoCancel) return "cancel";
@@ -312,7 +339,7 @@ async function autoSection(ch, n) {
     prev = sig;
     if (round === AUTO_MAX_ROUNDS) break;
     await say(`違いが${left}件あります。直します(${round}/${AUTO_MAX_ROUNDS - 1}回目)。`);
-    t = await chatTurn(ch, ch.id, fixPrompt(res, n, { project: BUILD_PROJECT }), {});
+    t = await chatTurn(ch, ch.id, fixPrompt(res, n, { project: BUILD_PROJECT }) + (shot ? SHOT_NOTE : ""), { images: shot ? [shot] : [] });
     if (t.why === "limit") return "limit";
     if (!t.ok) { await say("直す作業が、うまくいきませんでした。ここで止めます。人の確認が必要です。"); return "stop"; }
   }
@@ -494,7 +521,11 @@ client.on("messageCreate", async (msg) => {
     return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。**${fmtTime(chatLimitUntil)}** 以降に、もう一度送ってください。(\`!check\` \`!progress\` \`!shot\` は、上限中でも使えます。上限が解除されたはずのときは \`!limit clear\`)`);
   }
   msg.react("👀").catch(() => {});
-  chain = chain.then(() => chatTurn(msg.channel, msg.channelId, userText, { openProject: !!bm })).catch((e) => console.error(e));
+  const images = await downloadImages(msg);
+  if (images.length && !bm && !fm) userText += "\n\n(添付した画像は、ユーザーが貼った参考画像です。見た目を、これに合わせてください)";
+  if (bm) { const sh = specShot(Number(bm[1])); if (sh) { images.push(sh); userText += SHOT_NOTE; } }
+  if (fm) { const sh = specShot(Number(fm[1])); if (sh) { images.push(sh); userText += SHOT_NOTE; } }
+  chain = chain.then(() => chatTurn(msg.channel, msg.channelId, userText, { openProject: !!bm, images })).catch((e) => console.error(e));
 });
 
 // ネットワークの一時的な切れ(Discordとの接続の失敗)で、プロセスごと落ちないようにする
