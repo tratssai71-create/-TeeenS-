@@ -333,7 +333,16 @@ async function prepProject(ch) {
     if (!(await chatTurn(ch, ch.id, "(準備)", { openProject: true, skipCodex: true })).ok) { await say("制作先の編集画面を、開けませんでした。ここで止めます。"); return false; }
     await ready();
   }
-  const sw = await switchPage({ cdp: BROWSER_CDP, path: BUILD_PAGE });
+  let sw = await switchPage({ cdp: BROWSER_CDP, path: BUILD_PAGE });
+  // そのページが、まだ無いとき(新しいページを作るとき)は、デザイナーに、ページを作らせる(ヘッダー・フッターの部品も、置く)
+  if (!sw.ok && /見つかりません/.test(sw.detail) && BUILD_PAGE !== "/") {
+    let title = BUILD_PAGE.replace(/^\//, "");
+    try { title = String(JSON.parse(readFileSync(inSpec("spec.json"), "utf8")).pc.title ?? "").split(/[|｜]/)[0].trim() || title; } catch {}
+    await say(`ページ「${BUILD_PAGE}」が、まだ無いので、STUDIOに、新しく作ります(ページ名: ${title})。`);
+    const t = await chatTurn(ch, ch.id, `STUDIOの「${BUILD_PROJECT}」に、新しいページを作ってください。ページ名は「${title}」、ページのパス(URL)は「${BUILD_PAGE}」です。STUDIOの「ページパネル」から、ページを追加してください。ホームページ(「/」)で使っている、ヘッダーと、フッターの部品(コンポーネント)が、あれば、この新しいページにも、同じものを、置いてください(なければ、置かなくて、かまいません。その場合は、報告してください)。既存のページは、変えないでください。作ったら、そのページの編集画面を、開いたままにして、報告してください。公開はしない。`, { openProject: false });
+    if (t.why === "limit") { await say("Codexの利用上限のため、ここで止めます。"); return false; }
+    sw = await switchPage({ cdp: BROWSER_CDP, path: BUILD_PAGE });
+  }
   if (!sw.ok) { await say(`ページ「${BUILD_PAGE}」に、切り替えられませんでした(${sw.detail})。STUDIOの「ページパネル」で、そのページが、あるかを、確認してください。ここで止めます。`); return false; }
   await ready();
   return true;
