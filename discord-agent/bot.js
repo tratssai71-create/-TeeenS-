@@ -234,6 +234,9 @@ const BROWSER_ERR = {
   cdp_error: "専用Chromeとの接続に失敗しました。もう一度送ってください。続く場合は、専用Chromeを終了して `npm run browser` で開き直してください。",
 };
 
+const sessionTurns = {}; // チャンネルごとの、いまの会話の、依頼の回数
+const SESSION_MAX_TURNS = Number(process.env.SESSION_MAX_TURNS ?? 10);
+function resetSession(channelId) { delete sessions[channelId]; saveSessions(); sessionTurns[channelId] = 0; }
 async function chatTurn(ch, channelId, userText, { openProject = false, images = [], skipCodex = false } = {}) {
   stopRequested = false;
   await ch.send("🧹 ブラウザを整えています…").catch(() => {});
@@ -260,6 +263,9 @@ async function chatTurn(ch, channelId, userText, { openProject = false, images =
   const typing = setInterval(() => ch.sendTyping().catch(() => {}), 8000);
   ch.sendTyping().catch(() => {});
   const fresh = (t) => `${CHAT_PREAMBLE}\n\nユーザー: ${t}`;
+  // 会話(Codexのセッション)が長くなるほど、毎回、全部を読み直すので、使用量が、急に増える(実測: 1日の1つの会話で、約2億3千万トークン)。一定の回数ごとに、新しい会話にする
+  if ((sessionTurns[channelId] ?? 0) >= SESSION_MAX_TURNS) { resetSession(channelId); await ch.send("♻️ 使用量を抑えるため、会話を、新しくしました(依頼の文は、単独で、通じる形です)。").catch(() => {}); }
+  sessionTurns[channelId] = (sessionTurns[channelId] ?? 0) + 1;
   const sid = sessions[channelId];
   let said = ""; // 途中で💬として流した発言(最後の返事と重複して2回出るのを防ぐ)
   const mkProg = () => makeProgress((x) => { buf.push(x); if (x.startsWith("💬 ")) said += x.slice(3); }, { session: false });
@@ -349,6 +355,7 @@ async function prepProject(ch) {
 }
 
 async function autoSection(ch, n) {
+  resetSession(ch.id); // セクションごとに、新しい会話で始める(会話が長くなると、使用量が、急に増えるため)
   const t0 = Date.now();
   autoRounds = 0;
   const say = (t) => ch.send(`🧭 ディレクター: ${t}`).catch(() => {});
