@@ -633,7 +633,15 @@ client.on("messageCreate", async (msg) => {
     return void msg.reply(t ? `📝 学びの記録(新しい順に最大8件)\n${t.split("\n").filter(Boolean).slice(-8).reverse().join("\n")}`.slice(0, 1900) : "まだ、学びの記録は、ありません");
   }
   // 1サイト・1回の指示で、完成まで: !site <元のHTMLのパス> [STUDIOのプロジェクト名]
-  const sm = text.match(/^!site\s+("[^"]+"|'[^']+'|\S+)(?:\s+(.+))?$/); // パスに空白があるときは、"…" で囲む
+  // 「!site」だけを送ったときは、直前に作業していたサイトの続きから(元のURLと、プロジェクト名は、記録から)
+  let siteText = text;
+  if (text === "!site") {
+    const last = loadSiteState();
+    if (!last.src) return void msg.reply("まだ、作業したサイトの記録が、ありません。元のページのURLを、続けて、書いてください。例: `!site https://…/index.html 株式会社フィリーズ HP`");
+    siteText = `!site ${/\s/.test(last.src) ? `"${last.src}"` : last.src} ${last.project ?? BUILD_PROJECT}`;
+    await msg.reply(`直前のサイトの続きから、始めます: ${last.src}`).catch(() => {});
+  }
+  const sm = siteText.match(/^!site\s+("[^"]+"|'[^']+'|\S+)(?:\s+(.+))?$/); // パスに空白があるときは、"…" で囲む
   if (sm) {
     if (chatLimitUntil > Date.now()) return void msg.reply(`⏸ Codex(ChatGPT)の利用上限中です。${fmtTime(chatLimitUntil)} 以降に、もう一度送ってください`);
     const src = sm[1].replace(/^["']|["']$/g, "").replace(/^file:\/\//, "");
